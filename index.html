@@ -141,30 +141,56 @@ h1 {
 /* ── Theme chips ── */
 .themes-scroll {
   display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
   gap: 8px;
   padding: 16px 24px 0;
-  overflow-x: auto;
-  scrollbar-width: none;
+  max-width: 600px;
+  margin-left: auto;
+  margin-right: auto;
 }
 .themes-scroll::-webkit-scrollbar { display: none; }
 .chip {
+  flex: 0 0 calc(50% - 4px);
+  max-width: calc(50% - 4px);
   font-size: 12px;
   font-weight: 500;
-  padding: 6px 14px;
+  padding: 8px 12px;
   border-radius: 20px;
   border: 1px solid var(--border);
   color: var(--text2);
-  white-space: nowrap;
   cursor: pointer;
   transition: all 0.2s;
-  flex-shrink: 0;
+  text-align: center;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
   background: transparent;
+}
+.chip:hover {
+  border-color: var(--tc);
+  color: var(--text);
+  background: rgba(255, 255, 255, 0.05);
 }
 .chip.active {
   color: var(--bg);
   border-color: var(--tc);
   background: var(--tc);
   font-weight: 600;
+}
+
+/* 响应式 */
+@media (max-width: 480px) {
+  .themes-scroll {
+    max-width: 100%;
+    gap: 6px;
+  }
+  .chip {
+    flex: 0 0 calc(50% - 3px);
+    max-width: calc(50% - 3px);
+    padding: 7px 10px;
+    font-size: 11px;
+  }
 }
 
 /* ── Dice stage ── */
