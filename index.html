@@ -480,10 +480,17 @@ h1 {
   border-color: rgba(255,255,255,0.2);
 }
 .action-btn.primary {
-  background: rgba(255,255,255,0.1);
-  border-color: rgba(255,255,255,0.2);
-  color: var(--text);
+  background: var(--tc);
+  border-color: var(--tc);
+  color: var(--bg);
   font-weight: 600;
+  box-shadow: 0 4px 15px var(--tc-glow);
+}
+.action-btn.primary:hover {
+  background: var(--tc);
+  opacity: 0.9;
+  transform: translateY(-1px);
+  box-shadow: 0 6px 20px var(--tc-glow);
 }
 
 /* 一卦模式特有样式 */
@@ -764,19 +771,19 @@ h1 {
   gap: 8px;
 }
 
-/* 一卦模式骰子 - 使用和单骰模式完全相同的样式 */
+/* 一卦模式骰子 - 使用和单骰模式完全相同的样式，但尺寸小一些 */
 .combo-dice-scene {
-  width: 100px;
-  height: 100px;
-  perspective: 600px;
+  width: 80px;
+  height: 80px;
+  perspective: 500px;
 }
 
 .combo-dice-scene .dice-glow {
   position: absolute;
-  inset: -20px;
+  inset: -16px;
   border-radius: 50%;
   background: radial-gradient(circle, var(--tc-glow) 0%, transparent 70%);
-  filter: blur(20px);
+  filter: blur(16px);
   opacity: 0.5;
 }
 
@@ -788,33 +795,33 @@ h1 {
 }
 
 .combo-dice-scene .face {
-  width: 100px;
-  height: 100px;
+  width: 80px;
+  height: 80px;
   position: absolute;
   background: linear-gradient(145deg, rgba(255,255,255,0.22), rgba(255,255,255,0.1));
   border: 2px solid var(--tc);
-  border-radius: 16px;
+  border-radius: 12px;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   box-shadow:
     0 0 0 1px rgba(255, 255, 255, 0.1) inset,
-    0 10px 40px rgba(0, 0, 0, 0.3),
-    inset 0 0 20px rgba(255, 255, 255, 0.1);
+    0 8px 32px rgba(0, 0, 0, 0.3),
+    inset 0 0 16px rgba(255, 255, 255, 0.1);
   backface-visibility: hidden;
   transition: border-color 0.8s ease, box-shadow 0.8s ease;
 }
 
-.combo-dice-scene .face-face-front  { transform: rotateY(0deg)    translateZ(50px); }
-.combo-dice-scene .face-face-back   { transform: rotateY(180deg)  translateZ(50px); }
-.combo-dice-scene .face-face-left   { transform: rotateY(-90deg)  translateZ(50px); }
-.combo-dice-scene .face-face-right  { transform: rotateY(90deg)   translateZ(50px); }
-.combo-dice-scene .face-face-top    { transform: rotateX(90deg)   translateZ(50px); }
-.combo-dice-scene .face-face-bottom { transform: rotateX(-90deg)  translateZ(50px); }
+.combo-dice-scene .face-face-front  { transform: rotateY(0deg)    translateZ(40px); }
+.combo-dice-scene .face-face-back   { transform: rotateY(180deg)  translateZ(40px); }
+.combo-dice-scene .face-face-left   { transform: rotateY(-90deg)  translateZ(40px); }
+.combo-dice-scene .face-face-right  { transform: rotateY(90deg)   translateZ(40px); }
+.combo-dice-scene .face-face-top    { transform: rotateX(90deg)   translateZ(40px); }
+.combo-dice-scene .face-face-bottom { transform: rotateX(-90deg)  translateZ(40px); }
 
-.combo-dice-scene .face-emoji { font-size: 36px; line-height: 1; margin-bottom: 4px; }
-.combo-dice-scene .face-word { font-size: 14px; font-weight: 700; color: var(--text); }
+.combo-dice-scene .face-emoji { font-size: 28px; line-height: 1; margin-bottom: 3px; }
+.combo-dice-scene .face-word { font-size: 11px; font-weight: 700; color: var(--text); }
 
 /* 骰子下方的结果标签（暂时隐藏在骰子下方） */
 .dice-result {
@@ -1095,12 +1102,12 @@ h1 {
         <div class="dice-scene combo-dice-scene" id="diceScene0">
           <div class="dice-glow" id="diceGlow0"></div>
           <div class="dice-3d" id="dice3d0">
-            <div class="face face-front"  id="d0f0"><span class="face-emoji">🎲</span></div>
-            <div class="face face-back"   id="d0f1"><span class="face-emoji">🎲</span></div>
-            <div class="face face-left"   id="d0f2"><span class="face-emoji">🎲</span></div>
-            <div class="face face-right"  id="d0f3"><span class="face-emoji">🎲</span></div>
-            <div class="face face-top"    id="d0f4"><span class="face-emoji">🎲</span></div>
-            <div class="face face-bottom" id="d0f5"><span class="face-emoji">🎲</span></div>
+            <div class="face face-front"  id="d0f0"><span class="face-emoji">😎</span><span class="face-word">小爷来了</span></div>
+            <div class="face face-back"   id="d0f1"><span class="face-emoji">🤖</span><span class="face-word">清醒的NPC</span></div>
+            <div class="face face-left"   id="d0f2"><span class="face-emoji">😵</span><span class="face-word">我在哪</span></div>
+            <div class="face face-right"  id="d0f3"><span class="face-emoji">🪫</span><span class="face-word">电量不足</span></div>
+            <div class="face face-top"    id="d0f4"><span class="face-emoji">😐</span><span class="face-word">继续营业</span></div>
+            <div class="face face-bottom" id="d0f5"><span class="face-emoji">😅</span><span class="face-word">我爱工作</span></div>
           </div>
         </div>
         <div class="dice-result" id="diceResult0">
@@ -1117,12 +1124,12 @@ h1 {
         <div class="dice-scene combo-dice-scene" id="diceScene1">
           <div class="dice-glow" id="diceGlow1"></div>
           <div class="dice-3d" id="dice3d1">
-            <div class="face face-front"  id="d1f0"><span class="face-emoji">🎲</span></div>
-            <div class="face face-back"   id="d1f1"><span class="face-emoji">🎲</span></div>
-            <div class="face face-left"   id="d1f2"><span class="face-emoji">🎲</span></div>
-            <div class="face face-right"  id="d1f3"><span class="face-emoji">🎲</span></div>
-            <div class="face face-top"    id="d1f4"><span class="face-emoji">🎲</span></div>
-            <div class="face face-bottom" id="d1f5"><span class="face-emoji">🎲</span></div>
+            <div class="face face-front"  id="d1f0"><span class="face-emoji">😎</span><span class="face-word">小爷来了</span></div>
+            <div class="face face-back"   id="d1f1"><span class="face-emoji">🤖</span><span class="face-word">清醒的NPC</span></div>
+            <div class="face face-left"   id="d1f2"><span class="face-emoji">😵</span><span class="face-word">我在哪</span></div>
+            <div class="face face-right"  id="d1f3"><span class="face-emoji">🪫</span><span class="face-word">电量不足</span></div>
+            <div class="face face-top"    id="d1f4"><span class="face-emoji">😐</span><span class="face-word">继续营业</span></div>
+            <div class="face face-bottom" id="d1f5"><span class="face-emoji">😅</span><span class="face-word">我爱工作</span></div>
           </div>
         </div>
         <div class="dice-result" id="diceResult1">
@@ -1139,12 +1146,12 @@ h1 {
         <div class="dice-scene combo-dice-scene" id="diceScene2">
           <div class="dice-glow" id="diceGlow2"></div>
           <div class="dice-3d" id="dice3d2">
-            <div class="face face-front"  id="d2f0"><span class="face-emoji">🎲</span></div>
-            <div class="face face-back"   id="d2f1"><span class="face-emoji">🎲</span></div>
-            <div class="face face-left"   id="d2f2"><span class="face-emoji">🎲</span></div>
-            <div class="face face-right"  id="d2f3"><span class="face-emoji">🎲</span></div>
-            <div class="face face-top"    id="d2f4"><span class="face-emoji">🎲</span></div>
-            <div class="face face-bottom" id="d2f5"><span class="face-emoji">🎲</span></div>
+            <div class="face face-front"  id="d2f0"><span class="face-emoji">😎</span><span class="face-word">小爷来了</span></div>
+            <div class="face face-back"   id="d2f1"><span class="face-emoji">🤖</span><span class="face-word">清醒的NPC</span></div>
+            <div class="face face-left"   id="d2f2"><span class="face-emoji">😵</span><span class="face-word">我在哪</span></div>
+            <div class="face face-right"  id="d2f3"><span class="face-emoji">🪫</span><span class="face-word">电量不足</span></div>
+            <div class="face face-top"    id="d2f4"><span class="face-emoji">😐</span><span class="face-word">继续营业</span></div>
+            <div class="face face-bottom" id="d2f5"><span class="face-emoji">😅</span><span class="face-word">我爱工作</span></div>
           </div>
         </div>
         <div class="dice-result" id="diceResult2">
