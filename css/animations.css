@@ -1,0 +1,247 @@
+/* ========== 动画关键帧 ========== */
+@import url('./variables.css');
+
+/* ========== 摇骰子动画 ========== */
+@keyframes dice-roll {
+    0% {
+        transform: rotateX(-15deg) rotateY(25deg);
+    }
+    10% {
+        transform: translateY(-30px) rotateX(180deg) rotateY(360deg);
+    }
+    30% {
+        transform: translateY(-20px) rotateX(360deg) rotateY(540deg);
+    }
+    50% {
+        transform: translateY(-30px) rotateX(540deg) rotateY(720deg);
+    }
+    70% {
+        transform: translateY(-15px) rotateX(630deg) rotateY(810deg);
+    }
+    85% {
+        transform: translateY(-5px) rotateX(680deg) rotateY(850deg);
+    }
+    100% {
+        transform: rotateX(var(--final-rx, 720deg)) rotateY(var(--final-ry, 720deg)) translateY(0);
+    }
+}
+
+/* ========== 落地弹跳动画 ========== */
+@keyframes dice-landing {
+    0% {
+        transform: rotateX(var(--final-rx, 720deg)) rotateY(var(--final-ry, 720deg)) scale(1.06);
+    }
+    40% {
+        transform: rotateX(var(--final-rx, 720deg)) rotateY(var(--final-ry, 720deg)) scale(0.96);
+    }
+    70% {
+        transform: rotateX(var(--final-rx, 720deg)) rotateY(var(--final-ry, 720deg)) scale(1.02);
+    }
+    100% {
+        transform: rotateX(var(--final-rx, 720deg)) rotateY(var(--final-ry, 720deg)) scale(1);
+    }
+}
+
+/* ========== 骰子出现动画 ========== */
+@keyframes dice-appear {
+    0% {
+        opacity: 0;
+        transform: scale(0.3);
+    }
+    100% {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+/* ========== 骰子消失动画 ========== */
+@keyframes dice-exit {
+    0% {
+        opacity: 1;
+        transform: scale(1);
+    }
+    100% {
+        opacity: 0;
+        transform: scale(0.5) translateY(-20px);
+    }
+}
+
+/* ========== 骰子震颤动画 ========== */
+@keyframes dice-shake {
+    0%, 100% {
+        transform: rotateX(var(--final-rx, 720deg)) rotateY(var(--final-ry, 720deg)) translateX(0);
+    }
+    20% {
+        transform: rotateX(var(--final-rx, 720deg)) rotateY(var(--final-ry, 720deg)) translateX(-4px) rotateZ(-1.5deg);
+    }
+    40% {
+        transform: rotateX(var(--final-rx, 720deg)) rotateY(var(--final-ry, 720deg)) translateX(4px) rotateZ(1.5deg);
+    }
+    60% {
+        transform: rotateX(var(--final-rx, 720deg)) rotateY(var(--final-ry, 720deg)) translateX(-3px) rotateZ(-1deg);
+    }
+    80% {
+        transform: rotateX(var(--final-rx, 720deg)) rotateY(var(--final-ry, 720deg)) translateX(3px) rotateZ(0.5deg);
+    }
+}
+
+/* ========== 爻位揭晓动画 ========== */
+@keyframes reveal-yao {
+    0% {
+        opacity: 0;
+        transform: scale(0.7) rotateX(40deg);
+    }
+    60% {
+        transform: scale(1.05) rotateX(-5deg);
+    }
+    100% {
+        opacity: 1;
+        transform: scale(1) rotateX(0deg);
+    }
+}
+
+/* ========== 结果词脉冲动画 ========== */
+@keyframes result-pulse {
+    0%, 100% {
+        transform: scale(1);
+    }
+    50% {
+        transform: scale(1.08);
+    }
+}
+
+/* ========== Emoji翻转出现动画 ========== */
+@keyframes emoji-flip {
+    0% {
+        transform: scale(0) rotateY(180deg);
+        opacity: 0;
+    }
+    100% {
+        transform: scale(1) rotateY(0deg);
+        opacity: 1;
+    }
+}
+
+/* ========== Ripple扩散效果 ========== */
+@keyframes ripple-spread {
+    0% {
+        transform: scale(0);
+        opacity: 0.5;
+    }
+    100% {
+        transform: scale(3);
+        opacity: 0;
+    }
+}
+
+/* ========== 水波纹点击效果 ========== */
+@keyframes ripple-click {
+    0% {
+        transform: scale(0);
+        opacity: 0.6;
+    }
+    100% {
+        transform: scale(4);
+        opacity: 0;
+    }
+}
+
+/* ========== Confetti彩带动画 ========== */
+@keyframes confetti-fall {
+    0% {
+        transform: translateY(0) rotate(0deg);
+        opacity: 1;
+    }
+    100% {
+        transform: translateY(100vh) rotate(720deg);
+        opacity: 0;
+    }
+}
+
+/* ========== Toast提示动画 ========== */
+@keyframes toast-in {
+    0% {
+        transform: translateY(100%);
+        opacity: 0;
+    }
+    100% {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+@keyframes toast-out {
+    0% {
+        transform: translateY(0);
+        opacity: 1;
+    }
+    100% {
+        transform: translateY(100%);
+        opacity: 0;
+    }
+}
+
+/* ========== 弹窗动画 ========== */
+@keyframes modal-in {
+    0% {
+        opacity: 0;
+        transform: scale(0.9);
+    }
+    100% {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+/* ========== 加载旋转动画 ========== */
+@keyframes spin {
+    0% {
+        transform: rotate(0deg);
+    }
+    100% {
+        transform: rotate(360deg);
+    }
+}
+
+/* ========== 闪烁动画 ========== */
+@keyframes pulse-glow {
+    0%, 100% {
+        opacity: 0.6;
+    }
+    50% {
+        opacity: 1;
+    }
+}
+
+/* ========== 应用动画的类 ========== */
+.dice-3d.rolling {
+    animation: dice-roll var(--duration-roll) var(--easing-roll);
+}
+
+.dice-3d.landing {
+    animation: dice-landing var(--duration-landing) var(--easing-bounce);
+}
+
+.dice-3d.shake {
+    animation: dice-shake 300ms ease-in-out;
+}
+
+.dice-scene.appear .dice-3d {
+    animation: dice-appear 300ms var(--easing-bounce);
+}
+
+.dice-scene.exit .dice-3d {
+    animation: dice-exit 200ms ease-in;
+}
+
+.yao-card.reveal {
+    animation: reveal-yao 500ms var(--easing-bounce);
+}
+
+.result-word.pulse {
+    animation: result-pulse 400ms var(--easing-bounce);
+}
+
+.result-emoji.flip-in {
+    animation: emoji-flip 350ms var(--easing-bounce);
+}

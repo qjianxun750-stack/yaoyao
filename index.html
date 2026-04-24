@@ -1,0 +1,1566 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>🎲 情绪骰子 - 8款主题骰子，摇出今日状态 | 祈愿·玄学·关系·人生</title>
+<meta name="description" content="情绪骰子 - 8款主题骰子，摇出今日状态">
+
+<!-- Open Graph / Facebook -->
+<meta property="og:type" content="website">
+<meta property="og:title" content="🎲 情绪骰子 - 摇出今日状态">
+<meta property="og:description" content="8款主题骰子：状态、发疯、祈愿、玄学、关系、人生、妈妈、搭子">
+
+<!-- Twitter -->
+<meta property="twitter:card" content="summary_large_image">
+<meta property="twitter:title" content="🎲 情绪骰子 - 摇出今日状态">
+<meta property="twitter:description" content="8款主题骰子：状态、发疯、祈愿、玄学、关系、人生、妈妈、搭子">
+
+<!-- Umami Analytics -->
+<script async defer data-website-id="34118be7-d644-4577-a83d-3d8d001c2618" src="https://cloud.umami.is/script.js"></script>
+
+<!-- html2canvas for share image generation -->
+<script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;700&family=ZCOOL+XiaoWei&display=swap');
+
+:root {
+  --bg: #0C0A18;
+  --bg2: #13102A;
+  --border: rgba(255,255,255,0.08);
+  --text: #fff;
+  --text2: rgba(255,255,255,0.45);
+  --text3: rgba(255,255,255,0.2);
+  --tc: #FF6B6B;
+  --tc-glow: rgba(255,107,107,0.35);
+  --radius: 20px;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: -apple-system, 'PingFang SC', 'Hiragino Sans GB', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+/* Noise overlay */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+  pointer-events: none;
+  z-index: 0;
+  opacity: 0.6;
+}
+
+/* Ambient glow background */
+.ambient {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  transition: background 0.8s ease;
+}
+
+.container {
+  position: relative;
+  z-index: 1;
+  max-width: 480px;
+  margin: 0 auto;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  padding: 0 0 40px;
+}
+
+/* ── Header ── */
+header {
+  padding: 52px 24px 16px;
+  text-align: center;
+}
+.logo {
+  font-size: 13px;
+  letter-spacing: 0.15em;
+  color: var(--text3);
+  margin-bottom: 6px;
+  text-transform: uppercase;
+}
+h1 {
+  font-family: 'ZCOOL XiaoWei', 'Noto Serif SC', serif;
+  font-size: 28px;
+  font-weight: 400;
+  letter-spacing: 0.05em;
+  color: var(--text);
+}
+.tagline {
+  font-size: 12px;
+  color: var(--text3);
+  margin-top: 4px;
+  letter-spacing: 0.06em;
+}
+
+/* ── Tab switch ── */
+.tabs {
+  display: flex;
+  margin: 20px 24px 0;
+  background: rgba(255,255,255,0.05);
+  border-radius: 14px;
+  padding: 4px;
+  gap: 3px;
+}
+.tab {
+  flex: 1;
+  padding: 8px 0;
+  text-align: center;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text2);
+  border-radius: 10px;
+  cursor: pointer;
+  transition: all 0.25s;
+  border: none;
+  background: transparent;
+}
+.tab.active {
+  background: rgba(255,255,255,0.1);
+  color: var(--text);
+}
+
+/* ── Theme chips ── */
+.themes-scroll {
+  display: flex;
+  gap: 8px;
+  padding: 16px 24px 0;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+.themes-scroll::-webkit-scrollbar { display: none; }
+.chip {
+  font-size: 12px;
+  font-weight: 500;
+  padding: 6px 14px;
+  border-radius: 20px;
+  border: 1px solid var(--border);
+  color: var(--text2);
+  white-space: nowrap;
+  cursor: pointer;
+  transition: all 0.2s;
+  flex-shrink: 0;
+  background: transparent;
+}
+.chip.active {
+  color: var(--bg);
+  border-color: var(--tc);
+  background: var(--tc);
+  font-weight: 600;
+}
+
+/* ── Dice stage ── */
+.dice-stage {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 32px 24px 20px;
+  gap: 16px;
+}
+
+/* 3D dice */
+.dice-scene {
+  perspective: 600px;
+  width: 140px;
+  height: 140px;
+  cursor: pointer;
+  position: relative;
+}
+
+.dice-glow {
+  position: absolute;
+  inset: -24px;
+  border-radius: 50%;
+  background: radial-gradient(circle, var(--tc-glow) 0%, transparent 70%);
+  animation: pulse-glow 3s ease-in-out infinite;
+  pointer-events: none;
+  transition: background 0.6s;
+}
+
+@keyframes pulse-glow {
+  0%, 100% { transform: scale(1); opacity: 0.7; }
+  50% { transform: scale(1.15); opacity: 1; }
+}
+
+.dice-3d {
+  width: 140px;
+  height: 140px;
+  position: relative;
+  transform-style: preserve-3d;
+  transform: rotateX(-15deg) rotateY(25deg);
+  transition: transform 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+.dice-3d.rolling {
+  animation: dice-roll 1.8s cubic-bezier(0.25, 0.1, 0.25, 1) forwards;
+}
+
+.dice-3d.landing {
+  animation: dice-land 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+}
+
+@keyframes dice-roll {
+  0%   { transform: rotateX(-15deg) rotateY(25deg) translateY(0px); }
+  10%  { transform: rotateX(120deg) rotateY(80deg) translateY(-30px); }
+  30%  { transform: rotateX(360deg) rotateY(200deg) translateY(-20px); }
+  50%  { transform: rotateX(540deg) rotateY(380deg) translateY(-30px); }
+  70%  { transform: rotateX(680deg) rotateY(520deg) translateY(-15px); }
+  85%  { transform: rotateX(760deg) rotateY(600deg) translateY(-5px); }
+  100% { transform: rotateX(var(--rx, 720deg)) rotateY(var(--ry, 720deg)) translateY(0px); }
+}
+
+@keyframes dice-land {
+  0%   { transform: rotateX(var(--rx, 0deg)) rotateY(var(--ry, 0deg)) scale(1.06); }
+  40%  { transform: rotateX(var(--rx, 0deg)) rotateY(var(--ry, 0deg)) scale(0.96); }
+  70%  { transform: rotateX(var(--rx, 0deg)) rotateY(var(--ry, 0deg)) scale(1.02); }
+  100% { transform: rotateX(var(--rx, 0deg)) rotateY(var(--ry, 0deg)) scale(1); }
+}
+
+.face {
+  position: absolute;
+  width: 140px;
+  height: 140px;
+  border-radius: 22px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  border: 1px solid rgba(255,255,255,0.15);
+  backface-visibility: hidden;
+  transition: background 0.5s;
+}
+.face-front  { transform: rotateY(0deg)    translateZ(70px); }
+.face-back   { transform: rotateY(180deg)  translateZ(70px); }
+.face-left   { transform: rotateY(-90deg)  translateZ(70px); }
+.face-right  { transform: rotateY(90deg)   translateZ(70px); }
+.face-top    { transform: rotateX(90deg)   translateZ(70px); }
+.face-bottom { transform: rotateX(-90deg)  translateZ(70px); }
+
+.face-emoji { font-size: 36px; line-height: 1; }
+.face-word  { font-size: 14px; font-weight: 700; color: #fff; letter-spacing: -0.3px; text-align: center; padding: 0 8px; }
+
+/* ── Hint text ── */
+.hint {
+  font-size: 12px;
+  color: var(--text3);
+  letter-spacing: 0.06em;
+  height: 18px;
+  transition: opacity 0.3s;
+}
+
+/* ── Roll button ── */
+.roll-btn {
+  width: 100%;
+  padding: 16px;
+  border-radius: 16px;
+  border: none;
+  font-size: 16px;
+  font-weight: 700;
+  cursor: pointer;
+  color: #fff;
+  letter-spacing: 0.05em;
+  background: var(--tc);
+  position: relative;
+  overflow: hidden;
+  transition: all 0.2s;
+  box-shadow: 0 8px 32px var(--tc-glow);
+}
+.roll-btn:active { transform: scale(0.97); }
+.roll-btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+.roll-btn::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, rgba(255,255,255,0.15) 0%, transparent 60%);
+  pointer-events: none;
+}
+
+/* ── Result card ── */
+.result-card {
+  margin: 0 24px;
+  border-radius: 20px;
+  border: 1px solid rgba(255,255,255,0.1);
+  padding: 20px;
+  background: rgba(255,255,255,0.04);
+  opacity: 0;
+  transform: translateY(16px);
+  transition: all 0.5s cubic-bezier(0.34, 1.3, 0.64, 1);
+  pointer-events: none;
+}
+.result-card.visible {
+  opacity: 1;
+  transform: translateY(0);
+  pointer-events: auto;
+}
+.result-label {
+  font-size: 10px;
+  letter-spacing: 0.12em;
+  color: var(--text3);
+  text-transform: uppercase;
+  margin-bottom: 6px;
+}
+.result-main {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 10px;
+}
+.result-emoji { font-size: 28px; }
+.result-word {
+  font-family: 'ZCOOL XiaoWei', 'Noto Serif SC', serif;
+  font-size: 22px;
+  color: var(--tc);
+}
+.result-desc {
+  font-size: 13px;
+  color: var(--text2);
+  line-height: 1.6;
+  border-top: 1px solid var(--border);
+  padding-top: 10px;
+  margin-bottom: 14px;
+}
+.result-actions {
+  display: flex;
+  gap: 8px;
+}
+.action-btn {
+  flex: 1;
+  padding: 10px 0;
+  border-radius: 12px;
+  border: 1px solid var(--border);
+  background: transparent;
+  color: var(--text2);
+  font-size: 12px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.action-btn:hover { background: rgba(255,255,255,0.06); color: var(--text); }
+.action-btn.primary {
+  background: rgba(255,255,255,0.08);
+  border-color: rgba(255,255,255,0.15);
+  color: var(--text);
+}
+
+/* ── Particles ── */
+#particles {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 999;
+}
+.particle {
+  position: absolute;
+  border-radius: 50%;
+  animation: particle-fly 0.9s ease-out forwards;
+}
+@keyframes particle-fly {
+  0%   { opacity: 1; transform: translate(0,0) scale(1); }
+  100% { opacity: 0; transform: translate(var(--tx), var(--ty)) scale(0); }
+}
+
+/* ── Share overlay ── */
+.share-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.85);
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s;
+  backdrop-filter: blur(8px);
+}
+.share-overlay.visible {
+  opacity: 1;
+  pointer-events: auto;
+}
+.share-modal {
+  width: 320px;
+  background: var(--bg2);
+  border-radius: 28px;
+  border: 1px solid rgba(255,255,255,0.1);
+  overflow: hidden;
+  transform: scale(0.9);
+  transition: transform 0.35s cubic-bezier(0.34, 1.4, 0.64, 1);
+}
+.share-overlay.visible .share-modal {
+  transform: scale(1);
+}
+
+/* Share card image area */
+.share-card {
+  padding: 32px 28px 28px;
+  background: var(--tc);
+  position: relative;
+  overflow: hidden;
+  text-align: center;
+}
+.share-card::before {
+  content: '';
+  position: absolute;
+  top: -40px; right: -40px;
+  width: 160px; height: 160px;
+  background: rgba(255,255,255,0.12);
+  border-radius: 50%;
+}
+.share-card::after {
+  content: '';
+  position: absolute;
+  bottom: -20px; left: -20px;
+  width: 100px; height: 100px;
+  background: rgba(0,0,0,0.1);
+  border-radius: 50%;
+}
+.share-date {
+  font-size: 11px;
+  color: rgba(255,255,255,0.6);
+  letter-spacing: 0.08em;
+  margin-bottom: 20px;
+  position: relative; z-index: 1;
+}
+.share-big-emoji {
+  font-size: 56px;
+  display: block;
+  margin-bottom: 12px;
+  position: relative; z-index: 1;
+}
+.share-big-word {
+  font-family: 'ZCOOL XiaoWei', 'Noto Serif SC', serif;
+  font-size: 32px;
+  color: #fff;
+  margin-bottom: 8px;
+  position: relative; z-index: 1;
+}
+.share-theme-name {
+  font-size: 12px;
+  color: rgba(255,255,255,0.65);
+  position: relative; z-index: 1;
+}
+.share-desc-area {
+  padding: 16px 20px;
+  font-size: 12px;
+  color: rgba(255,255,255,0.5);
+  line-height: 1.6;
+  border-bottom: 1px solid rgba(255,255,255,0.06);
+}
+.share-footer {
+  padding: 12px 20px 16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.share-brand {
+  font-size: 11px;
+  color: var(--text3);
+  letter-spacing: 0.05em;
+}
+.share-footer-btns {
+  display: flex;
+  gap: 8px;
+}
+.share-footer-btn {
+  font-size: 12px;
+  padding: 8px 16px;
+  border-radius: 10px;
+  border: 1px solid var(--border);
+  background: transparent;
+  color: var(--text2);
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.share-footer-btn.primary {
+  background: var(--tc);
+  border-color: var(--tc);
+  color: #fff;
+  font-weight: 600;
+}
+.share-close {
+  position: absolute;
+  top: 16px; right: 16px;
+  width: 32px; height: 32px;
+  border-radius: 50%;
+  border: 1px solid var(--border);
+  background: rgba(255,255,255,0.06);
+  color: var(--text2);
+  font-size: 16px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10;
+}
+
+/* ── Sound toggle ── */
+.sound-toggle {
+  position: fixed;
+  top: 20px; right: 20px;
+  z-index: 100;
+  width: 36px; height: 36px;
+  border-radius: 50%;
+  border: 1px solid var(--border);
+  background: rgba(255,255,255,0.06);
+  color: var(--text2);
+  font-size: 16px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
+  backdrop-filter: blur(8px);
+}
+.sound-toggle:hover { background: rgba(255,255,255,0.1); }
+
+/* ── Ripple click effect ── */
+.ripple {
+  position: absolute;
+  border-radius: 50%;
+  transform: scale(0);
+  animation: ripple-anim 0.6s linear;
+  background: rgba(255,255,255,0.3);
+  pointer-events: none;
+}
+@keyframes ripple-anim {
+  to { transform: scale(4); opacity: 0; }
+}
+
+/* ── Combo mode ── */
+.combo-selector {
+  padding: 0 24px 16px;
+  display: flex;
+  gap: 8px;
+}
+
+/* Combo dice stage - initially hidden */
+#comboDiceStage {
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s ease;
+  min-height: 200px;
+  padding: 24px 24px 8px;
+}
+
+#comboDiceStage.visible {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+/* Combo dice glow */
+#comboDiceGlow {
+  background: radial-gradient(circle, var(--tc-glow) 0%, transparent 70%);
+}
+.combo-chip {
+  flex: 1;
+  padding: 10px 0;
+  text-align: center;
+  border-radius: 14px;
+  border: 1px solid var(--border);
+  background: rgba(255,255,255,0.03);
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--text2);
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.combo-chip.active {
+  background: rgba(255,255,255,0.08);
+  border-color: rgba(255,255,255,0.2);
+  color: var(--text);
+}
+
+.yao-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 0 24px 16px;
+}
+.yao-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  opacity: 0.35;
+  transition: opacity 0.4s;
+}
+.yao-row.active { opacity: 1; }
+.yao-row.revealed { opacity: 1; }
+
+.yao-badge {
+  width: 28px; height: 28px;
+  border-radius: 9px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  font-weight: 800;
+  color: #fff;
+  flex-shrink: 0;
+  background: var(--tc);
+  opacity: 0.6;
+  transition: opacity 0.3s;
+}
+.yao-row.revealed .yao-badge { opacity: 1; }
+
+.yao-box {
+  flex: 1;
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 14px;
+  padding: 10px 14px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  transition: border-color 0.4s;
+  min-height: 52px;
+}
+.yao-row.revealed .yao-box {
+  border-color: rgba(255,255,255,0.15);
+}
+.yao-emoji { font-size: 20px; }
+.yao-info .yao-name {
+  font-size: 10px;
+  color: var(--text3);
+  margin-bottom: 2px;
+}
+.yao-info .yao-word {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--text);
+}
+.yao-placeholder {
+  font-size: 12px;
+  color: var(--text3);
+}
+
+.guaci-box {
+  margin: 0 24px 16px;
+  padding: 14px 16px;
+  border-radius: 14px;
+  background: rgba(255,255,255,0.03);
+  border: 1px solid rgba(255,255,255,0.06);
+  font-size: 12px;
+  color: var(--text2);
+  line-height: 1.7;
+  min-height: 54px;
+  transition: all 0.4s;
+}
+.guaci-label {
+  font-size: 10px;
+  color: var(--text3);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  margin-bottom: 4px;
+}
+
+/* Reveal animation */
+@keyframes reveal-in {
+  0%   { opacity: 0; transform: scale(0.85) rotateX(30deg); }
+  60%  { transform: scale(1.04) rotateX(-5deg); }
+  100% { opacity: 1; transform: scale(1) rotateX(0deg); }
+}
+.yao-word.revealed {
+  animation: reveal-in 0.5s cubic-bezier(0.34, 1.4, 0.64, 1) forwards;
+}
+
+/* Toast */
+.toast {
+  position: fixed;
+  bottom: 40px;
+  left: 50%;
+  transform: translateX(-50%) translateY(20px);
+  background: rgba(255,255,255,0.1);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(255,255,255,0.15);
+  color: #fff;
+  padding: 10px 20px;
+  border-radius: 20px;
+  font-size: 13px;
+  opacity: 0;
+  transition: all 0.3s;
+  pointer-events: none;
+  z-index: 2000;
+  white-space: nowrap;
+}
+.toast.show {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+}
+
+</style>
+</head>
+<body>
+
+<div class="ambient" id="ambient"></div>
+<div id="particles"></div>
+
+<button class="sound-toggle" id="soundToggle" title="音效开关">🔊</button>
+
+<div class="container">
+  <header>
+    <div class="logo">Emotion Dice · 情绪骰子</div>
+    <h1>🎲 今日之卦</h1>
+    <div class="tagline">摇一摇，看今天是什么状态</div>
+  </header>
+
+  <!-- Tabs -->
+  <div class="tabs">
+    <button class="tab active" onclick="setMode('single')">🎯 单骰模式</button>
+    <button class="tab" onclick="setMode('combo')">☯️ 一卦模式</button>
+  </div>
+
+  <!-- Single mode content -->
+  <div id="single-panel">
+    <!-- Theme chips -->
+    <div class="themes-scroll" id="themeChips"></div>
+
+    <!-- Dice stage -->
+    <div class="dice-stage">
+      <div class="dice-scene" id="diceScene" onclick="onDiceClick(event)">
+        <div class="dice-glow" id="diceGlow"></div>
+        <div class="dice-3d" id="dice3d">
+          <div class="face face-front"  id="f0"><span class="face-emoji">😎</span><span class="face-word">小爷来了</span></div>
+          <div class="face face-back"   id="f1"><span class="face-emoji">🤖</span><span class="face-word">清醒的NPC</span></div>
+          <div class="face face-left"   id="f2"><span class="face-emoji">😵</span><span class="face-word">我在哪</span></div>
+          <div class="face face-right"  id="f3"><span class="face-emoji">🪫</span><span class="face-word">电量不足</span></div>
+          <div class="face face-top"    id="f4"><span class="face-emoji">😐</span><span class="face-word">继续营业</span></div>
+          <div class="face face-bottom" id="f5"><span class="face-emoji">😅</span><span class="face-word">我爱工作</span></div>
+        </div>
+      </div>
+      <div class="hint" id="hint">点击骰子 · 或点击下方按钮</div>
+    </div>
+
+    <div style="padding: 0 24px; display: flex; flex-direction: column; gap: 12px;">
+      <button class="roll-btn" id="rollBtn" onclick="rollDice()">摇一摇 🎲</button>
+
+      <!-- Result card -->
+      <div class="result-card" id="resultCard">
+        <div class="result-label">今日卦语</div>
+        <div class="result-main">
+          <div class="result-emoji" id="resultEmoji">😎</div>
+          <div class="result-word" id="resultWord">小爷来了</div>
+        </div>
+        <div class="result-desc" id="resultDesc">今天有气势，冲！适合主动出击、表达自我。</div>
+        <div class="result-actions">
+          <button class="action-btn" onclick="copyResult()">📋 复制</button>
+          <button class="action-btn primary" onclick="showShare()">🖼 生成分享图</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Combo mode content -->
+  <div id="combo-panel" style="display:none; flex-direction:column;">
+    <div class="combo-selector">
+      <div class="combo-chip active" onclick="selectCombo(0, this)">今日一卦 · 因态果</div>
+      <div class="combo-chip" onclick="selectCombo(1, this)">人生一卦 · 天人地</div>
+    </div>
+
+    <!-- Dice stage for combo mode -->
+    <div class="dice-stage" id="comboDiceStage">
+      <div class="dice-scene" id="comboDiceScene">
+        <div class="dice-glow" id="comboDiceGlow"></div>
+        <div class="dice-3d" id="comboDice3d">
+          <div class="face face-front"  id="cf0"><span class="face-emoji">🎲</span><span class="face-word">?</span></div>
+          <div class="face face-back"   id="cf1"><span class="face-emoji">🎲</span><span class="face-word">?</span></div>
+          <div class="face face-left"   id="cf2"><span class="face-emoji">🎲</span><span class="face-word">?</span></div>
+          <div class="face face-right"  id="cf3"><span class="face-emoji">🎲</span><span class="face-word">?</span></div>
+          <div class="face face-top"    id="cf4"><span class="face-emoji">🎲</span><span class="face-word">?</span></div>
+          <div class="face face-bottom" id="cf5"><span class="face-emoji">🎲</span><span class="face-word">?</span></div>
+        </div>
+      </div>
+      <div class="hint" id="comboHint">起爻时骰子会出现</div>
+    </div>
+
+    <div class="yao-list" id="yaoList">
+      <!-- filled by JS -->
+    </div>
+
+    <div class="guaci-box" id="guaciBox">
+      <div class="guaci-label">卦辞</div>
+      <div id="guaciText">选择一套玩法，依次摇出三爻，看今日之卦。</div>
+    </div>
+
+    <div style="padding: 0 24px; display: flex; flex-direction: column; gap: 12px;">
+      <button class="roll-btn" id="comboRollBtn" onclick="rollNextYao()">起第一爻 🎲</button>
+      <div class="result-card" id="comboResultCard" style="display:none;">
+        <div class="result-label">三爻完卦 · 可以分享</div>
+        <div class="result-desc" id="comboResultDesc"></div>
+        <div class="result-actions">
+          <button class="action-btn" onclick="resetCombo()">🔄 再起一卦</button>
+          <button class="action-btn primary" onclick="showComboShare()">🖼 生成分享图</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Share overlay -->
+<div class="share-overlay" id="shareOverlay">
+  <div class="share-modal" id="shareModal">
+    <button class="share-close" onclick="hideShare()">✕</button>
+    <div class="share-card" id="shareCard">
+      <div class="share-date" id="shareDate"></div>
+      <span class="share-big-emoji" id="shareBigEmoji">😎</span>
+      <div class="share-big-word" id="shareBigWord">小爷来了</div>
+      <div class="share-theme-name" id="shareThemeName">今日状态骰</div>
+    </div>
+    <div class="share-desc-area" id="shareDescArea">今天有气势，冲！适合主动出击、表达自我。</div>
+    <div class="share-footer">
+      <span class="share-brand">🎲 情绪骰子</span>
+      <div class="share-footer-btns">
+        <button class="share-footer-btn" onclick="copyShareText()">📋 复制文字</button>
+        <button class="share-footer-btn primary" onclick="downloadShare()">⬇ 保存图片</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Toast -->
+<div class="toast" id="toast"></div>
+
+<script>
+// ── Data (完整v1数据) ──
+const DICE = [
+  {
+    id:'status',
+    name:'今日状态',
+    color:'#FF6B6B',
+    faces:[
+      {e:'😎',w:'小爷来了',d:'今天有气势，冲！适合主动出击、表达自我'},
+      {e:'🤖',w:'清醒的NPC',d:'今天配合，但心里明白。表面营业，内心清醒'},
+      {e:'😵',w:'我在哪',d:'今天有点迷，找不到自己。允许自己迷茫一会儿'},
+      {e:'🪫',w:'电量不足',d:'今天没能量，别指望我。好好休息也是正事'},
+      {e:'😐',w:'继续营业',d:'今天正常运转，没感情。完成该完成的就好'},
+      {e:'😅',w:'我爱工作',d:'今天认命了，上吧。自嘲也是一种力量'}
+    ]
+  },
+  {
+    id:'crazy',
+    name:'今日发疯',
+    color:'#FF006E',
+    faces:[
+      {e:'👻',w:'想消失一下',d:'不是真的消失，就是想从所有人的视线里消失三天'},
+      {e:'🙅',w:'想说不',d:'今天有一百个请求，我想全部拒绝'},
+      {e:'💥',w:'想原地爆炸',d:'今天积累的东西太多，需要一个出口'},
+      {e:'😭',w:'想哭一场',d:'不是真的很难过，就是需要哭一下'},
+      {e:'🏃',w:'想跑路',d:'不是真的跑，就是想消失在一个没人认识我的地方'},
+      {e:'💢',w:'想摔东西',d:'不是真的摔，就是需要那个动作'}
+    ]
+  },
+  {
+    id:'wish',
+    name:'今日祈愿',
+    color:'#8338EC',
+    faces:[
+      {e:'🍀',w:'万一呢',d:'今天求个好运，信一半。留条退路，也留点期待'},
+      {e:'🙏',w:'求个心安',d:'今天不求别的，就求踏实。心安就好'},
+      {e:'😢',w:'我委屈我不哭',d:'今天求被看见，求一点点认可'},
+      {e:'✨',w:'好话连连',d:'今天只接受好消息，坏的不收'},
+      {e:'⏳',w:'静待时机',d:'今天不急，等。时机到了自然成'},
+      {e:'🤷',w:'算了算了',d:'今天什么都不求了，随缘'}
+    ]
+  },
+  {
+    id:'metaphysics',
+    name:'今日玄学',
+    color:'#FFB703',
+    faces:[
+      {e:'🎲',w:'万一呢',d:'今天信一半，留条退路。玄学也要理性'},
+      {e:'😏',w:'半信半得劲',d:'今天不全信，但信了就踏实'},
+      {e:'🎊',w:'好运批发中',d:'今天运气来了，接好。准备好迎接好消息'},
+      {e:'☯️',w:'求个心安而已',d:'今天不求别的，就求不出事'},
+      {e:'🌙',w:'静待时机',d:'今天不急，老天自有安排'},
+      {e:'🍃',w:'随缘了',d:'今天不求了，爱咋咋地'}
+    ]
+  },
+  {
+    id:'relationship',
+    name:'今日关系',
+    color:'#FB5607',
+    faces:[
+      {e:'🎭',w:'自觉的背景板',d:'今天我在场，但不是主角。当个安静的观众'},
+      {e:'😶',w:'沉默式应答',d:'今天有人说话，我在听，但没在听'},
+      {e:'👤',w:'隐形出席者',d:'今天人在心不在，全程在线离线'},
+      {e:'🔋',w:'社交耗材',d:'今天又被消耗了，什么都没留下'},
+      {e:'🎉',w:'气氛组成员',d:'今天撑了全场，散场各回各家'},
+      {e:'💔',w:'我委屈我不哭',d:'今天有话没说，咽下去了'}
+    ]
+  },
+  {
+    id:'life',
+    name:'今日人生',
+    color:'#3A86FF',
+    faces:[
+      {e:'🌫️',w:'我在哪',d:'今天迷失了，不知道自己在哪里。允许迷路'},
+      {e:'🚪',w:'回不去了',d:'今天突然想起从前，但门已经关上了'},
+      {e:'😌',w:'将就着吧',d:'今天不追求了，过得去就行'},
+      {e:'🤔',w:'还没想好',d:'今天没有答案，但也不急着找'},
+      {e:'⏰',w:'再等等',d:'今天不动，等一个说不清楚的什么'},
+      {e:'🍂',w:'就这样吧',d:'今天接受了，不挣扎了'}
+    ]
+  },
+  {
+    id:'mom',
+    name:'今日妈妈',
+    color:'#06FFB4',
+    faces:[
+      {e:'😑',w:'沉默式应答',d:'今天听见了，但没收到。左耳进右耳出'},
+      {e:'📢',w:'我知道了',d:'今天第八百次听这句话，第八百次这样回'},
+      {e:'🤲',w:'随你吧',d:'今天不争了，你说什么都行'},
+      {e:'😶',w:'嗯',d:'今天只有这一个字，但这个字装了很多东西'},
+      {e:'👍',w:'好好好',d:'今天全部答应，一个都不会做'},
+      {e:'⏭️',w:'下次吧',d:'今天用这三个字挡住了所有问题'}
+    ]
+  },
+  {
+    id:'partner',
+    name:'今日搭子',
+    color:'#FF69B4',
+    faces:[
+      {e:'🤐',w:'今天不想说话',d:'今天需要搭子，但不需要交流，就是陪着'},
+      {e:'💰',w:'今天AA',d:'今天是纯粹的搭子关系，干净，没有负担'},
+      {e:'🎁',w:'今天我请',d:'今天心情好，或者需要被需要'},
+      {e:'👑',w:'今天你说了算',d:'今天不想做决定，全交给你'},
+      {e:'🎮',w:'今天各玩各的',d:'今天在一起，但不互相打扰'},
+      {e:'🌟',w:'今天不散',d:'今天不想回家，多待一会儿'}
+    ]
+  }
+];
+
+const COMBOS = [
+  {
+    id:'today-cause',
+    name:'今日一卦',
+    color:'#8B5CF6',
+    labels:['因','态','果'],
+    names:['今日之因','今日之态','今日之果'],
+    faces:[
+      [{e:'🙋',w:'自找的',d:'今天的麻烦是自己造的，心知肚明'},{e:'🌟',w:'命该如此',d:'今天的事不怪自己，老天安排的'},{e:'🕳️',w:'被坑了',d:'今天有人挖坑，自己跳进去了'},{e:'😲',w:'没想到',d:'今天出了意外，完全没料到'},{e:'⏰',w:'早该如此',d:'今天发生的，其实早就该发生了'},{e:'🌫️',w:'说不清',d:'今天的原因理不清楚，反正就这样了'}],
+      [{e:'😎',w:'小爷来了',d:'今天有气势，冲'},{e:'🤐',w:'沉默式应答',d:'今天配合，但心里有数'},{e:'🍃',w:'随缘了',d:'今天不挣扎，交给命运'},{e:'😐',w:'继续营业',d:'今天正常运转，没有感情'},{e:'😢',w:'我委屈我不哭',d:'今天憋着，但撑着'},{e:'🤖',w:'清醒的NPC',d:'今天看透了，但选择不动'}],
+      [{e:'🚢',w:'船到桥头自然直',d:'今天的事到时候自然解决'},{e:'📅',w:'下个月再说',d:'今天的问题推给未来的自己'},{e:'🍀',w:'万一呢',d:'今天留一线希望，说不定有转机'},{e:'🤷',w:'就这样吧',d:'今天接受结果，不挣扎了'},{e:'👋',w:'算了算了',d:'今天不要结果了，放下'},{e:'✨',w:'挺好的',d:'今天结局不错，或者假装不错'}]
+    ],
+    interpret(r) {
+      return `因：${r[0].w}的处境，态：${r[1].w}的面对，果：${r[2].w}的结局。`;
+    }
+  },
+  {
+    id:'life-destiny',
+    name:'人生一卦',
+    color:'#059669',
+    labels:['天','人','地'],
+    names:['天·势','人·位','地·时'],
+    faces:[
+      [{e:'🌊',w:'顺势',d:'这件事是对的，跟着走'},{e:'⛰️',w:'逆势',d:'这件事是错的，但你在做'},{e:'🌫️',w:'无势',d:'这件事没有方向，随机的'},{e:'🌱',w:'蓄势',d:'这件事在积累，还没到时候'},{e:'⚡',w:'破势',d:'这件事要打破什么，需要勇气'},{e:'🛡️',w:'守势',d:'这件事不要动，守住就行'}],
+      [{e:'👑',w:'主角',d:'这件事我说了算，我来决定'},{e:'🤝',w:'配角',d:'这件事我在协助别人，不是主导'},{e:'👀',w:'旁观者',d:'这件事跟我有关，但我选择看着'},{e:'🎭',w:'局中人',d:'这件事我已经在里面了，出不去'},{e:'🚪',w:'局外人',d:'这件事我可以不参与，我有选择'},{e:'♟️',w:'棋子',d:'这件事我被人安排了，身不由己'}],
+      [{e:'▶️',w:'动',d:'现在是时候了，行动'},{e:'⏳',w:'等',d:'现在不是时候，再等等'},{e:'◀️',w:'退',d:'现在需要后退一步，让一让'},{e:'⏩',w:'进',d:'现在可以往前走，机会来了'},{e:'⏸️',w:'止',d:'现在停下来，不要再往前了'},{e:'👁️',w:'观',d:'现在什么都不做，先看着'}]
+    ],
+    interpret(r) {
+      return `天：${r[0].w}，人：${r[1].w}，地：${r[2].w}。`;
+    }
+  }
+];
+
+// ── Supabase Analytics ──
+const SUPABASE_CONFIG = {
+  url:'https://xwbhgojqgyaopqlhuqqd.supabase.co',
+  key:'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inh3Ymhnb2pxZ3lhb3BxbGh1cXFkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzY4OTM3NTUsImV4cCI6MjA5MjQ2OTc1NX0.vOFf9Td2Id-fUC12SCOxMNwtaSScM9crDDCDLe7d8sU'
+};
+
+// 记录骰子投掷
+async function trackDiceRoll(diceName, diceId, result) {
+  try {
+    await fetch(`${SUPABASE_CONFIG.url}/rest/v1/dice_rolls`, {
+      method:'POST',
+      headers:{
+        'apikey':SUPABASE_CONFIG.key,
+        'Authorization':`Bearer ${SUPABASE_CONFIG.key}`,
+        'Content-Type':'application/json'
+      },
+      body:JSON.stringify({
+        dice_name:diceName,
+        dice_id:diceId,
+        result_emoji:result.e,
+        result_word:result.w,
+        result_desc:result.d,
+        created_at:new Date().toISOString()
+      })
+    });
+  } catch(e) {
+    console.log('Analytics failed:', e);
+  }
+}
+
+// 记录分享
+async function trackShare(shareType, content) {
+  try {
+    await fetch(`${SUPABASE_CONFIG.url}/rest/v1/shares`, {
+      method:'POST',
+      headers:{
+        'apikey':SUPABASE_CONFIG.key,
+        'Authorization':`Bearer ${SUPABASE_CONFIG.key}`,
+        'Content-Type':'application/json'
+      },
+      body:JSON.stringify({
+        share_type:shareType,
+        content:content,
+        created_at:new Date().toISOString()
+      })
+    });
+  } catch(e) {
+    console.log('Share tracking failed:', e);
+  }
+}
+
+// 记录访问
+async function trackVisit() {
+  try {
+    await fetch(`${SUPABASE_CONFIG.url}/rest/v1/visitors`, {
+      method:'POST',
+      headers:{
+        'apikey':SUPABASE_CONFIG.key,
+        'Authorization':`Bearer ${SUPABASE_CONFIG.key}`,
+        'Content-Type':'application/json'
+      },
+      body:JSON.stringify({
+        user_agent:navigator.userAgent,
+        referrer:document.referrer,
+        created_at:new Date().toISOString()
+      })
+    });
+  } catch(e) {
+    console.log('Visit tracking failed:', e);
+  }
+}
+
+// ── State ──
+let mode = 'single';
+let curDice = 0;
+let isRolling = false;
+let soundOn = true;
+let curResult = null;
+let comboIdx = 0;
+let yaoResults = [];
+let yaoStep = 0;
+let audioCtx = null;
+
+// ── Audio ──
+function getAudioCtx() {
+  if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+  return audioCtx;
+}
+
+function playRollSound() {
+  if (!soundOn) return;
+  try {
+    const ctx = getAudioCtx();
+    for (let i = 0; i < 8; i++) {
+      setTimeout(() => {
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        const dist = ctx.createWaveShaper();
+        // create subtle distortion curve
+        const curve = new Float32Array(256);
+        for (let j = 0; j < 256; j++) { const x = (j*2/256)-1; curve[j] = (Math.PI+100)*x/(Math.PI+100*Math.abs(x)); }
+        dist.curve = curve;
+        osc.connect(dist); dist.connect(gain); gain.connect(ctx.destination);
+        osc.type = 'sawtooth';
+        osc.frequency.setValueAtTime(180 + Math.random()*120, ctx.currentTime);
+        osc.frequency.exponentialRampToValueAtTime(80 + Math.random()*40, ctx.currentTime + 0.08);
+        gain.gain.setValueAtTime(0.08, ctx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.08);
+        osc.start(ctx.currentTime); osc.stop(ctx.currentTime + 0.1);
+      }, i * 220);
+    }
+  } catch(e) {}
+}
+
+function playRevealSound(index = 0) {
+  if (!soundOn) return;
+  try {
+    const ctx = getAudioCtx();
+    const notes = [523.25, 659.25, 783.99, 1046.50, 1318.51];
+    const freq = notes[index % notes.length];
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+    const reverb = ctx.createConvolver();
+    osc.connect(gain); gain.connect(ctx.destination);
+    osc.type = 'sine';
+    osc.frequency.setValueAtTime(freq, ctx.currentTime);
+    osc.frequency.setValueAtTime(freq * 1.002, ctx.currentTime + 0.01);
+    gain.gain.setValueAtTime(0.18, ctx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.5);
+    osc.start(ctx.currentTime); osc.stop(ctx.currentTime + 0.6);
+    // harmonics
+    const osc2 = ctx.createOscillator();
+    const gain2 = ctx.createGain();
+    osc2.connect(gain2); gain2.connect(ctx.destination);
+    osc2.type = 'sine';
+    osc2.frequency.value = freq * 2;
+    gain2.gain.setValueAtTime(0.06, ctx.currentTime);
+    gain2.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.3);
+    osc2.start(ctx.currentTime); osc2.stop(ctx.currentTime + 0.3);
+  } catch(e) {}
+}
+
+function playFinalSound() {
+  if (!soundOn) return;
+  try {
+    const ctx = getAudioCtx();
+    const chord = [261.63, 329.63, 392, 523.25];
+    chord.forEach((freq, i) => {
+      setTimeout(() => {
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.connect(gain); gain.connect(ctx.destination);
+        osc.type = 'sine';
+        osc.frequency.value = freq;
+        gain.gain.setValueAtTime(0.12, ctx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.8);
+        osc.start(ctx.currentTime); osc.stop(ctx.currentTime + 0.9);
+      }, i * 80);
+    });
+  } catch(e) {}
+}
+
+// ── Theme setup ──
+const themeColors = {};
+DICE.forEach(d => themeColors[d.id] = d.color);
+
+function applyTheme(color) {
+  document.documentElement.style.setProperty('--tc', color);
+  document.documentElement.style.setProperty('--tc-glow', color + '55');
+  // ambient glow
+  document.getElementById('ambient').style.background =
+    `radial-gradient(ellipse 60% 50% at 50% 0%, ${color}18 0%, transparent 70%),
+     radial-gradient(ellipse 40% 30% at 50% 100%, ${color}0d 0%, transparent 60%)`;
+  // dice faces bg
+  document.querySelectorAll('.face').forEach(f => {
+    f.style.background = color + '22';
+  });
+  // share card
+  document.getElementById('shareCard').style.background = color;
+}
+
+function buildChips() {
+  const el = document.getElementById('themeChips');
+  el.innerHTML = '';
+  DICE.forEach((d, i) => {
+    const chip = document.createElement('button');
+    chip.className = 'chip' + (i === 0 ? ' active' : '');
+    chip.textContent = d.name;
+    chip.onclick = () => selectDice(i);
+    el.appendChild(chip);
+  });
+}
+
+function selectDice(i) {
+  curDice = i;
+  const d = DICE[i];
+  document.querySelectorAll('.chip').forEach((c, j) => c.classList.toggle('active', j === i));
+  applyTheme(d.color);
+  loadFaces(d);
+  document.getElementById('resultCard').classList.remove('visible');
+  curResult = null;
+  // reset rotation
+  const dice3d = document.getElementById('dice3d');
+  dice3d.style.transition = 'transform 0.6s cubic-bezier(0.25,0.46,0.45,0.94)';
+  dice3d.style.transform = 'rotateX(-15deg) rotateY(25deg)';
+}
+
+function loadFaces(d) {
+  d.faces.forEach((f, i) => {
+    document.getElementById('f'+i).querySelector('.face-emoji').textContent = f.e;
+    document.getElementById('f'+i).querySelector('.face-word').textContent = f.w;
+  });
+}
+
+function loadComboFaces(combo, yaoIndex) {
+  const stepFaces = combo.faces[yaoIndex];
+  // 前3个面用随机内容，后3个面用结果
+  stepFaces.forEach((f, i) => {
+    const faceEl = document.getElementById('cf'+i);
+    faceEl.querySelector('.face-emoji').textContent = f.e;
+    faceEl.querySelector('.face-word').textContent = f.w;
+  });
+}
+
+// ── Roll dice ──
+const faceRotations = [
+  {rx:0,   ry:0},
+  {rx:0,   ry:180},
+  {rx:0,   ry:-90},
+  {rx:0,   ry:90},
+  {rx:-90, ry:0},
+  {rx:90,  ry:0}
+];
+
+function onDiceClick(e) {
+  // ripple
+  const scene = document.getElementById('diceScene');
+  const r = document.createElement('div');
+  r.className = 'ripple';
+  const rect = scene.getBoundingClientRect();
+  const size = Math.max(rect.width, rect.height);
+  r.style.cssText = `width:${size}px;height:${size}px;left:${e.clientX-rect.left-size/2}px;top:${e.clientY-rect.top-size/2}px;`;
+  scene.appendChild(r);
+  setTimeout(() => r.remove(), 700);
+  rollDice();
+}
+
+function rollDice() {
+  if (isRolling) return;
+  isRolling = true;
+  const btn = document.getElementById('rollBtn');
+  btn.disabled = true;
+  btn.textContent = '转动中...';
+  document.getElementById('hint').textContent = '🎲 骰子飞起来了...';
+  document.getElementById('resultCard').classList.remove('visible');
+
+  playRollSound();
+
+  const faceIdx = Math.floor(Math.random() * 6);
+  const rot = faceRotations[faceIdx];
+  // Add multiples of 360 for spinning effect
+  const finalRx = rot.rx + 720;
+  const finalRy = rot.ry + 720;
+
+  const dice3d = document.getElementById('dice3d');
+  dice3d.style.cssText = `--rx:${finalRx}deg;--ry:${finalRy}deg;`;
+  dice3d.classList.add('rolling');
+
+  setTimeout(() => {
+    dice3d.classList.remove('rolling');
+    dice3d.classList.add('landing');
+    dice3d.style.transition = 'none';
+    dice3d.style.transform = `rotateX(${finalRx}deg) rotateY(${finalRy}deg)`;
+
+    setTimeout(() => {
+      dice3d.classList.remove('landing');
+      playRevealSound(faceIdx);
+      createParticles();
+      const result = DICE[curDice].faces[faceIdx];
+      showSingleResult(result);
+      // 记录统计
+      trackDiceRoll(DICE[curDice].name, DICE[curDice].id, result);
+      document.getElementById('hint').textContent = '✨ 点击骰子再摇一次';
+      btn.disabled = false;
+      btn.textContent = '再摇一次 🎲';
+      isRolling = false;
+    }, 400);
+  }, 1800);
+}
+
+function showSingleResult(face) {
+  curResult = face;
+  document.getElementById('resultEmoji').textContent = face.e;
+  document.getElementById('resultWord').textContent = face.w;
+  document.getElementById('resultDesc').textContent = face.d;
+  setTimeout(() => document.getElementById('resultCard').classList.add('visible'), 50);
+}
+
+// ── Particles ──
+function createParticles() {
+  const container = document.getElementById('particles');
+  const colors = [getComputedStyle(document.documentElement).getPropertyValue('--tc').trim(), '#fff', '#ffd700', '#fff'];
+  const scene = document.getElementById('diceScene').getBoundingClientRect();
+  const cx = scene.left + scene.width/2;
+  const cy = scene.top + scene.height/2;
+
+  for (let i = 0; i < 18; i++) {
+    const p = document.createElement('div');
+    p.className = 'particle';
+    const size = 4 + Math.random() * 8;
+    const angle = (Math.random() * Math.PI * 2);
+    const dist = 80 + Math.random() * 120;
+    const tx = Math.cos(angle) * dist;
+    const ty = Math.sin(angle) * dist;
+    p.style.cssText = `
+      left:${cx}px; top:${cy}px;
+      width:${size}px; height:${size}px;
+      background:${colors[Math.floor(Math.random()*colors.length)]};
+      --tx:${tx}px; --ty:${ty}px;
+      animation-duration:${0.6 + Math.random()*0.5}s;
+    `;
+    container.appendChild(p);
+    setTimeout(() => p.remove(), 1200);
+  }
+}
+
+// ── Mode switch ──
+function setMode(m) {
+  mode = m;
+  document.querySelectorAll('.tab').forEach((t,i) => t.classList.toggle('active', (i===0) === (m==='single')));
+  document.getElementById('single-panel').style.display = m === 'single' ? 'block' : 'none';
+  document.getElementById('combo-panel').style.display = m === 'combo' ? 'flex' : 'none';
+  if (m === 'combo') {
+    selectCombo(comboIdx, document.querySelectorAll('.combo-chip')[comboIdx]);
+  }
+}
+
+// ── Combo ──
+function selectCombo(i, el) {
+  comboIdx = i;
+  document.querySelectorAll('.combo-chip').forEach((c,j) => c.classList.toggle('active', j===i));
+  applyTheme(COMBOS[i].color);
+  resetCombo();
+}
+
+function buildYaoList() {
+  const combo = COMBOS[comboIdx];
+  const list = document.getElementById('yaoList');
+  list.innerHTML = '';
+  combo.labels.forEach((label, i) => {
+    const row = document.createElement('div');
+    row.className = 'yao-row' + (i === 0 ? ' active' : '');
+    row.id = 'yao-' + i;
+    row.innerHTML = `
+      <div class="yao-badge">${label}</div>
+      <div class="yao-box">
+        <div class="yao-emoji" id="yao-emoji-${i}">　</div>
+        <div class="yao-info">
+          <div class="yao-name">${combo.names[i]}</div>
+          <div class="yao-word" id="yao-word-${i}"><span class="yao-placeholder">${i === 0 ? '摇出第一爻' : '待揭晓'}</span></div>
+        </div>
+      </div>`;
+    list.appendChild(row);
+  });
+}
+
+function resetCombo() {
+  yaoResults = [];
+  yaoStep = 0;
+  buildYaoList();
+  document.getElementById('guaciText').textContent = '选择一套玩法，依次摇出三爻，看今日之卦。';
+  const btn = document.getElementById('comboRollBtn');
+  btn.disabled = false;
+  btn.textContent = '起第一爻 🎲';
+  const rc = document.getElementById('comboResultCard');
+  rc.style.display = 'none';
+}
+
+const yaoLabels = [['起第一爻','起第二爻','起第三爻·完卦'],['起天爻','起人爻','起地爻·完卦']];
+
+function rollNextYao() {
+  if (isRolling || yaoStep >= 3) return;
+  isRolling = true;
+  const btn = document.getElementById('comboRollBtn');
+  btn.disabled = true;
+  btn.textContent = '摇动中...';
+
+  const combo = COMBOS[comboIdx];
+  const stepFaces = combo.faces[yaoStep];
+  const faceIdx = Math.floor(Math.random() * 6);
+  const result = stepFaces[faceIdx];
+
+  // 显示骰子场景
+  const comboDiceStage = document.getElementById('comboDiceStage');
+  comboDiceStage.classList.add('visible');
+
+  // 加载骰子面内容
+  loadComboFaces(combo, yaoStep);
+
+  // 重置骰子姿态
+  const comboDice3d = document.getElementById('comboDice3d');
+  comboDice3d.style.transition = 'transform 0.6s cubic-bezier(0.25,0.46,0.45,0.94)';
+  comboDice3d.style.transform = 'rotateX(-15deg) rotateY(25deg)';
+
+  playRollSound();
+
+  // 执行骰子动画
+  setTimeout(() => {
+    const rot = faceRotations[faceIdx];
+    const finalRx = rot.rx + 720;
+    const finalRy = rot.ry + 720;
+
+    comboDice3d.style.cssText = `--rx:${finalRx}deg;--ry:${finalRy}deg;`;
+    comboDice3d.classList.add('rolling');
+
+    setTimeout(() => {
+      comboDice3d.classList.remove('rolling');
+      comboDice3d.classList.add('landing');
+      comboDice3d.style.transition = 'none';
+      comboDice3d.style.transform = `rotateX(${finalRx}deg) rotateY(${finalRy}deg)`;
+
+      setTimeout(() => {
+        comboDice3d.classList.remove('landing');
+
+        // 隐藏骰子场景
+        comboDiceStage.classList.remove('visible');
+
+        playRevealSound(yaoStep);
+        createParticles();
+
+        // 显示结果到爻位
+        yaoResults.push(result);
+
+        const row = document.getElementById('yao-' + yaoStep);
+        row.classList.add('revealed');
+        document.getElementById('yao-emoji-' + yaoStep).textContent = result.e;
+        const wordEl = document.getElementById('yao-word-' + yaoStep);
+        wordEl.innerHTML = `<span class="yao-word revealed">${result.w}</span>`;
+
+        // update guaci progressively
+        updateGuaci();
+        yaoStep++;
+
+        if (yaoStep < 3) {
+          // activate next row
+          const nextRow = document.getElementById('yao-' + yaoStep);
+          if (nextRow) nextRow.classList.add('active');
+          btn.disabled = false;
+          btn.textContent = yaoLabels[comboIdx][yaoStep];
+        } else {
+          // complete
+          playFinalSound();
+          createParticles();
+          setTimeout(() => createParticles(), 200);
+          const rc = document.getElementById('comboResultCard');
+          document.getElementById('comboResultDesc').textContent = combo.interpret(yaoResults);
+          rc.style.display = 'block';
+          setTimeout(() => rc.classList.add('visible'), 50);
+          btn.style.display = 'none';
+        }
+        isRolling = false;
+      }, 400);
+    }, 1800);
+  }, 100);
+}
+
+function updateGuaci() {
+  const combo = COMBOS[comboIdx];
+  const parts = yaoResults.map((r, i) => `${combo.labels[i]}：${r.w}`);
+  let text = parts.join('，');
+  if (yaoStep === 2) { // after 3rd yao
+    text = combo.interpret(yaoResults);
+  }
+  document.getElementById('guaciText').textContent = text;
+}
+
+// ── Share ──
+function showShare() {
+  if (!curResult) return;
+  const d = DICE[curDice];
+  const now = new Date();
+  document.getElementById('shareDate').textContent = `${now.getFullYear()}年${now.getMonth()+1}月${now.getDate()}日`;
+  document.getElementById('shareBigEmoji').textContent = curResult.e;
+  document.getElementById('shareBigWord').textContent = curResult.w;
+  document.getElementById('shareThemeName').textContent = d.name + '骰';
+  document.getElementById('shareDescArea').textContent = curResult.d;
+  document.getElementById('shareCard').style.background = d.color;
+  document.getElementById('shareOverlay').classList.add('visible');
+}
+
+function showComboShare() {
+  const combo = COMBOS[comboIdx];
+  const now = new Date();
+  document.getElementById('shareDate').textContent = `${now.getFullYear()}年${now.getMonth()+1}月${now.getDate()}日`;
+  document.getElementById('shareBigEmoji').textContent = yaoResults.map(r=>r.e).join('');
+  document.getElementById('shareBigWord').textContent = yaoResults.map(r=>r.w).join(' · ');
+  document.getElementById('shareThemeName').textContent = combo.name;
+  document.getElementById('shareDescArea').textContent = combo.interpret(yaoResults);
+  document.getElementById('shareCard').style.background = combo.color;
+  document.getElementById('shareOverlay').classList.add('visible');
+}
+
+function hideShare() {
+  document.getElementById('shareOverlay').classList.remove('visible');
+}
+
+document.getElementById('shareOverlay').addEventListener('click', e => {
+  if (e.target === document.getElementById('shareOverlay')) hideShare();
+});
+
+async function copyShareText() {
+  const word = document.getElementById('shareBigWord').textContent;
+  const desc = document.getElementById('shareDescArea').textContent;
+  const date = document.getElementById('shareDate').textContent;
+  const text = `🎲 情绪骰子 · ${date}\n\n「${word}」\n\n${desc}`;
+
+  try {
+    await navigator.clipboard.writeText(text);
+    await trackShare('text', word);
+    showToast('已复制到剪贴板 ✓');
+  } catch(e) {
+    showToast('请手动复制');
+  }
+}
+
+async function downloadShare() {
+  // 记录分享统计
+  const word = document.getElementById('shareBigWord').textContent;
+  await trackShare('image', word);
+
+  try {
+    const modal = document.getElementById('shareModal');
+    const canvas = await html2canvas(modal, {
+      backgroundColor: null,
+      scale: 2,
+      useCORS: true,
+      logging: false
+    });
+
+    canvas.toBlob(blob => {
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `情绪骰子_${new Date().getTime()}.png`;
+      a.click();
+      URL.revokeObjectURL(url);
+      showToast('✓ 图片已保存');
+    });
+  } catch(e) {
+    console.log('Canvas error:', e);
+    showToast('💡 长按分享图保存到相册，或截图保存');
+  }
+}
+
+function copyResult() {
+  if (!curResult) return;
+  const text = `🎲 今日情绪骰子\n\n「${curResult.w}」${curResult.e}\n\n${curResult.d}`;
+  navigator.clipboard.writeText(text).then(() => showToast('已复制 ✓')).catch(() => showToast('请手动复制'));
+}
+
+// ── Toast ──
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2500);
+}
+
+// ── Sound toggle ──
+document.getElementById('soundToggle').addEventListener('click', function() {
+  soundOn = !soundOn;
+  this.textContent = soundOn ? '🔊' : '🔇';
+  showToast(soundOn ? '音效已开启' : '音效已关闭');
+});
+
+// ── Init ──
+buildChips();
+applyTheme(DICE[0].color);
+loadFaces(DICE[0]);
+buildYaoList();
+
+// Init date in share
+const now = new Date();
+document.getElementById('shareDate').textContent = `${now.getFullYear()}年${now.getMonth()+1}月${now.getDate()}日`;
+
+// 记录访问
+trackVisit();
+</script>
+</body>
+</html>

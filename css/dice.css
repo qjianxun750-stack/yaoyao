@@ -1,0 +1,371 @@
+/* ========== 3D骰子样式 ========== */
+@import url('./variables.css');
+
+/* ========== 骰子场景 ========== */
+.dice-scene {
+    width: var(--dice-size);
+    height: var(--dice-size);
+    margin: 60px auto;
+    perspective: 600px;
+    position: relative;
+}
+
+/* ========== 光晕层 ========== */
+.dice-glow {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: calc(var(--dice-size) * 1.5);
+    height: calc(var(--dice-size) * 1.5);
+    transform: translate(-50%, -50%);
+    border-radius: 50%;
+    background: radial-gradient(circle, var(--tc-glow) 0%, transparent 70%);
+    filter: blur(30px);
+    opacity: 0.6;
+    transition: background 0.8s ease;
+    z-index: 0;
+}
+
+/* ========== 3D骰子主体 ========== */
+.dice-3d {
+    width: 100%;
+    height: 100%;
+    position: relative;
+    transform-style: preserve-3d;
+    z-index: 1;
+}
+
+/* 初始姿态 */
+.dice-3d.idle {
+    transform: rotateX(-15deg) rotateY(25deg);
+    transition: transform 0.5s ease;
+}
+
+/* ========== 骰子的六个面 ========== */
+.dice-face {
+    position: absolute;
+    width: var(--dice-size);
+    height: var(--dice-size);
+    background: var(--tc);
+    background-opacity: 0.22;
+    border: 2px solid var(--tc);
+    border-radius: var(--dice-radius);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    box-shadow:
+        0 0 0 1px rgba(255, 255, 255, 0.1) inset,
+        0 10px 40px rgba(0, 0, 0, 0.3),
+        inset 0 0 20px rgba(255, 255, 255, 0.1);
+    backface-visibility: hidden;
+    transition: border-color 0.8s ease, box-shadow 0.8s ease;
+}
+
+.dice-face.front {
+    background: linear-gradient(145deg, rgba(255,255,255,0.22), rgba(255,255,255,0.1));
+    transform: rotateY(0deg) translateZ(calc(var(--dice-size) / 2));
+}
+
+.dice-face.back {
+    background: linear-gradient(145deg, rgba(255,255,255,0.18), rgba(255,255,255,0.08));
+    transform: rotateY(180deg) translateZ(calc(var(--dice-size) / 2));
+}
+
+.dice-face.left {
+    background: linear-gradient(145deg, rgba(255,255,255,0.15), rgba(255,255,255,0.05));
+    transform: rotateY(-90deg) translateZ(calc(var(--dice-size) / 2));
+}
+
+.dice-face.right {
+    background: linear-gradient(145deg, rgba(255,255,255,0.15), rgba(255,255,255,0.05));
+    transform: rotateY(90deg) translateZ(calc(var(--dice-size) / 2));
+}
+
+.dice-face.top {
+    background: linear-gradient(145deg, rgba(255,255,255,0.20), rgba(255,255,255,0.08));
+    transform: rotateX(90deg) translateZ(calc(var(--dice-size) / 2));
+}
+
+.dice-face.bottom {
+    background: linear-gradient(145deg, rgba(255,255,255,0.20), rgba(255,255,255,0.08));
+    transform: rotateX(-90deg) translateZ(calc(var(--dice-size) / 2));
+}
+
+/* ========== 面内容 ========== */
+.face-emoji {
+    font-size: 48px;
+    margin-bottom: 8px;
+    filter: drop-shadow(0 2px 10px rgba(0, 0, 0, 0.3));
+    text-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+}
+
+.face-word {
+    font-family: var(--font-title);
+    font-size: 20px;
+    font-weight: 500;
+    letter-spacing: 0.02em;
+    color: var(--text);
+    text-align: center;
+    padding: 0 10px;
+    text-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+}
+
+/* ========== 摇动按钮 ========== */
+.roll-button {
+    display: block;
+    margin: 40px auto;
+    padding: 16px 48px;
+    background: var(--tc);
+    color: var(--bg);
+    border: none;
+    border-radius: 50px;
+    font-size: 18px;
+    font-weight: 600;
+    letter-spacing: 0.05em;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 8px 25px var(--tc-glow);
+}
+
+.roll-button:hover:not(:disabled) {
+    transform: translateY(-2px);
+    box-shadow: 0 12px 35px var(--tc-glow);
+}
+
+.roll-button:active:not(:disabled) {
+    transform: translateY(0);
+}
+
+.roll-button:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+/* ========== 结果卡片 ========== */
+.result-card {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 30px;
+    margin-top: 30px;
+    transform: translateY(20px);
+    opacity: 0;
+    transition: all 0.5s var(--easing-bounce);
+}
+
+.result-card.show {
+    transform: translateY(0);
+    opacity: 1;
+}
+
+.result-header {
+    font-size: 12px;
+    color: var(--text3);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    margin-bottom: 15px;
+}
+
+.result-main {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 15px;
+    margin-bottom: 20px;
+}
+
+.result-emoji {
+    font-size: 64px;
+    filter: drop-shadow(0 4px 20px rgba(0, 0, 0, 0.4));
+}
+
+.result-word {
+    font-family: var(--font-title);
+    font-size: 32px;
+    font-weight: 400;
+    color: var(--text);
+    letter-spacing: 0.05em;
+}
+
+.result-desc {
+    font-size: 16px;
+    color: var(--text2);
+    line-height: 1.8;
+    text-align: center;
+}
+
+/* ========== 主题选择器（单骰模式） ========== */
+.theme-selector {
+    display: flex;
+    gap: 10px;
+    overflow-x: auto;
+    padding: 10px 0;
+    margin-bottom: 30px;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+}
+
+.theme-selector::-webkit-scrollbar {
+    display: none;
+}
+
+.theme-capsule {
+    flex-shrink: 0;
+    padding: 12px 24px;
+    border: 2px solid var(--border);
+    border-radius: 50px;
+    font-size: 15px;
+    font-weight: 500;
+    color: var(--text2);
+    cursor: pointer;
+    transition: all 0.3s ease;
+    white-space: nowrap;
+    background: rgba(255, 255, 255, 0.05);
+}
+
+.theme-capsule:hover {
+    border-color: var(--tc);
+    color: var(--text);
+    background: rgba(255, 255, 255, 0.1);
+}
+
+.theme-capsule.active {
+    background: var(--tc);
+    border-color: var(--tc);
+    color: var(--bg);
+    box-shadow: 0 4px 15px var(--tc-glow);
+}
+
+/* ========== 一卦模式专属样式 ========== */
+.yao-cards {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    margin: 30px 0;
+}
+
+.yao-card {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 20px;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    min-height: 80px;
+    transition: all 0.3s ease;
+}
+
+.yao-card.revealed {
+    background: rgba(255, 255, 255, 0.03);
+    border-color: var(--tc);
+}
+
+.yao-label {
+    font-size: 16px;
+    color: var(--text3);
+    letter-spacing: 0.1em;
+    width: 40px;
+    flex-shrink: 0;
+}
+
+.yao-content {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+}
+
+.yao-emoji {
+    font-size: 36px;
+}
+
+.yao-word {
+    font-family: var(--font-title);
+    font-size: 24px;
+    color: var(--text);
+    letter-spacing: 0.05em;
+}
+
+.yao-placeholder {
+    font-size: 14px;
+    color: var(--text3);
+    letter-spacing: 0.1em;
+}
+
+/* 卦辞样式 */
+.gua-text {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 25px;
+    margin-top: 30px;
+    min-height: 100px;
+}
+
+.gua-line {
+    font-size: 16px;
+    color: var(--text2);
+    line-height: 1.8;
+    text-align: center;
+    margin-bottom: 8px;
+}
+
+.gua-line:last-child {
+    margin-bottom: 0;
+}
+
+/* 组合模式骰子场景（初始隐藏） */
+.combo-dice-scene {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 100;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s ease;
+}
+
+.combo-dice-scene.appear,
+.combo-dice-scene.exit {
+    opacity: 1;
+    pointer-events: auto;
+}
+
+/* ========== 响应式 ========== */
+@media (max-width: 480px) {
+    .dice-scene {
+        --dice-size: 120px;
+    }
+
+    .face-emoji {
+        font-size: 40px;
+    }
+
+    .face-word {
+        font-size: 16px;
+    }
+
+    .result-word {
+        font-size: 28px;
+    }
+
+    .result-emoji {
+        font-size: 56px;
+    }
+
+    .yao-card {
+        padding: 15px;
+    }
+
+    .yao-emoji {
+        font-size: 32px;
+    }
+
+    .yao-word {
+        font-size: 20px;
+    }
+}

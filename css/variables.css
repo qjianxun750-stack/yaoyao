@@ -1,0 +1,45 @@
+/* ========== CSS变量系统 ========== */
+:root {
+    /* 基础色系 */
+    --bg: #0C0A18;                    /* 深宇宙紫，主背景 */
+    --bg2: #13102A;                   /* 卡片/弹窗底色 */
+    --border: rgba(255, 255, 255, 0.08);  /* 默认边框 */
+    --text: #FFFFFF;                  /* 主文字 */
+    --text2: rgba(255, 255, 255, 0.45);  /* 次要文字 */
+    --text3: rgba(255, 255, 255, 0.20);  /* 弱提示 */
+
+    /* 主题色（默认今日状态） */
+    --tc: #FF6B6B;                    /* 当前主题色，动态 */
+    --tc-glow: #FF6B6B55;             /* 主题色发光 */
+
+    /* 10个玩法主题色 */
+    --tc-status: #FF6B6B;             /* 今日状态 · 珊瑚红 */
+    --tc-crazy: #FF006E;              /* 今日发疯 · 霓虹粉 */
+    --tc-wish: #9B72FF;               /* 今日祈愿 · 梦幻紫 */
+    --tc-metaphysics: #FFB703;        /* 今日玄学 · 玄学金 */
+    --tc-relationship: #FF8C42;       /* 今日关系 · 暖橙 */
+    --tc-life: #4EA8DE;               /* 今日人生 · 星空蓝 */
+    --tc-mom: #2EC4B6;                /* 今日妈妈 · 薄荷绿 */
+    --tc-partner: #FF85A1;            /* 今日搭子 · 少女粉 */
+    --tc-today-cause: #8B5CF6;        /* 今日一卦·因态果 · 深紫 */
+    --tc-life-destiny: #10B981;       /* 人生一卦·天人地 · 翡翠绿 */
+
+    /* 布局尺寸 */
+    --dice-size: 140px;               /* 骰子尺寸 */
+    --dice-radius: 22px;              /* 骰子圆角 */
+    --container-max-width: 600px;     /* 容器最大宽度 */
+
+    /* 动画时长 */
+    --duration-roll: 1800ms;          /* 摇骰动画时长 */
+    --duration-landing: 400ms;        /* 落地动画时长 */
+    --duration-reveal: 500ms;         /* 揭晓动画时长 */
+    --easing-roll: cubic-bezier(0.25, 0.1, 0.25, 1);  /* 摇骰缓动 */
+    --easing-bounce: cubic-bezier(0.34, 1.56, 0.64, 1);  /* 弹性缓动 */
+
+    /* 字体 */
+    --font-title: 'ZCOOL XiaoWei', 'Noto Serif SC', serif;
+    --font-body: -apple-system, BlinkMacSystemFont, 'PingFang SC', 'Hiragino Sans GB', sans-serif;
+}
+
+/* Google Fonts 引入 */
+@import url('https://fonts.googleapis.com/css2?family=ZCOOL+XiaoWei&family=Noto+Serif+SC:wght@400;700&display=swap');

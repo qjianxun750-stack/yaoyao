@@ -1,0 +1,361 @@
+/* ========== 分享弹窗和分享卡样式 ========== */
+@import url('./variables.css');
+
+/* ========== 分享弹窗 ========== */
+.share-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.85);
+    backdrop-filter: blur(8px);
+    z-index: 2000;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+}
+
+.share-modal.show {
+    display: flex;
+    animation: modal-in 300ms var(--easing-bounce);
+}
+
+.share-modal-content {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: 24px;
+    padding: 30px;
+    max-width: 420px;
+    width: 100%;
+    max-height: 90vh;
+    overflow-y: auto;
+}
+
+.share-modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.share-modal-title {
+    font-size: 18px;
+    font-weight: 600;
+    color: var(--text);
+}
+
+.share-modal-close {
+    background: none;
+    border: none;
+    color: var(--text2);
+    font-size: 28px;
+    cursor: pointer;
+    padding: 0;
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    transition: all 0.3s ease;
+}
+
+.share-modal-close:hover {
+    background: rgba(255, 255, 255, 0.1);
+    color: var(--text);
+}
+
+/* ========== 分享图预览 ========== */
+.share-preview {
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 20px;
+    margin-bottom: 20px;
+    display: flex;
+    justify-content: center;
+}
+
+.share-preview img {
+    max-width: 100%;
+    height: auto;
+    border-radius: 12px;
+}
+
+/* ========== 分享操作按钮 ========== */
+.share-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.share-action-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 14px 24px;
+    border-radius: 12px;
+    font-size: 15px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    border: none;
+}
+
+.share-action-btn.primary {
+    background: var(--tc);
+    color: var(--bg);
+}
+
+.share-action-btn.primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px var(--tc-glow);
+}
+
+.share-action-btn.secondary {
+    background: transparent;
+    border: 1px solid var(--border);
+    color: var(--text);
+}
+
+.share-action-btn.secondary:hover {
+    border-color: var(--tc);
+    background: rgba(255, 255, 255, 0.05);
+}
+
+/* ========== 生成分享图按钮 ========== */
+.generate-share-btn {
+    width: 100%;
+    margin-top: 20px;
+    padding: 14px 24px;
+    background: var(--tc);
+    color: var(--bg);
+    border: none;
+    border-radius: 12px;
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.generate-share-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px var(--tc-glow);
+}
+
+/* ========== 隐藏的分享Canvas ========== */
+#shareCanvas {
+    position: absolute;
+    left: -9999px;
+    top: -9999px;
+}
+
+/* ========== Toast提示 ========== */
+.toast {
+    position: fixed;
+    bottom: 30px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    color: var(--text);
+    padding: 12px 24px;
+    border-radius: 50px;
+    font-size: 14px;
+    z-index: 3000;
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.4);
+}
+
+.toast.show {
+    animation: toast-in 300ms ease-out;
+}
+
+.toast.hide {
+    animation: toast-out 300ms ease-in;
+}
+
+/* ========== 分享卡样式（用于Canvas渲染） ========== */
+.share-card {
+    width: 750px;
+    height: 1000px;
+    background: linear-gradient(180deg, var(--bg) 0%, var(--bg2) 100%);
+    position: relative;
+    overflow: hidden;
+}
+
+.share-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    opacity: 0.4;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+}
+
+.share-header {
+    position: relative;
+    padding: 60px 50px 40px;
+    text-align: center;
+}
+
+.share-date {
+    font-size: 18px;
+    color: var(--text3);
+    letter-spacing: 0.1em;
+    margin-bottom: 10px;
+}
+
+.share-dice-name {
+    font-size: 16px;
+    color: var(--text2);
+    letter-spacing: 0.05em;
+}
+
+.share-body {
+    position: relative;
+    padding: 40px 50px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.share-emoji {
+    font-size: 120px;
+    margin-bottom: 30px;
+}
+
+.share-word {
+    font-family: var(--font-title);
+    font-size: 56px;
+    font-weight: 400;
+    letter-spacing: 0.05em;
+    color: var(--text);
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.share-desc {
+    font-size: 22px;
+    line-height: 1.8;
+    color: var(--text2);
+    text-align: center;
+    max-width: 600px;
+}
+
+.share-footer {
+    position: relative;
+    margin-top: auto;
+    padding: 40px 50px 60px;
+    text-align: center;
+    border-top: 1px solid var(--border);
+}
+
+.share-brand {
+    font-size: 18px;
+    color: var(--text2);
+    margin-bottom: 15px;
+}
+
+.share-qrcode-wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 15px;
+}
+
+.share-qrcode {
+    width: 100px;
+    height: 100px;
+    background: white;
+    padding: 8px;
+    border-radius: 8px;
+}
+
+.share-qrcode-hint {
+    font-size: 12px;
+    color: var(--text3);
+}
+
+.share-link {
+    font-size: 14px;
+    color: var(--text3);
+    letter-spacing: 0.05em;
+}
+
+/* ========== 一卦模式专属分享卡 ========== */
+.share-card.combo {
+    padding: 60px 50px;
+}
+
+.share-yaos {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: 25px;
+    margin-bottom: 40px;
+}
+
+.share-yao {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    padding: 20px;
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+}
+
+.share-yao-label {
+    font-size: 16px;
+    color: var(--text3);
+    letter-spacing: 0.1em;
+    width: 60px;
+    flex-shrink: 0;
+}
+
+.share-yao-emoji {
+    font-size: 48px;
+}
+
+.share-yao-word {
+    font-family: var(--font-title);
+    font-size: 32px;
+    color: var(--text);
+    letter-spacing: 0.05em;
+}
+
+.share-gua {
+    position: relative;
+    padding: 30px;
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+}
+
+.share-gua-text {
+    font-size: 24px;
+    line-height: 1.8;
+    color: var(--text2);
+    text-align: center;
+}
+
+/* ========== 响应式 ========== */
+@media (max-width: 480px) {
+    .share-modal-content {
+        padding: 20px;
+    }
+
+    .share-modal-header {
+        margin-bottom: 15px;
+    }
+
+    .share-actions {
+        gap: 10px;
+    }
+}

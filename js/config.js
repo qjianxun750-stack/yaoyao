@@ -1,0 +1,223 @@
+// ========== 骰子配置数据 ==========
+const DICE_CONFIG = [
+    {
+        id: 'status',
+        name: '今日状态',
+        color: '#FF6B6B',
+        faces: [
+            { word: '小爷来了', emoji: '😎', desc: '今天有气势，冲！适合主动出击、表达自我' },
+            { word: '清醒的NPC', emoji: '🤖', desc: '今天配合，但心里明白。表面营业，内心清醒' },
+            { word: '我在哪', emoji: '😵', desc: '今天有点迷，找不到自己。允许自己迷茫一会儿' },
+            { word: '电量不足', emoji: '🪫', desc: '今天没能量，别指望我。好好休息也是正事' },
+            { word: '继续营业', emoji: '😐', desc: '今天正常运转，没感情。完成该完成的就好' },
+            { word: '我爱工作', emoji: '😅', desc: '今天认命了，上吧。自嘲也是一种力量' }
+        ]
+    },
+    {
+        id: 'crazy',
+        name: '今日发疯',
+        color: '#FF006E',
+        faces: [
+            { word: '想消失一下', emoji: '👻', desc: '不是真的消失，就是想从所有人的视线里消失三天' },
+            { word: '想说不', emoji: '🙅', desc: '今天有一百个请求，我想全部拒绝' },
+            { word: '想原地爆炸', emoji: '💥', desc: '今天积累的东西太多，需要一个出口' },
+            { word: '想哭一场', emoji: '😭', desc: '不是真的很难过，就是需要哭一下' },
+            { word: '想跑路', emoji: '🏃', desc: '不是真的跑，就是想消失在一个没人认识我的地方' },
+            { word: '想摔东西', emoji: '💢', desc: '不是真的摔，就是需要那个动作' }
+        ]
+    },
+    {
+        id: 'wish',
+        name: '今日祈愿',
+        color: '#8338EC',
+        faces: [
+            { word: '万一呢', emoji: '🍀', desc: '今天求个好运，信一半。留条退路，也留点期待' },
+            { word: '求个心安', emoji: '🙏', desc: '今天不求别的，就求踏实。心安就好' },
+            { word: '我委屈我不哭', emoji: '😢', desc: '今天求被看见，求一点点认可' },
+            { word: '好话连连', emoji: '✨', desc: '今天只接受好消息，坏的不收' },
+            { word: '静待时机', emoji: '⏳', desc: '今天不急，等。时机到了自然成' },
+            { word: '算了算了', emoji: '🤷', desc: '今天什么都不求了，随缘' }
+        ]
+    },
+    {
+        id: 'metaphysics',
+        name: '今日玄学',
+        color: '#FFB703',
+        faces: [
+            { word: '万一呢', emoji: '🎲', desc: '今天信一半，留条退路。玄学也要理性' },
+            { word: '半信半得劲', emoji: '😏', desc: '今天不全信，但信了就踏实' },
+            { word: '好运批发中', emoji: '🎊', desc: '今天运气来了，接好。准备好迎接好消息' },
+            { word: '求个心安而已', emoji: '☯️', desc: '今天不求别的，就求不出事' },
+            { word: '静待时机', emoji: '🌙', desc: '今天不急，老天自有安排' },
+            { word: '随缘了', emoji: '🍃', desc: '今天不求了，爱咋咋地' }
+        ]
+    },
+    {
+        id: 'relationship',
+        name: '今日关系',
+        color: '#FB5607',
+        faces: [
+            { word: '自觉的背景板', emoji: '🎭', desc: '今天我在场，但不是主角。当个安静的观众' },
+            { word: '沉默式应答', emoji: '😶', desc: '今天有人说话，我在听，但没在听' },
+            { word: '隐形出席者', emoji: '👤', desc: '今天人在心不在，全程在线离线' },
+            { word: '社交耗材', emoji: '🔋', desc: '今天又被消耗了，什么都没留下' },
+            { word: '气氛组成员', emoji: '🎉', desc: '今天撑了全场，散场各回各家' },
+            { word: '我委屈我不哭', emoji: '💔', desc: '今天有话没说，咽下去了' }
+        ]
+    },
+    {
+        id: 'life',
+        name: '今日人生',
+        color: '#3A86FF',
+        faces: [
+            { word: '我在哪', emoji: '🌫️', desc: '今天迷失了，不知道自己在哪里。允许迷路' },
+            { word: '回不去了', emoji: '🚪', desc: '今天突然想起从前，但门已经关上了' },
+            { word: '将就着吧', emoji: '😌', desc: '今天不追求了，过得去就行' },
+            { word: '还没想好', emoji: '🤔', desc: '今天没有答案，但也不急着找' },
+            { word: '再等等', emoji: '⏰', desc: '今天不动，等一个说不清楚的什么' },
+            { word: '就这样吧', emoji: '🍂', desc: '今天接受了，不挣扎了' }
+        ]
+    },
+    {
+        id: 'mom',
+        name: '今日妈妈',
+        color: '#06FFB4',
+        faces: [
+            { word: '沉默式应答', emoji: '😑', desc: '今天听见了，但没收到。左耳进右耳出' },
+            { word: '我知道了', emoji: '📢', desc: '今天第八百次听这句话，第八百次这样回' },
+            { word: '随你吧', emoji: '🤲', desc: '今天不争了，你说什么都行' },
+            { word: '嗯', emoji: '😶', desc: '今天只有这一个字，但这个字装了很多东西' },
+            { word: '好好好', emoji: '👍', desc: '今天全部答应，一个都不会做' },
+            { word: '下次吧', emoji: '⏭️', desc: '今天用这三个字挡住了所有问题' }
+        ]
+    },
+    {
+        id: 'partner',
+        name: '今日搭子',
+        color: '#FF69B4',
+        faces: [
+            { word: '今天不想说话', emoji: '🤐', desc: '今天需要搭子，但不需要交流，就是陪着' },
+            { word: '今天AA', emoji: '💰', desc: '今天是纯粹的搭子关系，干净，没有负担' },
+            { word: '今天我请', emoji: '🎁', desc: '今天心情好，或者需要被需要' },
+            { word: '今天你说了算', emoji: '👑', desc: '今天不想做决定，全交给你' },
+            { word: '今天各玩各的', emoji: '🎮', desc: '今天在一起，但不互相打扰' },
+            { word: '今天不散', emoji: '🌟', desc: '今天不想回家，多待一会儿' }
+        ]
+    },
+    // ========== 组合骰子：今日一卦·因态果 ==========
+    {
+        id: 'today-cause',
+        name: '今日一卦',
+        type: 'combo', // 标记为组合骰子
+        subDice: ['cause', 'attitude', 'result'],
+        subNames: ['因', '态', '果'],
+        color: '#8B5CF6',
+        description: '今日一卦 · 因态果',
+        combo: [
+            {
+                subId: 'cause',
+                name: '今日之因',
+                faces: [
+                    { word: '自找的', emoji: '🙋', desc: '今天的麻烦是自己造的，心知肚明' },
+                    { word: '命该如此', emoji: '🌟', desc: '今天的事不怪自己，老天安排的' },
+                    { word: '被坑了', emoji: '🕳️', desc: '今天有人挖坑，自己跳进去了' },
+                    { word: '没想到', emoji: '😲', desc: '今天出了意外，完全没料到' },
+                    { word: '早该如此', emoji: '⏰', desc: '今天发生的，其实早就该发生了' },
+                    { word: '说不清', emoji: '🌫️', desc: '今天的原因理不清楚，反正就这样了' }
+                ]
+            },
+            {
+                subId: 'attitude',
+                name: '今日之态',
+                faces: [
+                    { word: '小爷来了', emoji: '😎', desc: '今天有气势，冲' },
+                    { word: '沉默式应答', emoji: '🤐', desc: '今天配合，但心里有数' },
+                    { word: '随缘了', emoji: '🍃', desc: '今天不挣扎，交给命运' },
+                    { word: '继续营业', emoji: '😐', desc: '今天正常运转，没有感情' },
+                    { word: '我委屈我不哭', emoji: '😢', desc: '今天憋着，但撑着' },
+                    { word: '清醒的NPC', emoji: '🤖', desc: '今天看透了，但选择不动' }
+                ]
+            },
+            {
+                subId: 'result',
+                name: '今日之果',
+                faces: [
+                    { word: '船到桥头自然直', emoji: '🚢', desc: '今天的事到时候自然解决' },
+                    { word: '下个月再说', emoji: '📅', desc: '今天的问题推给未来的自己' },
+                    { word: '万一呢', emoji: '🍀', desc: '今天留一线希望，说不定有转机' },
+                    { word: '就这样吧', emoji: '🤷', desc: '今天接受结果，不挣扎了' },
+                    { word: '算了算了', emoji: '👋', desc: '今天不要结果了，放下' },
+                    { word: '挺好的', emoji: '✨', desc: '今天结局不错，或者假装不错' }
+                ]
+            }
+        ]
+    },
+    // ========== 组合骰子：人生一卦·天人地 ==========
+    {
+        id: 'life-destiny',
+        name: '人生一卦',
+        type: 'combo', // 标记为组合骰子
+        subDice: ['heaven', 'human', 'earth'],
+        subNames: ['天', '人', '地'],
+        color: '#059669',
+        description: '人生一卦 · 天人地',
+        combo: [
+            {
+                subId: 'heaven',
+                name: '天·势',
+                faces: [
+                    { word: '顺势', emoji: '🌊', desc: '这件事是对的，跟着走' },
+                    { word: '逆势', emoji: '⛰️', desc: '这件事是错的，但你在做' },
+                    { word: '无势', emoji: '🌫️', desc: '这件事没有方向，随机的' },
+                    { word: '蓄势', emoji: '🌱', desc: '这件事在积累，还没到时候' },
+                    { word: '破势', emoji: '⚡', desc: '这件事要打破什么，需要勇气' },
+                    { word: '守势', emoji: '🛡️', desc: '这件事不要动，守住就行' }
+                ]
+            },
+            {
+                subId: 'human',
+                name: '人·位',
+                faces: [
+                    { word: '主角', emoji: '👑', desc: '这件事我说了算，我来决定' },
+                    { word: '配角', emoji: '🤝', desc: '这件事我在协助别人，不是主导' },
+                    { word: '旁观者', emoji: '👀', desc: '这件事跟我有关，但我选择看着' },
+                    { word: '局中人', emoji: '🎭', desc: '这件事我已经在里面了，出不去' },
+                    { word: '局外人', emoji: '🚪', desc: '这件事我可以不参与，我有选择' },
+                    { word: '棋子', emoji: '♟️', desc: '这件事我被人安排了，身不由己' }
+                ]
+            },
+            {
+                subId: 'earth',
+                name: '地·时',
+                faces: [
+                    { word: '动', emoji: '▶️', desc: '现在是时候了，行动' },
+                    { word: '等', emoji: '⏳', desc: '现在不是时候，再等等' },
+                    { word: '退', emoji: '◀️', desc: '现在需要后退一步，让一让' },
+                    { word: '进', emoji: '⏩', desc: '现在可以往前走，机会来了' },
+                    { word: '止', emoji: '⏸️', desc: '现在停下来，不要再往前了' },
+                    { word: '观', emoji: '👁️', desc: '现在什么都不做，先看着' }
+                ]
+            }
+        ]
+    }
+];
+
+// 从DICE_CONFIG中提取组合骰子，转换为v2格式
+const COMBO_CONFIG = DICE_CONFIG
+    .filter(dice => dice.type === 'combo')
+    .map(dice => ({
+        id: dice.id,
+        name: dice.name,
+        subtitle: dice.subNames.join(''),
+        color: dice.color,
+        yaos: dice.combo.map(sub => ({
+            id: sub.subId,
+            name: sub.name.replace('今日之', '').replace('·', ''),
+            faces: sub.faces
+        }))
+    }));
+
+// 导出配置
+if (typeof module !== 'undefined' && module.exports) {
+    module.exports = { DICE_CONFIG, COMBO_CONFIG };
+}
