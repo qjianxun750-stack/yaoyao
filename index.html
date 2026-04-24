@@ -426,6 +426,22 @@ h1 {
   opacity: 0.6;
 }
 
+/* 二维码容器 */
+.result-qrcode {
+  margin-top: 8px;
+  padding: 8px;
+  background: rgba(255, 255, 255, 0.95);
+  border-radius: 8px;
+  display: inline-block;
+}
+.result-qrcode canvas,
+.result-qrcode img {
+  display: block;
+  width: 80px !important;
+  height: 80px !important;
+  border-radius: 4px;
+}
+
 /* 截图提示 */
 .screenshot-hint {
   display: block;
@@ -727,12 +743,12 @@ h1 {
   background: radial-gradient(circle, var(--tc-glow) 0%, transparent 70%);
 }
 
-/* 三个骰子容器 */
+/* 三个骰子容器 - 水平排列 */
 .three-dice-container {
   display: flex;
   justify-content: center;
-  align-items: flex-start;
-  gap: 16px;
+  align-items: center;
+  gap: 20px;
   padding: 20px 16px;
   margin-bottom: 16px;
 }
@@ -741,24 +757,39 @@ h1 {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 12px;
+  gap: 8px;
 }
 
+/* 一卦模式骰子 - 使用和单骰模式完全相同的样式 */
 .combo-dice-scene {
-  width: 80px;
-  height: 80px;
-  perspective: 500px;
+  width: 100px;
+  height: 100px;
+  perspective: 600px;
 }
 
-/* 一卦模式骰子的面 - translateZ必须是骰子大小的一半 */
-.combo-dice-scene .face {
-  width: 80px;
-  height: 80px;
+.combo-dice-scene .dice-glow {
   position: absolute;
-  background: var(--tc);
-  background-opacity: 0.22;
+  inset: -20px;
+  border-radius: 50%;
+  background: radial-gradient(circle, var(--tc-glow) 0%, transparent 70%);
+  filter: blur(20px);
+  opacity: 0.5;
+}
+
+.combo-dice-scene .dice-3d {
+  width: 100%;
+  height: 100%;
+  position: relative;
+  transform-style: preserve-3d;
+}
+
+.combo-dice-scene .face {
+  width: 100px;
+  height: 100px;
+  position: absolute;
+  background: linear-gradient(145deg, rgba(255,255,255,0.22), rgba(255,255,255,0.1));
   border: 2px solid var(--tc);
-  border-radius: 12px;
+  border-radius: 16px;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -771,34 +802,38 @@ h1 {
   transition: border-color 0.8s ease, box-shadow 0.8s ease;
 }
 
-.combo-dice-scene .face-face-front  { transform: rotateY(0deg)    translateZ(40px); }
-.combo-dice-scene .face-face-back   { transform: rotateY(180deg)  translateZ(40px); }
-.combo-dice-scene .face-face-left   { transform: rotateY(-90deg)  translateZ(40px); }
-.combo-dice-scene .face-face-right  { transform: rotateY(90deg)   translateZ(40px); }
-.combo-dice-scene .face-face-top    { transform: rotateX(90deg)   translateZ(40px); }
-.combo-dice-scene .face-face-bottom { transform: rotateX(-90deg)  translateZ(40px); }
+.combo-dice-scene .face-face-front  { transform: rotateY(0deg)    translateZ(50px); }
+.combo-dice-scene .face-face-back   { transform: rotateY(180deg)  translateZ(50px); }
+.combo-dice-scene .face-face-left   { transform: rotateY(-90deg)  translateZ(50px); }
+.combo-dice-scene .face-face-right  { transform: rotateY(90deg)   translateZ(50px); }
+.combo-dice-scene .face-face-top    { transform: rotateX(90deg)   translateZ(50px); }
+.combo-dice-scene .face-face-bottom { transform: rotateX(-90deg)  translateZ(50px); }
 
-.combo-dice-scene .face-emoji { font-size: 24px; line-height: 1; }
-.combo-dice-scene .face-word { font-size: 11px; font-weight: 700; color: #fff; }
+.combo-dice-scene .face-emoji { font-size: 36px; line-height: 1; margin-bottom: 4px; }
+.combo-dice-scene .face-word { font-size: 14px; font-weight: 700; color: var(--text); }
 
+/* 骰子下方的结果标签（暂时隐藏在骰子下方） */
 .dice-result {
   text-align: center;
-  min-height: 60px;
+  min-height: 50px;
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 6px;
-  padding: 8px;
+  justify-content: center;
+  gap: 4px;
+  padding: 6px 10px;
   background: rgba(255,255,255,0.03);
-  border-radius: 12px;
+  border-radius: 10px;
   border: 1px solid rgba(255,255,255,0.08);
   transition: all 0.3s ease;
+  opacity: 0.6;
 }
 
 .dice-result.revealed {
   background: rgba(255,255,255,0.06);
   border-color: var(--tc);
-  box-shadow: 0 0 20px var(--tc-glow);
+  box-shadow: 0 0 15px var(--tc-glow);
+  opacity: 1;
 }
 
 .dice-label {
@@ -812,17 +847,17 @@ h1 {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 4px;
+  gap: 2px;
 }
 
 .dice-result-emoji {
-  font-size: 28px;
+  font-size: 24px;
   line-height: 1;
 }
 
 .dice-result-word {
   font-family: 'ZCOOL XiaoWei', 'Noto Serif SC', serif;
-  font-size: 13px;
+  font-size: 12px;
   color: var(--text2);
   font-weight: 500;
 }
@@ -1026,17 +1061,18 @@ h1 {
         <!-- 下面：卦语 -->
         <div class="result-desc" id="resultDesc">今天有气势，冲！适合主动出击、表达自我。</div>
 
-        <!-- 底部：回流钩子 -->
+        <!-- 底部：回流钩子 + 链接 -->
         <div class="result-footer">
           <span class="result-cta">你的今日签是什么？</span>
-          <span class="result-domain">yaoyao.vercel.app</span>
+          <span class="result-domain">🔗 yaoyao.vercel.app</span>
+          <!-- 二维码容器 -->
+          <div class="result-qrcode" id="resultQRCode"></div>
         </div>
 
-        <!-- 操作按钮（截图时不显示） -->
+        <!-- 操作按钮 -->
         <div class="result-actions">
           <span class="screenshot-hint">💡 截图即可分享到朋友圈</span>
-          <button class="action-btn" onclick="copyResultText()">📋 复制文字</button>
-          <button class="action-btn primary" onclick="copyShareImage()">📋 复制图片</button>
+          <button class="action-btn primary" onclick="shareResult()">📤 分享图片</button>
         </div>
       </div>
     </div>
@@ -1125,6 +1161,8 @@ h1 {
 
     <div style="padding: 0 24px; display: flex; flex-direction: column; gap: 12px;">
       <button class="roll-btn" id="comboRollBtn" onclick="rollAllDice()">🎲 摇一卦</button>
+
+      <!-- 一卦模式结果卡片 -->
       <div class="result-card combo-result-card" id="comboResultCard" style="display:none;">
         <!-- 顶部：游戏名+日期 -->
         <div class="result-header">
@@ -1140,18 +1178,19 @@ h1 {
         <!-- 卦辞 -->
         <div class="result-desc" id="comboResultDesc"></div>
 
-        <!-- 底部：回流钩子 -->
+        <!-- 底部：回流钩子 + 链接 -->
         <div class="result-footer">
           <span class="result-cta">你的今日卦是什么？</span>
-          <span class="result-domain">yaoyao.vercel.app</span>
+          <span class="result-domain">🔗 yaoyao.vercel.app</span>
+          <!-- 二维码容器 -->
+          <div class="result-qrcode" id="comboResultQRCode"></div>
         </div>
 
         <!-- 操作按钮 -->
         <div class="result-actions">
           <span class="screenshot-hint">💡 截图即可分享到朋友圈</span>
-          <button class="action-btn" onclick="copyComboResultText()">📋 复制文字</button>
-          <button class="action-btn" onclick="resetCombo()">🔄 再起一卦</button>
-          <button class="action-btn primary" onclick="copyComboShareImage()">📋 复制图片</button>
+          <button class="action-btn" onclick="resetCombo()">🔄 再摇一次</button>
+          <button class="action-btn primary" onclick="shareComboResult()">📤 分享图片</button>
         </div>
       </div>
     </div>
@@ -1608,8 +1647,16 @@ function selectDice(i) {
   document.querySelectorAll('.chip').forEach((c, j) => c.classList.toggle('active', j === i));
   applyTheme(d.color);
   loadFaces(d);
+
+  // 隐藏结果卡片
   document.getElementById('resultCard').classList.remove('visible');
   curResult = null;
+
+  // 显示骰子场景
+  const diceScene = document.getElementById('diceScene');
+  diceScene.style.opacity = '1';
+  diceScene.style.pointerEvents = 'auto';
+
   // reset rotation
   const dice3d = document.getElementById('dice3d');
   dice3d.style.transition = 'transform 0.6s cubic-bezier(0.25,0.46,0.45,0.94)';
@@ -1665,6 +1712,11 @@ function rollDice() {
   document.getElementById('hint').textContent = '🎲 骰子飞起来了...';
   document.getElementById('resultCard').classList.remove('visible');
 
+  // 显示骰子场景
+  const diceScene = document.getElementById('diceScene');
+  diceScene.style.opacity = '1';
+  diceScene.style.pointerEvents = 'auto';
+
   playRollSound();
 
   const faceIdx = Math.floor(Math.random() * 6);
@@ -1715,7 +1767,17 @@ function showSingleResult(face) {
   const weekDay = weekDays[now.getDay()];
   document.getElementById('resultDate').textContent = `${month}月${date}日·周${weekDay}`;
 
-  setTimeout(() => document.getElementById('resultCard').classList.add('visible'), 50);
+  // 生成二维码
+  generateResultQRCode();
+
+  // 隐藏骰子场景，显示结果卡片
+  const diceStage = document.getElementById('diceScene');
+  diceStage.style.opacity = '0';
+  diceStage.style.pointerEvents = 'none';
+
+  setTimeout(() => {
+    document.getElementById('resultCard').classList.add('visible');
+  }, 50);
 }
 
 // ── Particles ──
@@ -1799,10 +1861,24 @@ function resetCombo() {
   }
 
   document.getElementById('guaciText').textContent = '点击下方按钮，一次摇出三爻，看今日之卦。';
+
+  // 显示骰子容器
+  const diceContainer = document.getElementById('threeDiceContainer');
+  diceContainer.style.opacity = '1';
+  diceContainer.style.pointerEvents = 'auto';
+
+  // 显示卦辞框
+  const guaciBox = document.getElementById('guaciBox');
+  guaciBox.style.opacity = '1';
+  guaciBox.style.pointerEvents = 'auto';
+
+  // 显示摇骰子按钮
   const btn = document.getElementById('comboRollBtn');
   btn.disabled = false;
   btn.textContent = '🎲 摇一卦';
-  btn.style.display = ''; // 恢复按钮显示
+  btn.style.display = '';
+
+  // 隐藏结果卡片
   const rc = document.getElementById('comboResultCard');
   rc.style.display = 'none';
   rc.classList.remove('visible');
@@ -1824,6 +1900,16 @@ async function rollAllDice() {
   // 重置显示
   document.getElementById('guaciText').textContent = '🎲 骰子旋转中...';
   document.getElementById('comboResultCard').style.display = 'none';
+
+  // 显示骰子容器
+  const diceContainer = document.getElementById('threeDiceContainer');
+  diceContainer.style.opacity = '1';
+  diceContainer.style.pointerEvents = 'auto';
+
+  // 显示卦辞框
+  const guaciBox = document.getElementById('guaciBox');
+  guaciBox.style.opacity = '1';
+  guaciBox.style.pointerEvents = 'auto';
 
   for (let i = 0; i < 3; i++) {
     document.getElementById(`resultEmoji${i}`).textContent = '🎲';
@@ -1918,11 +2004,27 @@ function showComboResult() {
   `).join('');
 
   document.getElementById('comboResultDesc').textContent = combo.interpret(yaoResults);
-  rc.style.display = 'block';
-  setTimeout(() => rc.classList.add('visible'), 50);
 
+  // 生成二维码
+  generateComboResultQRCode();
+
+  // 隐藏骰子容器
+  const diceContainer = document.getElementById('threeDiceContainer');
+  diceContainer.style.opacity = '0';
+  diceContainer.style.pointerEvents = 'none';
+
+  // 隐藏卦辞框
+  const guaciBox = document.getElementById('guaciBox');
+  guaciBox.style.opacity = '0';
+  guaciBox.style.pointerEvents = 'none';
+
+  // 隐藏摇骰子按钮
   const btn = document.getElementById('comboRollBtn');
   btn.style.display = 'none';
+
+  // 显示结果卡片
+  rc.style.display = 'block';
+  setTimeout(() => rc.classList.add('visible'), 50);
 }
 
 function rollNextYao() {
@@ -2079,6 +2181,40 @@ function generateQRCode() {
   });
 }
 
+// 生成单骰模式结果卡二维码
+function generateResultQRCode() {
+  const qrContainer = document.getElementById('resultQRCode');
+  qrContainer.innerHTML = ''; // 清空之前的二维码
+
+  const pageUrl = window.location.href;
+
+  new QRCode(qrContainer, {
+    text: pageUrl,
+    width: 80,
+    height: 80,
+    colorDark: '#000000',
+    colorLight: '#ffffff',
+    correctLevel: QRCode.CorrectLevel.L
+  });
+}
+
+// 生成一卦模式结果卡二维码
+function generateComboResultQRCode() {
+  const qrContainer = document.getElementById('comboResultQRCode');
+  qrContainer.innerHTML = ''; // 清空之前的二维码
+
+  const pageUrl = window.location.href;
+
+  new QRCode(qrContainer, {
+    text: pageUrl,
+    width: 80,
+    height: 80,
+    colorDark: '#000000',
+    colorLight: '#ffffff',
+    correctLevel: QRCode.CorrectLevel.L
+  });
+}
+
 function showComboShare() {
   const combo = COMBOS[comboIdx];
   const now = new Date();
@@ -2193,6 +2329,139 @@ async function copyComboShareImage() {
       } catch (err) {
         console.error('复制失败:', err);
         showToast('❌ 复制失败，请尝试"保存图片"按钮');
+      }
+    }, 'image/png');
+
+  } catch (error) {
+    console.error('生成图片失败:', error);
+    showToast('❌ 生成图片失败，请重试');
+  }
+}
+
+// 单骰模式分享结果
+async function shareResult() {
+  if (!curResult) return;
+
+  try {
+    showToast('正在生成分享图...');
+
+    const resultCard = document.getElementById('resultCard');
+
+    // 临时隐藏操作按钮
+    const actions = resultCard.querySelector('.result-actions');
+    actions.style.display = 'none';
+
+    const canvas = await html2canvas(resultCard, {
+      backgroundColor: null,
+      scale: 2,
+      useCORS: true,
+      logging: false
+    });
+
+    // 恢复操作按钮
+    actions.style.display = '';
+
+    // 转换为blob
+    canvas.toBlob(async (blob) => {
+      try {
+        // 检查是否支持原生分享
+        if (navigator.share && navigator.canShare) {
+          const file = new File([blob], '情绪骰子.png', { type: 'image/png' });
+
+          const shareData = {
+            title: '今日签 · 情绪骰子',
+            text: `我的今日签是「${curResult.w}」，你的呢？`,
+            files: [file]
+          };
+
+          if (navigator.canShare(shareData)) {
+            await navigator.share(shareData);
+            showToast('✅ 分享成功！');
+            await trackShare('image', curResult.w);
+            return;
+          }
+        }
+
+        // 如果不支持原生分享，则复制到剪贴板
+        const clipboardItem = new ClipboardItem({
+          'image/png': blob
+        });
+        await navigator.clipboard.write([clipboardItem]);
+        showToast('✅ 图片已复制！现在可以到微信/QQ等应用中粘贴发送了');
+        await trackShare('image', curResult.w);
+
+      } catch (err) {
+        if (err.name !== 'AbortError') {
+          console.error('分享失败:', err);
+          showToast('❌ 分享失败，请尝试截图分享');
+        }
+      }
+    }, 'image/png');
+
+  } catch (error) {
+    console.error('生成图片失败:', error);
+    showToast('❌ 生成图片失败，请重试');
+  }
+}
+
+// 一卦模式分享结果
+async function shareComboResult() {
+  if (!yaoResults || yaoResults.length === 0) return;
+
+  try {
+    showToast('正在生成分享图...');
+
+    const resultCard = document.getElementById('comboResultCard');
+
+    // 临时隐藏操作按钮
+    const actions = resultCard.querySelector('.result-actions');
+    actions.style.display = 'none';
+
+    const canvas = await html2canvas(resultCard, {
+      backgroundColor: null,
+      scale: 2,
+      useCORS: true,
+      logging: false
+    });
+
+    // 恢复操作按钮
+    actions.style.display = '';
+
+    // 转换为blob
+    canvas.toBlob(async (blob) => {
+      try {
+        // 检查是否支持原生分享
+        if (navigator.share && navigator.canShare) {
+          const file = new File([blob], '情绪骰子一卦.png', { type: 'image/png' });
+
+          const word = yaoResults.map(r=>r.w).join('·');
+          const shareData = {
+            title: '今日卦 · 情绪骰子',
+            text: `我的今日卦是「${word}」，你的呢？`,
+            files: [file]
+          };
+
+          if (navigator.canShare(shareData)) {
+            await navigator.share(shareData);
+            showToast('✅ 分享成功！');
+            await trackShare('image', word);
+            return;
+          }
+        }
+
+        // 如果不支持原生分享，则复制到剪贴板
+        const clipboardItem = new ClipboardItem({
+          'image/png': blob
+        });
+        await navigator.clipboard.write([clipboardItem]);
+        showToast('✅ 图片已复制！现在可以到微信/QQ等应用中粘贴发送了');
+        await trackShare('image', yaoResults.map(r=>r.w).join('·'));
+
+      } catch (err) {
+        if (err.name !== 'AbortError') {
+          console.error('分享失败:', err);
+          showToast('❌ 分享失败，请尝试截图分享');
+        }
       }
     }, 'image/png');
 
