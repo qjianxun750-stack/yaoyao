@@ -21,6 +21,9 @@
 
 <!-- html2canvas for share image generation -->
 <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
+
+<!-- QRCode.js for generating QR codes -->
+<script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;700&family=ZCOOL+XiaoWei&display=swap');
 
@@ -470,6 +473,21 @@ h1 {
   color: var(--text3);
   letter-spacing: 0.05em;
 }
+.share-qrcode {
+  width: 60px;
+  height: 60px;
+  border-radius: 8px;
+  overflow: hidden;
+  background: white;
+  padding: 4px;
+  box-sizing: border-box;
+}
+.share-qrcode canvas,
+.share-qrcode img {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
 .share-footer-btns {
   display: flex;
   gap: 8px;
@@ -800,8 +818,9 @@ h1 {
         <div class="result-label">三爻完卦 · 可以分享</div>
         <div class="result-desc" id="comboResultDesc"></div>
         <div class="result-actions">
+          <button class="action-btn" onclick="copyComboShareImage()">📋 复制图片</button>
           <button class="action-btn" onclick="resetCombo()">🔄 再起一卦</button>
-          <button class="action-btn primary" onclick="showComboShare()">🖼 生成分享图</button>
+          <button class="action-btn primary" onclick="showComboShare()">⬇ 保存图片</button>
         </div>
       </div>
     </div>
@@ -821,7 +840,9 @@ h1 {
     <div class="share-desc-area" id="shareDescArea">今天有气势，冲！适合主动出击、表达自我。</div>
     <div class="share-footer">
       <span class="share-brand">🎲 情绪骰子</span>
+      <div class="share-qrcode" id="shareQRCode"></div>
       <div class="share-footer-btns">
+        <button class="share-footer-btn" onclick="copyShareImage()">📋 复制图片</button>
         <button class="share-footer-btn" onclick="copyShareText()">📋 复制文字</button>
         <button class="share-footer-btn primary" onclick="downloadShare()">⬇ 保存图片</button>
       </div>
@@ -1063,57 +1084,140 @@ function getAudioCtx() {
   return audioCtx;
 }
 
+// 渐进式紧张音乐 - 3个阶段
 function playRollSound() {
   if (!soundOn) return;
   try {
     const ctx = getAudioCtx();
-    for (let i = 0; i < 8; i++) {
+    const duration = 2400; // 总时长2.4秒
+    const stages = [
+      { name: '舒缓期', start: 0, end: 800, baseFreq: 150, freqRange: 50, volume: 0.03, speed: 250 },
+      { name: '紧张期', start: 800, end: 1800, baseFreq: 200, freqRange: 100, volume: 0.06, speed: 180 },
+      { name: '高潮期', start: 1800, end: 2400, baseFreq: 280, freqRange: 150, volume: 0.10, speed: 100 }
+    ];
+
+    stages.forEach(stage => {
+      const beats = Math.floor((stage.end - stage.start) / stage.speed);
+      for (let i = 0; i < beats; i++) {
+        const progress = i / beats; // 0到1的进度
+        const freq = stage.baseFreq + (progress * stage.freqRange);
+        const vol = stage.volume * (1 + progress * 0.5); // 音量递增
+
+        setTimeout(() => {
+          const osc = ctx.createOscillator();
+          const gain = ctx.createGain();
+          const dist = ctx.createWaveShaper();
+
+          // 失真曲线
+          const curve = new Float32Array(256);
+          for (let j = 0; j < 256; j++) {
+            const x = (j*2/256)-1;
+            curve[j] = (Math.PI+100)*x/(Math.PI+100*Math.abs(x));
+          }
+          dist.curve = curve;
+          dist.oversample = '4x';
+
+          osc.connect(dist);
+          dist.connect(gain);
+          gain.connect(ctx.destination);
+
+          osc.type = 'sawtooth';
+          osc.frequency.setValueAtTime(freq + Math.random() * 30, ctx.currentTime);
+          osc.frequency.exponentialRampToValueAtTime(freq * 0.6, ctx.currentTime + 0.1);
+
+          gain.gain.setValueAtTime(vol, ctx.currentTime);
+          gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.12);
+
+          osc.start(ctx.currentTime);
+          osc.stop(ctx.currentTime + 0.15);
+        }, stage.start + (i * stage.speed));
+      }
+    });
+
+    // 添加心跳低音 - 越来越快
+    const heartbeatBeats = [0, 600, 1000, 1300, 1600, 1800, 2000, 2150, 2300];
+    heartbeatBeats.forEach((time, i) => {
       setTimeout(() => {
         const osc = ctx.createOscillator();
         const gain = ctx.createGain();
-        const dist = ctx.createWaveShaper();
-        // create subtle distortion curve
-        const curve = new Float32Array(256);
-        for (let j = 0; j < 256; j++) { const x = (j*2/256)-1; curve[j] = (Math.PI+100)*x/(Math.PI+100*Math.abs(x)); }
-        dist.curve = curve;
-        osc.connect(dist); dist.connect(gain); gain.connect(ctx.destination);
-        osc.type = 'sawtooth';
-        osc.frequency.setValueAtTime(180 + Math.random()*120, ctx.currentTime);
-        osc.frequency.exponentialRampToValueAtTime(80 + Math.random()*40, ctx.currentTime + 0.08);
-        gain.gain.setValueAtTime(0.08, ctx.currentTime);
-        gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.08);
-        osc.start(ctx.currentTime); osc.stop(ctx.currentTime + 0.1);
-      }, i * 220);
-    }
-  } catch(e) {}
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(60, ctx.currentTime);
+        osc.frequency.exponentialRampToValueAtTime(40, ctx.currentTime + 0.15);
+
+        gain.gain.setValueAtTime(0.15, ctx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.2);
+
+        osc.start(ctx.currentTime);
+        osc.stop(ctx.currentTime + 0.25);
+      }, time);
+    });
+
+  } catch(e) {
+    console.log('Audio error:', e);
+  }
 }
 
+// 揭晓音效 - 释放感
 function playRevealSound(index = 0) {
   if (!soundOn) return;
   try {
     const ctx = getAudioCtx();
     const notes = [523.25, 659.25, 783.99, 1046.50, 1318.51];
     const freq = notes[index % notes.length];
+
+    // 主音
     const osc = ctx.createOscillator();
     const gain = ctx.createGain();
-    const reverb = ctx.createConvolver();
-    osc.connect(gain); gain.connect(ctx.destination);
+    osc.connect(gain);
+    gain.connect(ctx.destination);
+
     osc.type = 'sine';
     osc.frequency.setValueAtTime(freq, ctx.currentTime);
-    osc.frequency.setValueAtTime(freq * 1.002, ctx.currentTime + 0.01);
-    gain.gain.setValueAtTime(0.18, ctx.currentTime);
+    osc.frequency.exponentialRampToValueAtTime(freq * 2, ctx.currentTime + 0.1);
+
+    gain.gain.setValueAtTime(0.15, ctx.currentTime);
     gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.5);
-    osc.start(ctx.currentTime); osc.stop(ctx.currentTime + 0.6);
-    // harmonics
+
+    osc.start(ctx.currentTime);
+    osc.stop(ctx.currentTime + 0.6);
+
+    // 和声
     const osc2 = ctx.createOscillator();
     const gain2 = ctx.createGain();
-    osc2.connect(gain2); gain2.connect(ctx.destination);
-    osc2.type = 'sine';
-    osc2.frequency.value = freq * 2;
-    gain2.gain.setValueAtTime(0.06, ctx.currentTime);
-    gain2.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.3);
-    osc2.start(ctx.currentTime); osc2.stop(ctx.currentTime + 0.3);
-  } catch(e) {}
+    osc2.connect(gain2);
+    gain2.connect(ctx.destination);
+
+    osc2.type = 'triangle';
+    osc2.frequency.setValueAtTime(freq * 1.5, ctx.currentTime);
+
+    gain2.gain.setValueAtTime(0.08, ctx.currentTime);
+    gain2.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.7);
+
+    osc2.start(ctx.currentTime);
+    osc2.stop(ctx.currentTime + 0.8);
+
+    // 闪光音效
+    const sparkle = ctx.createOscillator();
+    const sparkleGain = ctx.createGain();
+    sparkle.connect(sparkleGain);
+    sparkleGain.connect(ctx.destination);
+
+    sparkle.type = 'sine';
+    sparkle.frequency.setValueAtTime(freq * 3, ctx.currentTime);
+    sparkle.frequency.exponentialRampToValueAtTime(freq * 4, ctx.currentTime + 0.05);
+
+    sparkleGain.gain.setValueAtTime(0.05, ctx.currentTime);
+    sparkleGain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.15);
+
+    sparkle.start(ctx.currentTime);
+    sparkle.stop(ctx.currentTime + 0.2);
+
+  } catch(e) {
+    console.log('Reveal sound error:', e);
+  }
 }
 
 function playFinalSound() {
@@ -1348,8 +1452,10 @@ function resetCombo() {
   const btn = document.getElementById('comboRollBtn');
   btn.disabled = false;
   btn.textContent = '起第一爻 🎲';
+  btn.style.display = ''; // 恢复按钮显示
   const rc = document.getElementById('comboResultCard');
   rc.style.display = 'none';
+  rc.classList.remove('visible');
 }
 
 const yaoLabels = [['起第一爻','起第二爻','起第三爻·完卦'],['起天爻','起人爻','起地爻·完卦']];
@@ -1461,7 +1567,30 @@ function showShare() {
   document.getElementById('shareThemeName').textContent = d.name + '骰';
   document.getElementById('shareDescArea').textContent = curResult.d;
   document.getElementById('shareCard').style.background = d.color;
+
+  // 生成二维码
+  generateQRCode();
+
   document.getElementById('shareOverlay').classList.add('visible');
+}
+
+// 生成二维码
+function generateQRCode() {
+  const qrContainer = document.getElementById('shareQRCode');
+  qrContainer.innerHTML = ''; // 清空之前的二维码
+
+  // 使用当前页面URL
+  const pageUrl = window.location.href;
+
+  // 创建二维码
+  new QRCode(qrContainer, {
+    text: pageUrl,
+    width: 52,
+    height: 52,
+    colorDark: '#000000',
+    colorLight: '#ffffff',
+    correctLevel: QRCode.CorrectLevel.L
+  });
 }
 
 function showComboShare() {
@@ -1473,6 +1602,10 @@ function showComboShare() {
   document.getElementById('shareThemeName').textContent = combo.name;
   document.getElementById('shareDescArea').textContent = combo.interpret(yaoResults);
   document.getElementById('shareCard').style.background = combo.color;
+
+  // 生成二维码
+  generateQRCode();
+
   document.getElementById('shareOverlay').classList.add('visible');
 }
 
@@ -1483,6 +1616,105 @@ function hideShare() {
 document.getElementById('shareOverlay').addEventListener('click', e => {
   if (e.target === document.getElementById('shareOverlay')) hideShare();
 });
+
+// 复制图片到剪贴板（支持微信粘贴）
+async function copyShareImage() {
+  try {
+    showToast('正在生成图片...');
+
+    const modal = document.getElementById('shareModal');
+    const canvas = await html2canvas(modal, {
+      backgroundColor: null,
+      scale: 2,
+      useCORS: true,
+      logging: false
+    });
+
+    // 转换为blob
+    canvas.toBlob(async (blob) => {
+      try {
+        // 创建剪贴板项
+        const clipboardItem = new ClipboardItem({
+          'image/png': blob
+        });
+
+        // 写入剪贴板
+        await navigator.clipboard.write([clipboardItem]);
+
+        showToast('✅ 图片已复制！现在可以到微信/QQ等应用中粘贴发送了\n\n💡 提示：也可以使用"保存图片"按钮保存到相册');
+
+        // 记录分享统计
+        const word = document.getElementById('shareBigWord').textContent;
+        await trackShare('image', word);
+      } catch (err) {
+        console.error('复制失败:', err);
+        showToast('❌ 复制失败，请尝试使用"保存图片"功能');
+      }
+    }, 'image/png');
+
+  } catch (error) {
+    console.error('生成图片失败:', error);
+    showToast('❌ 生成图片失败，请重试');
+  }
+}
+
+// 复制一卦模式图片到剪贴板（快速分享）
+async function copyComboShareImage() {
+  try {
+    showToast('正在生成分享图...');
+
+    // 先准备分享弹窗内容
+    const combo = COMBOS[comboIdx];
+    const now = new Date();
+    document.getElementById('shareDate').textContent = `${now.getFullYear()}年${now.getMonth()+1}月${now.getDate()}日`;
+    document.getElementById('shareBigEmoji').textContent = yaoResults.map(r=>r.e).join('');
+    document.getElementById('shareBigWord').textContent = yaoResults.map(r=>r.w).join(' · ');
+    document.getElementById('shareThemeName').textContent = combo.name;
+    document.getElementById('shareDescArea').textContent = combo.interpret(yaoResults);
+    document.getElementById('shareCard').style.background = combo.color;
+
+    // 生成二维码
+    generateQRCode();
+
+    // 等待二维码生成
+    await new Promise(resolve => setTimeout(resolve, 300));
+
+    // 生成图片
+    const modal = document.getElementById('shareModal');
+    const canvas = await html2canvas(modal, {
+      backgroundColor: null,
+      scale: 2,
+      useCORS: true,
+      logging: false
+    });
+
+    // 转换为blob
+    canvas.toBlob(async (blob) => {
+      try {
+        // 创建剪贴板项
+        const clipboardItem = new ClipboardItem({
+          'image/png': blob
+        });
+
+        // 写入剪贴板
+        await navigator.clipboard.write([clipboardItem]);
+
+        showToast('✅ 一卦图片已复制！现在可以到微信/QQ等应用中粘贴发送了');
+
+        // 记录分享统计
+        const word = yaoResults.map(r=>r.w).join('·');
+        await trackShare('image', word);
+      } catch (err) {
+        console.error('复制失败:', err);
+        showToast('❌ 复制失败，请尝试"保存图片"按钮');
+      }
+    }, 'image/png');
+
+  } catch (error) {
+    console.error('生成图片失败:', error);
+    showToast('❌ 生成图片失败，请重试');
+  }
+}
 
 async function copyShareText() {
   const word = document.getElementById('shareBigWord').textContent;
