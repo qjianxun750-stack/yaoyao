@@ -700,6 +700,76 @@ h1 {
 #comboDiceGlow {
   background: radial-gradient(circle, var(--tc-glow) 0%, transparent 70%);
 }
+
+/* 三个骰子容器 */
+.three-dice-container {
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  gap: 16px;
+  padding: 20px 16px;
+  margin-bottom: 16px;
+}
+
+.single-dice-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+}
+
+.combo-dice-scene {
+  width: 80px;
+  height: 80px;
+  perspective: 500px;
+}
+
+.dice-result {
+  text-align: center;
+  min-height: 60px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  padding: 8px;
+  background: rgba(255,255,255,0.03);
+  border-radius: 12px;
+  border: 1px solid rgba(255,255,255,0.08);
+  transition: all 0.3s ease;
+}
+
+.dice-result.revealed {
+  background: rgba(255,255,255,0.06);
+  border-color: var(--tc);
+  box-shadow: 0 0 20px var(--tc-glow);
+}
+
+.dice-label {
+  font-size: 10px;
+  color: var(--text3);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.dice-result-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+}
+
+.dice-result-emoji {
+  font-size: 28px;
+  line-height: 1;
+}
+
+.dice-result-word {
+  font-family: 'ZCOOL XiaoWei', 'Noto Serif SC', serif;
+  font-size: 13px;
+  color: var(--text2);
+  font-weight: 500;
+}
+
 .combo-chip {
   flex: 1;
   padding: 10px 0;
@@ -922,33 +992,82 @@ h1 {
       <div class="combo-chip" onclick="selectCombo(1, this)">人生一卦 · 天人地</div>
     </div>
 
-    <!-- Dice stage for combo mode -->
-    <div class="dice-stage" id="comboDiceStage">
-      <div class="dice-scene" id="comboDiceScene">
-        <div class="dice-glow" id="comboDiceGlow"></div>
-        <div class="dice-3d" id="comboDice3d">
-          <div class="face face-front"  id="cf0"><span class="face-emoji">🎲</span><span class="face-word">?</span></div>
-          <div class="face face-back"   id="cf1"><span class="face-emoji">🎲</span><span class="face-word">?</span></div>
-          <div class="face face-left"   id="cf2"><span class="face-emoji">🎲</span><span class="face-word">?</span></div>
-          <div class="face face-right"  id="cf3"><span class="face-emoji">🎲</span><span class="face-word">?</span></div>
-          <div class="face face-top"    id="cf4"><span class="face-emoji">🎲</span><span class="face-word">?</span></div>
-          <div class="face face-bottom" id="cf5"><span class="face-emoji">🎲</span><span class="face-word">?</span></div>
+    <!-- 三个骰子同时显示 -->
+    <div class="three-dice-container" id="threeDiceContainer">
+      <!-- 骰子1 -->
+      <div class="single-dice-wrapper">
+        <div class="dice-scene combo-dice-scene" id="diceScene0">
+          <div class="dice-glow" id="diceGlow0"></div>
+          <div class="dice-3d" id="dice3d0">
+            <div class="face face-front"  id="d0f0"><span class="face-emoji">🎲</span></div>
+            <div class="face face-back"   id="d0f1"><span class="face-emoji">🎲</span></div>
+            <div class="face face-left"   id="d0f2"><span class="face-emoji">🎲</span></div>
+            <div class="face face-right"  id="d0f3"><span class="face-emoji">🎲</span></div>
+            <div class="face face-top"    id="d0f4"><span class="face-emoji">🎲</span></div>
+            <div class="face face-bottom" id="d0f5"><span class="face-emoji">🎲</span></div>
+          </div>
+        </div>
+        <div class="dice-result" id="diceResult0">
+          <div class="dice-label" id="diceLabel0">第一爻</div>
+          <div class="dice-result-content">
+            <span class="dice-result-emoji" id="resultEmoji0">?</span>
+            <span class="dice-result-word" id="resultWord0">待揭晓</span>
+          </div>
         </div>
       </div>
-      <div class="hint" id="comboHint">起爻时骰子会出现</div>
-    </div>
 
-    <div class="yao-list" id="yaoList">
-      <!-- filled by JS -->
+      <!-- 骰子2 -->
+      <div class="single-dice-wrapper">
+        <div class="dice-scene combo-dice-scene" id="diceScene1">
+          <div class="dice-glow" id="diceGlow1"></div>
+          <div class="dice-3d" id="dice3d1">
+            <div class="face face-front"  id="d1f0"><span class="face-emoji">🎲</span></div>
+            <div class="face face-back"   id="d1f1"><span class="face-emoji">🎲</span></div>
+            <div class="face face-left"   id="d1f2"><span class="face-emoji">🎲</span></div>
+            <div class="face face-right"  id="d1f3"><span class="face-emoji">🎲</span></div>
+            <div class="face face-top"    id="d1f4"><span class="face-emoji">🎲</span></div>
+            <div class="face face-bottom" id="d1f5"><span class="face-emoji">🎲</span></div>
+          </div>
+        </div>
+        <div class="dice-result" id="diceResult1">
+          <div class="dice-label" id="diceLabel1">第二爻</div>
+          <div class="dice-result-content">
+            <span class="dice-result-emoji" id="resultEmoji1">?</span>
+            <span class="dice-result-word" id="resultWord1">待揭晓</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- 骰子3 -->
+      <div class="single-dice-wrapper">
+        <div class="dice-scene combo-dice-scene" id="diceScene2">
+          <div class="dice-glow" id="diceGlow2"></div>
+          <div class="dice-3d" id="dice3d2">
+            <div class="face face-front"  id="d2f0"><span class="face-emoji">🎲</span></div>
+            <div class="face face-back"   id="d2f1"><span class="face-emoji">🎲</span></div>
+            <div class="face face-left"   id="d2f2"><span class="face-emoji">🎲</span></div>
+            <div class="face face-right"  id="d2f3"><span class="face-emoji">🎲</span></div>
+            <div class="face face-top"    id="d2f4"><span class="face-emoji">🎲</span></div>
+            <div class="face face-bottom" id="d2f5"><span class="face-emoji">🎲</span></div>
+          </div>
+        </div>
+        <div class="dice-result" id="diceResult2">
+          <div class="dice-label" id="diceLabel2">第三爻</div>
+          <div class="dice-result-content">
+            <span class="dice-result-emoji" id="resultEmoji2">?</span>
+            <span class="dice-result-word" id="resultWord2">待揭晓</span>
+          </div>
+        </div>
+      </div>
     </div>
 
     <div class="guaci-box" id="guaciBox">
       <div class="guaci-label">卦辞</div>
-      <div id="guaciText">选择一套玩法，依次摇出三爻，看今日之卦。</div>
+      <div id="guaciText">点击下方按钮，一次摇出三爻，看今日之卦。</div>
     </div>
 
     <div style="padding: 0 24px; display: flex; flex-direction: column; gap: 12px;">
-      <button class="roll-btn" id="comboRollBtn" onclick="rollNextYao()">起第一爻 🎲</button>
+      <button class="roll-btn" id="comboRollBtn" onclick="rollAllDice()">🎲 摇一卦</button>
       <div class="result-card combo-result-card" id="comboResultCard" style="display:none;">
         <!-- 顶部：游戏名+日期 -->
         <div class="result-header">
@@ -1586,38 +1705,46 @@ function selectCombo(i, el) {
   comboIdx = i;
   document.querySelectorAll('.combo-chip').forEach((c,j) => c.classList.toggle('active', j===i));
   applyTheme(COMBOS[i].color);
+
+  // 更新三个骰子的标签
+  const combo = COMBOS[i];
+  for (let j = 0; j < 3; j++) {
+    document.getElementById(`diceLabel${j}`).textContent = combo.names[j];
+    document.getElementById(`resultEmoji${j}`).textContent = '🎲';
+    document.getElementById(`resultWord${j}`).textContent = '待揭晓';
+    document.getElementById(`diceResult${j}`).classList.remove('revealed');
+  }
+
   resetCombo();
 }
 
 function buildYaoList() {
-  const combo = COMBOS[comboIdx];
-  const list = document.getElementById('yaoList');
-  list.innerHTML = '';
-  combo.labels.forEach((label, i) => {
-    const row = document.createElement('div');
-    row.className = 'yao-row' + (i === 0 ? ' active' : '');
-    row.id = 'yao-' + i;
-    row.innerHTML = `
-      <div class="yao-badge">${label}</div>
-      <div class="yao-box">
-        <div class="yao-emoji" id="yao-emoji-${i}">　</div>
-        <div class="yao-info">
-          <div class="yao-name">${combo.names[i]}</div>
-          <div class="yao-word" id="yao-word-${i}"><span class="yao-placeholder">${i === 0 ? '摇出第一爻' : '待揭晓'}</span></div>
-        </div>
-      </div>`;
-    list.appendChild(row);
-  });
+  // 这个函数不再需要，因为现在直接用三个骰子显示
 }
 
 function resetCombo() {
   yaoResults = [];
   yaoStep = 0;
-  buildYaoList();
-  document.getElementById('guaciText').textContent = '选择一套玩法，依次摇出三爻，看今日之卦。';
+
+  const combo = COMBOS[comboIdx];
+
+  // 重置三个骰子显示
+  for (let i = 0; i < 3; i++) {
+    document.getElementById(`diceLabel${i}`).textContent = combo.names[i];
+    document.getElementById(`resultEmoji${i}`).textContent = '🎲';
+    document.getElementById(`resultWord${i}`).textContent = '待揭晓';
+    document.getElementById(`diceResult${i}`).classList.remove('revealed');
+
+    // 重置骰子姿态
+    const dice3d = document.getElementById(`dice3d${i}`);
+    dice3d.style.transition = 'transform 0.6s cubic-bezier(0.25,0.46,0.45,0.94)';
+    dice3d.style.transform = 'rotateX(-15deg) rotateY(25deg)';
+  }
+
+  document.getElementById('guaciText').textContent = '点击下方按钮，一次摇出三爻，看今日之卦。';
   const btn = document.getElementById('comboRollBtn');
   btn.disabled = false;
-  btn.textContent = '起第一爻 🎲';
+  btn.textContent = '🎲 摇一卦';
   btn.style.display = ''; // 恢复按钮显示
   const rc = document.getElementById('comboResultCard');
   rc.style.display = 'none';
@@ -1625,6 +1752,119 @@ function resetCombo() {
 }
 
 const yaoLabels = [['起第一爻','起第二爻','起第三爻·完卦'],['起天爻','起人爻','起地爻·完卦']];
+
+// ── 三骰同时旋转函数 ──
+async function rollAllDice() {
+  if (isRolling) return;
+  isRolling = true;
+
+  const btn = document.getElementById('comboRollBtn');
+  btn.disabled = true;
+  btn.textContent = '摇动中...';
+
+  const combo = COMBOS[comboIdx];
+
+  // 重置显示
+  document.getElementById('guaciText').textContent = '🎲 骰子旋转中...';
+  document.getElementById('comboResultCard').style.display = 'none';
+
+  for (let i = 0; i < 3; i++) {
+    document.getElementById(`resultEmoji${i}`).textContent = '🎲';
+    document.getElementById(`resultWord${i}`).textContent = '待揭晓';
+    document.getElementById(`diceResult${i}`).classList.remove('revealed');
+  }
+
+  // 随机生成三个结果
+  const results = [];
+  for (let i = 0; i < 3; i++) {
+    const faceIdx = Math.floor(Math.random() * 6);
+    results.push(combo.faces[i][faceIdx]);
+  }
+
+  // 播放音效（延长版）
+  playRollSound();
+
+  // 三个骰子同时开始旋转，但先后停下
+  const stopTimes = [2500, 3000, 3500]; // 2.5秒、3秒、3.5秒
+
+  for (let i = 0; i < 3; i++) {
+    const dice3d = document.getElementById(`dice3d${i}`);
+    const rot = faceRotations[Math.floor(Math.random() * 6)];
+    const finalRx = rot.rx + 1080 + (i * 360); // 不同骰子转不同圈数
+    const finalRy = rot.ry + 1080 + (i * 360);
+
+    // 设置初始姿态
+    dice3d.style.transition = 'transform 0.6s cubic-bezier(0.25,0.46,0.45,0.94)';
+    dice3d.style.transform = 'rotateX(-15deg) rotateY(25deg)';
+
+    // 延迟后开始旋转
+    setTimeout(() => {
+      dice3d.style.cssText = `--rx:${finalRx}deg;--ry:${finalRy}deg;`;
+      dice3d.classList.add('rolling');
+    }, 100 + (i * 50));
+
+    // 在指定时间停下
+    setTimeout(() => {
+      dice3d.classList.remove('rolling');
+      dice3d.classList.add('landing');
+      dice3d.style.transition = 'none';
+      dice3d.style.transform = `rotateX(${finalRx}deg) rotateY(${finalRy}deg)`;
+
+      // 延迟后揭晓结果
+      setTimeout(() => {
+        dice3d.classList.remove('landing');
+
+        // 播放揭晓音效
+        playRevealSound(i);
+        createParticles();
+
+        // 显示结果
+        document.getElementById(`resultEmoji${i}`).textContent = results[i].e;
+        document.getElementById(`resultWord${i}`).textContent = results[i].w;
+        document.getElementById(`diceResult${i}`).classList.add('revealed');
+
+        // 最后一个骰子停下后，显示卦辞
+        if (i === 2) {
+          yaoResults = results;
+          updateGuaci();
+
+          setTimeout(() => {
+            playFinalSound();
+            showComboResult();
+            isRolling = false;
+          }, 500);
+        }
+      }, 400);
+    }, stopTimes[i]);
+  }
+}
+
+function showComboResult() {
+  const rc = document.getElementById('comboResultCard');
+  const combo = COMBOS[comboIdx];
+  const now = new Date();
+  const month = now.getMonth() + 1;
+  const date = now.getDate();
+  const weekDays = ['日', '一', '二', '三', '四', '五', '六'];
+  const weekDay = weekDays[now.getDay()];
+  document.getElementById('comboResultDate').textContent = `${month}月${date}日·周${weekDay}`;
+
+  const yaosContainer = document.getElementById('comboYaos');
+  yaosContainer.innerHTML = yaoResults.map((r, i) => `
+    <div class="combo-yao">
+      <span class="combo-yao-emoji">${r.e}</span>
+      <span class="combo-yao-label">${combo.labels[i]}</span>
+      <span class="combo-yao-word">${r.w}</span>
+    </div>
+  `).join('');
+
+  document.getElementById('comboResultDesc').textContent = combo.interpret(yaoResults);
+  rc.style.display = 'block';
+  setTimeout(() => rc.classList.add('visible'), 50);
+
+  const btn = document.getElementById('comboRollBtn');
+  btn.style.display = 'none';
+}
 
 function rollNextYao() {
   if (isRolling || yaoStep >= 3) return;
