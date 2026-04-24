@@ -6,15 +6,20 @@
 <title>🎲 情绪骰子 - 8款主题骰子，摇出今日状态 | 祈愿·玄学·关系·人生</title>
 <meta name="description" content="情绪骰子 - 8款主题骰子，摇出今日状态">
 
-<!-- Open Graph / Facebook -->
+<!-- Open Graph / Facebook / 微信分享 -->
 <meta property="og:type" content="website">
-<meta property="og:title" content="🎲 情绪骰子 - 摇出今日状态">
-<meta property="og:description" content="8款主题骰子：状态、发疯、祈愿、玄学、关系、人生、妈妈、搭子">
+<meta property="og:title" content="今日签 · 摇一摇看今天的状态">
+<meta property="og:description" content="赛博求签，随机不随缘。8款主题骰子：状态、发疯、祈愿、玄学、关系、人生、妈妈、搭子">
+<meta property="og:image" content="https://yaoyao.vercel.app/assets/share-cover.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:url" content="https://yaoyao.vercel.app">
 
 <!-- Twitter -->
 <meta property="twitter:card" content="summary_large_image">
-<meta property="twitter:title" content="🎲 情绪骰子 - 摇出今日状态">
-<meta property="twitter:description" content="8款主题骰子：状态、发疯、祈愿、玄学、关系、人生、妈妈、搭子">
+<meta property="twitter:title" content="今日签 · 摇一摇看今天的状态">
+<meta property="twitter:description" content="赛博求签，随机不随缘">
+<meta property="twitter:image" content="https://yaoyao.vercel.app/assets/share-cover.png">
 
 <!-- Umami Analytics -->
 <script async defer data-website-id="34118be7-d644-4577-a83d-3d8d001c2618" src="https://cloud.umami.is/script.js"></script>
@@ -291,71 +296,184 @@ h1 {
   pointer-events: none;
 }
 
-/* ── Result card ── */
+/* ── Result card - 截图友好设计 ── */
 .result-card {
-  margin: 0 24px;
-  border-radius: 20px;
-  border: 1px solid rgba(255,255,255,0.1);
-  padding: 20px;
-  background: rgba(255,255,255,0.04);
+  margin: 20px 16px;
+  border-radius: 24px;
+  border: 2px solid rgba(255,255,255,0.15);
+  padding: 24px 20px 20px;
+  /* 主题色深色渐变背景 */
+  background: linear-gradient(180deg,
+    rgba(255,255,255,0.12) 0%,
+    rgba(255,255,255,0.06) 50%,
+    rgba(0,0,0,0.1) 100%);
   opacity: 0;
   transform: translateY(16px);
   transition: all 0.5s cubic-bezier(0.34, 1.3, 0.64, 1);
   pointer-events: none;
+  /* 截图友好：固定宽度，占满屏幕 */
+  width: calc(100% - 32px);
+  box-sizing: border-box;
+  box-shadow:
+    0 20px 60px rgba(0,0,0,0.3),
+    inset 0 1px 0 rgba(255,255,255,0.1);
 }
 .result-card.visible {
   opacity: 1;
   transform: translateY(0);
   pointer-events: auto;
 }
-.result-label {
-  font-size: 10px;
-  letter-spacing: 0.12em;
-  color: var(--text3);
-  text-transform: uppercase;
-  margin-bottom: 6px;
-}
-.result-main {
+
+/* 顶部：游戏名+日期 */
+.result-header {
   display: flex;
+  justify-content: space-between;
   align-items: center;
-  gap: 12px;
-  margin-bottom: 10px;
+  margin-bottom: 20px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid rgba(255,255,255,0.1);
 }
-.result-emoji { font-size: 28px; }
+.result-game-name {
+  font-size: 13px;
+  color: var(--text3);
+  letter-spacing: 0.05em;
+}
+.result-date {
+  font-size: 11px;
+  color: var(--text3);
+  opacity: 0.7;
+}
+
+/* 中间：超大emoji+结果词 */
+.result-main {
+  text-align: center;
+  padding: 24px 0;
+  margin-bottom: 20px;
+}
+.result-emoji {
+  font-size: 72px;
+  line-height: 1;
+  margin-bottom: 16px;
+  filter: drop-shadow(0 4px 12px rgba(0,0,0,0.3));
+}
 .result-word {
   font-family: 'ZCOOL XiaoWei', 'Noto Serif SC', serif;
-  font-size: 22px;
-  color: var(--tc);
+  font-size: 36px;
+  font-weight: 700;
+  color: var(--text);
+  letter-spacing: 0.08em;
+  text-shadow: 0 2px 8px rgba(0,0,0,0.2);
 }
+
+/* 下面：卦语 */
 .result-desc {
-  font-size: 13px;
+  font-size: 15px;
   color: var(--text2);
-  line-height: 1.6;
-  border-top: 1px solid var(--border);
-  padding-top: 10px;
-  margin-bottom: 14px;
+  line-height: 1.8;
+  text-align: center;
+  padding: 16px;
+  margin-bottom: 20px;
+  background: rgba(0,0,0,0.2);
+  border-radius: 12px;
+  border: 1px solid rgba(255,255,255,0.05);
 }
+
+/* 底部：回流钩子 */
+.result-footer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  padding: 16px 0 0;
+  margin-bottom: 20px;
+  border-top: 1px solid rgba(255,255,255,0.1);
+}
+.result-cta {
+  font-size: 13px;
+  color: var(--text);
+  font-weight: 500;
+}
+.result-domain {
+  font-size: 11px;
+  color: var(--text3);
+  letter-spacing: 0.05em;
+  opacity: 0.6;
+}
+
+/* 截图提示 */
+.screenshot-hint {
+  display: block;
+  width: 100%;
+  text-align: center;
+  font-size: 11px;
+  color: var(--text3);
+  margin-bottom: 12px;
+  opacity: 0.5;
+}
+
+/* 操作按钮 */
 .result-actions {
   display: flex;
   gap: 8px;
 }
 .action-btn {
   flex: 1;
-  padding: 10px 0;
+  padding: 12px 0;
   border-radius: 12px;
   border: 1px solid var(--border);
-  background: transparent;
+  background: rgba(255,255,255,0.05);
   color: var(--text2);
   font-size: 12px;
   font-weight: 500;
   cursor: pointer;
   transition: all 0.2s;
 }
-.action-btn:hover { background: rgba(255,255,255,0.06); color: var(--text); }
-.action-btn.primary {
-  background: rgba(255,255,255,0.08);
-  border-color: rgba(255,255,255,0.15);
+.action-btn:hover {
+  background: rgba(255,255,255,0.1);
   color: var(--text);
+  border-color: rgba(255,255,255,0.2);
+}
+.action-btn.primary {
+  background: rgba(255,255,255,0.1);
+  border-color: rgba(255,255,255,0.2);
+  color: var(--text);
+  font-weight: 600;
+}
+
+/* 一卦模式特有样式 */
+.combo-yaos {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin: 20px 0;
+  padding: 16px;
+  background: rgba(0,0,0,0.2);
+  border-radius: 16px;
+  border: 1px solid rgba(255,255,255,0.05);
+}
+.combo-yao {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 8px 0;
+}
+.combo-yao-emoji {
+  font-size: 32px;
+  width: 48px;
+  text-align: center;
+}
+.combo-yao-label {
+  font-size: 12px;
+  color: var(--text3);
+  width: 32px;
+  flex-shrink: 0;
+}
+.combo-yao-word {
+  font-family: 'ZCOOL XiaoWei', 'Noto Serif SC', serif;
+  font-size: 18px;
+  color: var(--text);
+  flex: 1;
+  text-align: center;
 }
 
 /* ── Particles ── */
@@ -764,17 +882,34 @@ h1 {
     <div style="padding: 0 24px; display: flex; flex-direction: column; gap: 12px;">
       <button class="roll-btn" id="rollBtn" onclick="rollDice()">摇一摇 🎲</button>
 
-      <!-- Result card -->
+      <!-- Result card - 截图友好设计 -->
       <div class="result-card" id="resultCard">
-        <div class="result-label">今日卦语</div>
+        <!-- 顶部：游戏名+日期 -->
+        <div class="result-header">
+          <span class="result-game-name">🎲 情绪骰子</span>
+          <span class="result-date" id="resultDate"></span>
+        </div>
+
+        <!-- 中间：超大emoji+结果词 -->
         <div class="result-main">
           <div class="result-emoji" id="resultEmoji">😎</div>
           <div class="result-word" id="resultWord">小爷来了</div>
         </div>
+
+        <!-- 下面：卦语 -->
         <div class="result-desc" id="resultDesc">今天有气势，冲！适合主动出击、表达自我。</div>
+
+        <!-- 底部：回流钩子 -->
+        <div class="result-footer">
+          <span class="result-cta">你的今日签是什么？</span>
+          <span class="result-domain">yaoyao.vercel.app</span>
+        </div>
+
+        <!-- 操作按钮（截图时不显示） -->
         <div class="result-actions">
-          <button class="action-btn" onclick="copyResult()">📋 复制</button>
-          <button class="action-btn primary" onclick="showShare()">🖼 生成分享图</button>
+          <span class="screenshot-hint">💡 截图即可分享到朋友圈</span>
+          <button class="action-btn" onclick="copyResultText()">📋 复制文字</button>
+          <button class="action-btn primary" onclick="copyShareImage()">📋 复制图片</button>
         </div>
       </div>
     </div>
@@ -814,13 +949,33 @@ h1 {
 
     <div style="padding: 0 24px; display: flex; flex-direction: column; gap: 12px;">
       <button class="roll-btn" id="comboRollBtn" onclick="rollNextYao()">起第一爻 🎲</button>
-      <div class="result-card" id="comboResultCard" style="display:none;">
-        <div class="result-label">三爻完卦 · 可以分享</div>
+      <div class="result-card combo-result-card" id="comboResultCard" style="display:none;">
+        <!-- 顶部：游戏名+日期 -->
+        <div class="result-header">
+          <span class="result-game-name">🎲 情绪骰子 · 一卦模式</span>
+          <span class="result-date" id="comboResultDate"></span>
+        </div>
+
+        <!-- 三爻展示（竖排） -->
+        <div class="combo-yaos" id="comboYaos">
+          <!-- 动态生成 -->
+        </div>
+
+        <!-- 卦辞 -->
         <div class="result-desc" id="comboResultDesc"></div>
+
+        <!-- 底部：回流钩子 -->
+        <div class="result-footer">
+          <span class="result-cta">你的今日卦是什么？</span>
+          <span class="result-domain">yaoyao.vercel.app</span>
+        </div>
+
+        <!-- 操作按钮 -->
         <div class="result-actions">
-          <button class="action-btn" onclick="copyComboShareImage()">📋 复制图片</button>
+          <span class="screenshot-hint">💡 截图即可分享到朋友圈</span>
+          <button class="action-btn" onclick="copyComboResultText()">📋 复制文字</button>
           <button class="action-btn" onclick="resetCombo()">🔄 再起一卦</button>
-          <button class="action-btn primary" onclick="showComboShare()">⬇ 保存图片</button>
+          <button class="action-btn primary" onclick="copyComboShareImage()">📋 复制图片</button>
         </div>
       </div>
     </div>
@@ -1370,9 +1525,20 @@ function rollDice() {
 
 function showSingleResult(face) {
   curResult = face;
+
+  // 更新结果卡内容
   document.getElementById('resultEmoji').textContent = face.e;
   document.getElementById('resultWord').textContent = face.w;
   document.getElementById('resultDesc').textContent = face.d;
+
+  // 更新日期
+  const now = new Date();
+  const month = now.getMonth() + 1;
+  const date = now.getDate();
+  const weekDays = ['日', '一', '二', '三', '四', '五', '六'];
+  const weekDay = weekDays[now.getDay()];
+  document.getElementById('resultDate').textContent = `${month}月${date}日·周${weekDay}`;
+
   setTimeout(() => document.getElementById('resultCard').classList.add('visible'), 50);
 }
 
@@ -1534,7 +1700,28 @@ function rollNextYao() {
           playFinalSound();
           createParticles();
           setTimeout(() => createParticles(), 200);
+
           const rc = document.getElementById('comboResultCard');
+          const combo = COMBOS[comboIdx];
+
+          // 更新日期
+          const now = new Date();
+          const month = now.getMonth() + 1;
+          const date = now.getDate();
+          const weekDays = ['日', '一', '二', '三', '四', '五', '六'];
+          const weekDay = weekDays[now.getDay()];
+          document.getElementById('comboResultDate').textContent = `${month}月${date}日·周${weekDay}`;
+
+          // 生成三爻展示
+          const yaosContainer = document.getElementById('comboYaos');
+          yaosContainer.innerHTML = yaoResults.map((r, i) => `
+            <div class="combo-yao">
+              <span class="combo-yao-emoji">${r.e}</span>
+              <span class="combo-yao-label">${combo.labels[i]}</span>
+              <span class="combo-yao-word">${r.w}</span>
+            </div>
+          `).join('');
+
           document.getElementById('comboResultDesc').textContent = combo.interpret(yaoResults);
           rc.style.display = 'block';
           setTimeout(() => rc.classList.add('visible'), 50);
@@ -1760,6 +1947,62 @@ async function downloadShare() {
   }
 }
 
+// 复制单骰结果文字（带链接）
+async function copyResultText() {
+  if (!curResult) return;
+  const d = DICE[curDice];
+  const now = new Date();
+  const month = now.getMonth() + 1;
+  const date = now.getDate();
+  const pageUrl = window.location.href;
+
+  const text = `🎲 今日签｜${d.name} 「${curResult.w}」${curResult.e}
+
+${curResult.d}
+
+你的今日签是什么？→ ${pageUrl}`;
+
+  try {
+    await navigator.clipboard.writeText(text);
+    await trackShare('text', curResult.w);
+    showToast('✅ 已复制！粘贴发送给好友');
+  } catch(e) {
+    showToast('❌ 复制失败，请手动复制');
+  }
+}
+
+// 复制一卦结果文字（带链接）
+async function copyComboResultText() {
+  if (yaoResults.length === 0) return;
+  const combo = COMBOS[comboIdx];
+  const now = new Date();
+  const month = now.getMonth() + 1;
+  const date = now.getDate();
+  const pageUrl = window.location.href;
+
+  const emojis = yaoResults.map(r => r.e).join('');
+  const words = yaoResults.map(r => r.w).join('·');
+  const interpretation = combo.interpret(yaoResults);
+
+  const text = `🎲 今日卦｜${combo.name}
+
+${emojis}
+${words}
+
+${interpretation}
+
+你的今日卦是什么？→ ${pageUrl}`;
+
+  try {
+    await navigator.clipboard.writeText(text);
+    await trackShare('text', words);
+    showToast('✅ 已复制！粘贴发送给好友');
+  } catch(e) {
+    showToast('❌ 复制失败，请手动复制');
+  }
+}
+
+// 旧的复制函数（保留兼容）
 function copyResult() {
   if (!curResult) return;
   const text = `🎲 今日情绪骰子\n\n「${curResult.w}」${curResult.e}\n\n${curResult.d}`;
