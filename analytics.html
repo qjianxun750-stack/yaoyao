@@ -351,10 +351,11 @@
             'partner': '搭子关系'
         };
 
-        // 获取所有摇骰子记录
+        // 获取所有摇骰子记录（无限制）
         async function fetchAllRolls() {
             try {
-                const response = await fetch(`${SUPABASE_URL}/rest/v1/dice_rolls?select=*&order=created_at.desc&limit=100`, {
+                // 移除 limit 限制，获取所有历史数据
+                const response = await fetch(`${SUPABASE_URL}/rest/v1/dice_rolls?select=*&order=created_at.desc`, {
                     headers: {
                         'apikey': SUPABASE_KEY,
                         'Authorization': `Bearer ${SUPABASE_KEY}`
@@ -369,10 +370,11 @@
             }
         }
 
-        // 获取分享记录
+        // 获取所有分享记录（无限制）
         async function fetchShares() {
             try {
-                const response = await fetch(`${SUPABASE_URL}/rest/v1/shares?select=*&order=created_at.desc&limit=100`, {
+                // 移除 limit 限制，获取所有历史数据
+                const response = await fetch(`${SUPABASE_URL}/rest/v1/shares?select=*&order=created_at.desc`, {
                     headers: {
                         'apikey': SUPABASE_KEY,
                         'Authorization': `Bearer ${SUPABASE_KEY}`
@@ -434,8 +436,8 @@
             document.getElementById('textShares').textContent = textShares.toLocaleString();
             document.getElementById('imageShares').textContent = imageShares.toLocaleString();
 
-            // 最新摇骰子记录
-            updateRecentRolls(rolls.slice(0, 10));
+            // 最新摇骰子记录 - 显示前100条
+            updateRecentRolls(rolls.slice(0, 100), rolls.length);
 
             // 热门主题
             updatePopularThemes(rolls);
@@ -445,7 +447,7 @@
         }
 
         // 更新最新摇骰子记录
-        function updateRecentRolls(rolls) {
+        function updateRecentRolls(rolls, totalCount = 0) {
             const container = document.getElementById('recentRolls');
 
             if (rolls.length === 0) {
@@ -453,7 +455,13 @@
                 return;
             }
 
+            const displayCount = rolls.length;
+            const showMoreText = totalCount > displayCount ? `（显示最近 ${displayCount} 条，共 ${totalCount.toLocaleString()} 条）` : `（共 ${totalCount.toLocaleString()} 条）`;
+
             container.innerHTML = `
+                <div style="margin-bottom: 15px; color: #666; font-size: 14px;">
+                    📊 ${showMoreText}
+                </div>
                 <table class="data-table">
                     <thead>
                         <tr>
