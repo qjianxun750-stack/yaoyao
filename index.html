@@ -447,10 +447,14 @@ h1 {
   display: block;
   width: 100%;
   text-align: center;
-  font-size: 11px;
-  color: var(--text3);
+  font-size: 12px;
+  color: var(--text2);
   margin-bottom: 12px;
-  opacity: 0.5;
+  opacity: 0.8;
+  padding: 8px;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 8px;
+  border: 1px dashed rgba(255, 255, 255, 0.2);
 }
 
 /* 操作按钮 */
@@ -1071,8 +1075,7 @@ h1 {
 
         <!-- 操作按钮 -->
         <div class="result-actions">
-          <span class="screenshot-hint">💡 截图即可分享到朋友圈</span>
-          <button class="action-btn primary" onclick="shareResult()">📤 分享图片</button>
+          <span class="screenshot-hint">💡 截图保存到相册，或长按图片保存</span>
         </div>
       </div>
     </div>
@@ -1188,33 +1191,9 @@ h1 {
 
         <!-- 操作按钮 -->
         <div class="result-actions">
-          <span class="screenshot-hint">💡 截图即可分享到朋友圈</span>
-          <button class="action-btn" onclick="resetCombo()">🔄 再摇一次</button>
-          <button class="action-btn primary" onclick="shareComboResult()">📤 分享图片</button>
+          <span class="screenshot-hint">💡 截图保存到相册，或长按图片保存</span>
+          <button class="action-btn primary" onclick="resetCombo()">🔄 再摇一次</button>
         </div>
-      </div>
-    </div>
-  </div>
-</div>
-
-<!-- Share overlay -->
-<div class="share-overlay" id="shareOverlay">
-  <div class="share-modal" id="shareModal">
-    <button class="share-close" onclick="hideShare()">✕</button>
-    <div class="share-card" id="shareCard">
-      <div class="share-date" id="shareDate"></div>
-      <span class="share-big-emoji" id="shareBigEmoji">😎</span>
-      <div class="share-big-word" id="shareBigWord">小爷来了</div>
-      <div class="share-theme-name" id="shareThemeName">今日状态骰</div>
-    </div>
-    <div class="share-desc-area" id="shareDescArea">今天有气势，冲！适合主动出击、表达自我。</div>
-    <div class="share-footer">
-      <span class="share-brand">🎲 情绪骰子</span>
-      <div class="share-qrcode" id="shareQRCode"></div>
-      <div class="share-footer-btns">
-        <button class="share-footer-btn" onclick="copyShareImage()">📋 复制图片</button>
-        <button class="share-footer-btn" onclick="copyShareText()">📋 复制文字</button>
-        <button class="share-footer-btn primary" onclick="downloadShare()">⬇ 保存图片</button>
       </div>
     </div>
   </div>
