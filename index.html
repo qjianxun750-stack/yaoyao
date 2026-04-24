@@ -724,6 +724,37 @@ h1 {
   perspective: 500px;
 }
 
+/* 一卦模式骰子的面 - translateZ必须是骰子大小的一半 */
+.combo-dice-scene .face {
+  width: 80px;
+  height: 80px;
+  position: absolute;
+  background: var(--tc);
+  background-opacity: 0.22;
+  border: 2px solid var(--tc);
+  border-radius: 12px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  box-shadow:
+    0 0 0 1px rgba(255, 255, 255, 0.1) inset,
+    0 10px 40px rgba(0, 0, 0, 0.3),
+    inset 0 0 20px rgba(255, 255, 255, 0.1);
+  backface-visibility: hidden;
+  transition: border-color 0.8s ease, box-shadow 0.8s ease;
+}
+
+.combo-dice-scene .face-face-front  { transform: rotateY(0deg)    translateZ(40px); }
+.combo-dice-scene .face-face-back   { transform: rotateY(180deg)  translateZ(40px); }
+.combo-dice-scene .face-face-left   { transform: rotateY(-90deg)  translateZ(40px); }
+.combo-dice-scene .face-face-right  { transform: rotateY(90deg)   translateZ(40px); }
+.combo-dice-scene .face-face-top    { transform: rotateX(90deg)   translateZ(40px); }
+.combo-dice-scene .face-face-bottom { transform: rotateX(-90deg)  translateZ(40px); }
+
+.combo-dice-scene .face-emoji { font-size: 24px; line-height: 1; }
+.combo-dice-scene .face-word { font-size: 11px; font-weight: 700; color: #fff; }
+
 .dice-result {
   text-align: center;
   min-height: 60px;
@@ -1776,8 +1807,10 @@ async function rollAllDice() {
 
   // 随机生成三个结果
   const results = [];
+  const faceIndices = [];
   for (let i = 0; i < 3; i++) {
     const faceIdx = Math.floor(Math.random() * 6);
+    faceIndices.push(faceIdx);
     results.push(combo.faces[i][faceIdx]);
   }
 
@@ -1789,7 +1822,7 @@ async function rollAllDice() {
 
   for (let i = 0; i < 3; i++) {
     const dice3d = document.getElementById(`dice3d${i}`);
-    const rot = faceRotations[Math.floor(Math.random() * 6)];
+    const rot = faceRotations[faceIndices[i]]; // 使用预先生成的索引
     const finalRx = rot.rx + 1080 + (i * 360); // 不同骰子转不同圈数
     const finalRy = rot.ry + 1080 + (i * 360);
 
