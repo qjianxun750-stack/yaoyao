@@ -5,9 +5,17 @@
     {
       "src": "index.html",
       "use": "@vercel/static"
+    },
+    {
+      "src": "analytics.html",
+      "use": "@vercel/static"
     }
   ],
   "routes": [
+    {
+      "src": "/analytics.html",
+      "dest": "/analytics.html"
+    },
     {
       "src": "/(.*)",
       "dest": "/index.html"
