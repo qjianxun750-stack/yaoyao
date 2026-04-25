@@ -84,22 +84,8 @@ const App = {
 
     // 渲染组合选择器
     renderComboSelector() {
-        const container = document.getElementById('comboSelector'); // index.html 中 class="combo-selector" 但没ID
-        if (!container) {
-            // 尝试通过类名查找
-            const comboSelector = document.querySelector('.combo-selector');
-            if (comboSelector) {
-                const html = COMBO_CONFIG.map((combo, index) => `
-                    <div class="combo-chip ${index === this.state.currentCombo ? 'active' : ''}"
-                            data-combo-index="${index}"
-                            onclick="App.selectCombo(${index}, this)">
-                        ${combo.name}
-                    </div>
-                `).join('');
-                comboSelector.innerHTML = html;
-            }
-            return;
-        }
+        const container = document.getElementById('comboSelector');
+        if (!container) return;
 
         const html = COMBO_CONFIG.map((combo, index) => `
             <button class="chip ${index === this.state.currentCombo ? 'active' : ''}"
@@ -220,10 +206,10 @@ const App = {
         }
 
         // 骰子点击（也可触发摇动）
-        const diceScene = document.querySelector('.dice-scene');
+        const diceScene = document.getElementById('diceScene');
         if (diceScene) {
             diceScene.addEventListener('click', () => {
-                if (!this.state.isRolling) {
+                if (!this.state.isRolling && this.state.mode === 'single') {
                     this.rollSingleDice();
                 }
             });
@@ -254,13 +240,16 @@ const App = {
         this.saveState();
 
         // 更新Tab样式
-        document.querySelectorAll('.tab').forEach(tab => {
-            tab.classList.toggle('active', tab.getAttribute('onclick') && tab.getAttribute('onclick').includes(mode));
+        document.querySelectorAll('.mode-tab').forEach(tab => {
+            tab.classList.toggle('active', tab.dataset.mode === mode);
         });
 
         // 切换面板
-        document.getElementById('single-panel').style.display = mode === 'single' ? 'block' : 'none';
-        document.getElementById('combo-panel').style.display = mode === 'combo' ? 'flex' : 'none';
+        const singlePanel = document.getElementById('singlePanel');
+        const comboPanel = document.getElementById('comboPanel');
+        
+        if (singlePanel) singlePanel.style.display = mode === 'single' ? 'block' : 'none';
+        if (comboPanel) comboPanel.style.display = mode === 'combo' ? 'block' : 'none';
 
         // 播放切换音效
         if (typeof AudioController !== 'undefined') {
