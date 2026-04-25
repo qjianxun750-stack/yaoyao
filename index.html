@@ -1637,11 +1637,18 @@ function buildChips() {
 }
 
 function selectDice(i) {
+  console.log('=== selectDice called ===');
+  console.log('Index:', i);
+  console.log('Selected theme:', DICE[i].name);
+
   curDice = i;
   const d = DICE[i];
   document.querySelectorAll('.chip').forEach((c, j) => c.classList.toggle('active', j === i));
   applyTheme(d.color);
+
+  console.log('About to call loadFaces with:', d.name);
   loadFaces(d);
+  console.log('loadFaces completed');
 
   // 隐藏结果卡片
   document.getElementById('resultCard').classList.remove('visible');
@@ -1659,15 +1666,36 @@ function selectDice(i) {
 }
 
 function loadFaces(d) {
-  console.log('Loading faces for theme:', d.name);
+  console.log('=== loadFaces called ===');
+  console.log('Theme:', d.name);
+  console.log('Faces to load:', d.faces.length);
+
   d.faces.forEach((f, i) => {
-    const faceEl = document.getElementById('f'+i);
+    const faceId = 'f' + i;
+    const faceEl = document.getElementById(faceId);
+
+    if (!faceEl) {
+      console.error('Face element not found:', faceId);
+      return;
+    }
+
     const emojiEl = faceEl.querySelector('.face-emoji');
     const wordEl = faceEl.querySelector('.face-word');
-    console.log('- f' + i + ':', emojiEl.textContent, '→', f.e, wordEl.textContent, '→', f.w);
+
+    if (!emojiEl || !wordEl) {
+      console.error('Emoji or word element not found in face:', faceId);
+      return;
+    }
+
+    console.log(`f${i}: ${emojiEl.textContent} → ${f.e}, ${wordEl.textContent} → ${f.w}`);
+
     emojiEl.textContent = f.e;
     wordEl.textContent = f.w;
+
+    // Verify the update
+    console.log(`Verification after update: f${i} = ${emojiEl.textContent} ${wordEl.textContent}`);
   });
+  console.log('=== loadFaces completed ===');
 }
 
 function loadComboFaces(combo, yaoIndex) {
