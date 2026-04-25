@@ -232,7 +232,8 @@ h1 {
 }
 
 .dice-3d.flat {
-  transform: rotateX(var(--rx, 0deg)) rotateY(var(--ry, 0deg)) !important; /* 强制覆盖初始倾斜角度，确保变正 */
+  transform: rotateX(var(--rx, 0deg)) rotateY(var(--ry, 0deg)) !important; /* 强制变平 */
+  transition: transform 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275); /* 添加一点回弹质感 */
 }
 
 .dice-3d.rolling {

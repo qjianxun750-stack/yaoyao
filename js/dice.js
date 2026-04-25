@@ -130,10 +130,11 @@ const DiceController = {
         // 移除状态
         dice.classList.remove('idle', 'landing', 'flat');
 
-        // 设置最终旋转角度（与 targetFaceIndex 对应）
+        // 设置最终旋转角度（增加圈数让动作更大，且必须是 360 的整数倍）
+        const extraSpins = (4 + Math.floor(Math.random() * 3)) * 360;
         const finalRotation = this.finalRotations[targetFaceIndex];
-        dice.style.setProperty('--rx', `${finalRotation.rx}deg`);
-        dice.style.setProperty('--ry', `${finalRotation.ry}deg`);
+        dice.style.setProperty('--rx', `${finalRotation.rx + extraSpins}deg`);
+        dice.style.setProperty('--ry', `${finalRotation.ry + extraSpins}deg`);
 
         // 执行rolling动画
         dice.classList.add('rolling');
@@ -221,8 +222,8 @@ const DiceController = {
                 const result = results[i];
                 const resultIndex = Math.floor(Math.random() * 6); 
                 
-                // 增加动作差异：每个骰子的旋转圈数和起始时间略有不同
-                const extraSpins = 1440 + (i * 360) + (Math.random() * 360);
+                // 增加动作差异：旋转圈数必须是 360 的整数倍，否则落地面会歪掉
+                const extraSpins = (4 + Math.floor(Math.random() * 3)) * 360; 
                 const finalRotation = {
                     rx: this.finalRotations[resultIndex].rx + extraSpins,
                     ry: this.finalRotations[resultIndex].ry + extraSpins
