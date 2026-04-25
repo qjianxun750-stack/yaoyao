@@ -107,7 +107,10 @@ const App = {
         diceContainer.classList.add('dice-scene');
 
         if (typeof DiceController !== 'undefined') {
-            DiceController.initDice(diceContainer);
+            const diceEl = DiceController.initDice(diceContainer);
+            // 初始也刷新一下文案
+            const diceConfig = DICE_CONFIG[this.state.currentDice];
+            DiceController.refreshDiceFaces(diceEl, diceConfig);
         }
     },
 
@@ -273,8 +276,14 @@ const App = {
         });
 
         // 应用主题
-        const dice = DICE_CONFIG[index];
-        this.applyTheme(dice.color);
+        const diceConfig = DICE_CONFIG[index];
+        this.applyTheme(diceConfig.color);
+
+        // 更新骰子面文案
+        const diceEl = document.querySelector('#singleDiceContainer .dice-3d');
+        if (diceEl && typeof DiceController !== 'undefined') {
+            DiceController.refreshDiceFaces(diceEl, diceConfig);
+        }
 
         // 播放切换音效
         if (typeof AudioController !== 'undefined') {

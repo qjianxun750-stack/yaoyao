@@ -74,6 +74,22 @@ const DiceController = {
         });
     },
 
+    // 仅刷新骰子面内容（用于切换主题时）
+    refreshDiceFaces(dice, diceConfig) {
+        if (!dice || !diceConfig || !diceConfig.faces) return;
+
+        const faces = dice.querySelectorAll('.dice-face');
+        faces.forEach((face, index) => {
+            // 如果配置的faces少于6个，循环使用
+            const faceData = diceConfig.faces[index % diceConfig.faces.length];
+            const emojiEl = face.querySelector('.face-emoji');
+            const wordEl = face.querySelector('.face-word');
+
+            if (emojiEl) emojiEl.textContent = faceData.emoji;
+            if (wordEl) wordEl.textContent = faceData.word;
+        });
+    },
+
     // 摇骰子（单骰模式）
     async rollSingleDice(diceConfig, callback) {
         if (this.isRolling) return;
