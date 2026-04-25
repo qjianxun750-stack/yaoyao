@@ -247,6 +247,54 @@ const DICE_CONFIG = [
                 ]
             }
         ]
+    },
+    // ========== 组合骰子：泡沫关系·关系状态感受建议 ==========
+    {
+        id: 'bubble-relationship',
+        name: '泡沫关系',
+        type: 'combo', // 标记为组合骰子
+        subDice: ['relation-state', 'my-feeling', 'what-to-do'],
+        subNames: ['关系状态', '我的感受', '该怎么办'],
+        color: '#EC4899',
+        description: '泡沫关系 · 关系状态感受建议',
+        combo: [
+            {
+                subId: 'relation-state',
+                name: '关系状态',
+                faces: [
+                    { word: '泡沫还在', emoji: '🫧', desc: '还没破，但两个人都知道' },
+                    { word: '撑着呢', emoji: '🤕', desc: '有裂缝，但默契地维持着' },
+                    { word: '凉了', emoji: '❄️', desc: '不是突然冷的，是慢慢凉的' },
+                    { word: '越来越陌生', emoji: '🌫️', desc: '在一起很久，但越来越不认识这个人' },
+                    { word: '将将就就', emoji: '😐', desc: '不好也不坏，就这么着吧' },
+                    { word: '心不在了', emoji: '💔', desc: '人还在，但心已经不在这里了' }
+                ]
+            },
+            {
+                subId: 'my-feeling',
+                name: '我的感受',
+                faces: [
+                    { word: '舍不得', emoji: '💝', desc: '知道可能该结束了，但放不下' },
+                    { word: '累了', emoji: '😴', desc: '不是身体累，是那种说不清的累' },
+                    { word: '假装没事', emoji: '🎭', desc: '心里有数，但装作什么都好' },
+                    { word: '等一个答案', emoji: '❓', desc: '有个问题一直没问出口' },
+                    { word: '不想先开口', emoji: '🤐', desc: '有话要说，但不想是自己先说' },
+                    { word: '看不清了', emoji: '🌫️', desc: '太近了，反而看不清这个人了' }
+                ]
+            },
+            {
+                subId: 'what-to-do',
+                name: '该怎么办',
+                faces: [
+                    { word: '戳破它', emoji: '💥', desc: '把那句话说出去，不管结果' },
+                    { word: '再护一会儿', emoji: '🫂', desc: '还没准备好，再撑一段时间' },
+                    { word: '离远一点', emoji: '👣', desc: '不是结束，是给彼此一点距离' },
+                    { word: '靠近一下', emoji: '🤝', desc: '主动迈一步，看对方怎么接' },
+                    { word: '等等看', emoji: '⏳', desc: '先不动，等一个信号' },
+                    { word: '算了', emoji: '🤷', desc: '不是放弃，是放下那个执念' }
+                ]
+            }
+        ]
     }
 ];
 

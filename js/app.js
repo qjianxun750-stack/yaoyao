@@ -534,6 +534,8 @@ const App = {
             desc = `三爻问心：此刻${results[0].word}，身处${results[1].word}，心里压着${results[2].word}。`;
         } else if (combo.id === 'find-direction') {
             desc = `摇个方向：${results[0].word}，但卡在${results[1].word}，建议${results[2].word}。`;
+        } else if (combo.id === 'bubble-relationship') {
+            desc = `泡沫关系：${results[0].word}，我${results[1].word}，建议${results[2].word}。`;
         }
         return { desc };
     },
