@@ -295,6 +295,54 @@ const DICE_CONFIG = [
                 ]
             }
         ]
+    },
+    // ========== 组合骰子：钱途在哪·钱途状态卡点行动 ==========
+    {
+        id: 'money-path',
+        name: '钱途在哪',
+        type: 'combo', // 标记为组合骰子
+        subDice: ['money-state', 'money-block', 'money-action'],
+        subNames: ['钱途状态', '卡在哪里', '怎么动'],
+        color: '#10B981',
+        description: '钱途在哪 · 钱途状态卡点行动',
+        combo: [
+            {
+                subId: 'money-state',
+                name: '钱途状态',
+                faces: [
+                    { word: '饼还在画', emoji: '🥧', desc: '方向有了，钱还没来' },
+                    { word: '快了快了', emoji: '⚡', desc: '自我安慰中，也可能真的快了' },
+                    { word: '原地踏步', emoji: '🏃', desc: '忙了很久，账户没什么变化' },
+                    { word: '漏水桶', emoji: '🪣', desc: '挣多少花多少，留不住' },
+                    { word: '等风来', emoji: '🌬️', desc: '机会还没到，先等着' },
+                    { word: '瞎忙一场', emoji: '🌀', desc: '方向错了，白干了' }
+                ]
+            },
+            {
+                subId: 'money-block',
+                name: '卡在哪里',
+                faces: [
+                    { word: '不敢押注', emoji: '🎰', desc: '看到机会了，但迈不出那一步' },
+                    { word: '想得多做得少', emoji: '🤔', desc: '脑子转得快，手慢' },
+                    { word: '等别人', emoji: '⏳', desc: '方案有了，在等一个人或一个时机' },
+                    { word: '舍不得投', emoji: '💰', desc: '知道要投入，但钱拿出去手抖' },
+                    { word: '找不到方向', emoji: '🧭', desc: '什么都想试，什么都没做透' },
+                    { word: '就差一口气', emoji: '💨', desc: '已经很近了，但那口气一直没来' }
+                ]
+            },
+            {
+                subId: 'money-action',
+                name: '怎么动',
+                faces: [
+                    { word: '押一个', emoji: '🎯', desc: '不要全押，但要选一个押进去' },
+                    { word: '先动起来', emoji: '🏃', desc: '别想太多，动了再说' },
+                    { word: '找个人', emoji: '👥', desc: '一个人转不动，去找那个能带你的人' },
+                    { word: '砍掉一个', emoji: '🪓', desc: '做得太散，砍掉一个专注一个' },
+                    { word: '等这个月', emoji: '📅', desc: '给自己一个deadline，这个月见分晓' },
+                    { word: '想清楚再说', emoji: '🧠', desc: '现在还没想清楚，先别动' }
+                ]
+            }
+        ]
     }
 ];
 

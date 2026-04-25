@@ -536,6 +536,8 @@ const App = {
             desc = `摇个方向：${results[0].word}，但卡在${results[1].word}，建议${results[2].word}。`;
         } else if (combo.id === 'bubble-relationship') {
             desc = `泡沫关系：${results[0].word}，我${results[1].word}，建议${results[2].word}。`;
+        } else if (combo.id === 'money-path') {
+            desc = `钱途在哪：${results[0].word}，卡在${results[1].word}，建议${results[2].word}。`;
         }
         return { desc };
     },
