@@ -439,6 +439,54 @@ const DICE_CONFIG = [
                 ]
             }
         ]
+    },
+    // ========== 组合骰子：职场破事·状态卡点行动 ==========
+    {
+        id: 'workplace-mess',
+        name: '职场破事',
+        type: 'combo', // 标记为组合骰子
+        subDice: ['work-state', 'work-block', 'work-action'],
+        subNames: ['职场状态', '卡在哪里', '怎么动'],
+        color: '#EF4444',
+        description: '职场破事 · 状态卡点行动',
+        combo: [
+            {
+                subId: 'work-state',
+                name: '职场状态',
+                faces: [
+                    { word: '忍着呢', emoji: '😤', desc: '还在忍，但快到极限了' },
+                    { word: '干不下去', emoji: '😡', desc: '真的干不下去了' },
+                    { word: '混着吧', emoji: '😐', desc: '不好也不坏，混着过日子' },
+                    { word: '憋屈死了', emoji: '😤', desc: '憋屈得很，难受' },
+                    { word: '要变天了', emoji: '⛈️', desc: '感觉要有大变化' },
+                    { word: '就这样吧', emoji: '😌', desc: '就这样了，不争了' }
+                ]
+            },
+            {
+                subId: 'work-block',
+                name: '卡在哪里',
+                faces: [
+                    { word: '走不掉', emoji: '🔒', desc: '想走，但走不了' },
+                    { word: '怕没退路', emoji: '😰', desc: '怕走了之后找不到更好的' },
+                    { word: '不甘心', emoji: '💔', desc: '不甘心就这么走了' },
+                    { word: '舍不得走', emoji: '💝', desc: '有些东西放不下' },
+                    { word: '还没想好', emoji: '🤔', desc: '还没想清楚下一步' },
+                    { word: '等个时机', emoji: '⏳', desc: '在等一个合适的时机' }
+                ]
+            },
+            {
+                subId: 'work-action',
+                name: '怎么动',
+                faces: [
+                    { word: '忍一忍', emoji: '😮‍💨', desc: '再忍忍，时机到了再动' },
+                    { word: '该走了', emoji: '🚪', desc: '是时候离开了' },
+                    { word: '先准备', emoji: '📝', desc: '悄悄准备，准备好再说' },
+                    { word: '摊牌吧', emoji: '🃏', desc: '把话说开，不憋着' },
+                    { word: '找条路', emoji: '🛤️', desc: '给自己找条出路' },
+                    { word: '就当练手', emoji: '🏋️', desc: '当练手，攒够本事再走' }
+                ]
+            }
+        ]
     }
 ];
 
