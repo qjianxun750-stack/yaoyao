@@ -79,7 +79,7 @@ const DiceController = {
         if (!dice || !diceConfig || !diceConfig.faces) return;
 
         // 重置旋转和状态，确保呈现初始 3D 视角
-        dice.classList.remove('rolling', 'landing');
+        dice.classList.remove('rolling', 'landing', 'flat');
         dice.classList.add('idle');
         dice.style.removeProperty('--rx');
         dice.style.removeProperty('--ry');
@@ -128,7 +128,7 @@ const DiceController = {
         }
 
         // 移除状态
-        dice.classList.remove('idle', 'landing');
+        dice.classList.remove('idle', 'landing', 'flat');
 
         // 设置最终旋转角度（与 targetFaceIndex 对应）
         const finalRotation = this.finalRotations[targetFaceIndex];
@@ -146,7 +146,7 @@ const DiceController = {
 
             // landing完成后（0.5秒）
             setTimeout(() => {
-                dice.classList.add('idle');
+                dice.classList.add('idle', 'flat'); // 落地后变平面
 
                 // 播放揭晓音效
                 if (typeof AudioController !== 'undefined') {
@@ -194,7 +194,11 @@ const DiceController = {
             `;
             diceScene.innerHTML = diceHTML;
             container.appendChild(diceScene);
-            diceElements.push(diceScene.querySelector('.dice-3d'));
+            const diceEl = diceScene.querySelector('.dice-3d');
+            diceElements.push(diceEl);
+
+            // 初始也给每个骰子随机填充一些面，增加立体感
+            this.refreshDiceFaces(diceEl, DICE_CONFIG[0]); // 默认用第一个主题填充
         }
         
         return diceElements;
@@ -227,7 +231,7 @@ const DiceController = {
                 this.updateDiceFaces(dice, comboConfig.yaos[i], result, resultIndex);
 
                 // 移除旧状态
-                dice.classList.remove('idle', 'landing');
+                dice.classList.remove('idle', 'landing', 'flat');
 
                 // 设置随机旋转角度和动画时长（2.5s - 3.5s 之间差异化）
                 const duration = 2500 + (i * 400) + (Math.random() * 200);
@@ -244,7 +248,7 @@ const DiceController = {
                     dice.classList.add('landing');
                     
                     setTimeout(() => {
-                        dice.classList.add('idle');
+                        dice.classList.add('idle', 'flat'); // 落地后变平面
                         resolve();
                     }, 500);
                 }, duration);

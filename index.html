@@ -227,8 +227,12 @@ h1 {
   height: 140px;
   position: relative;
   transform-style: preserve-3d;
-  transform: rotateX(-30deg) rotateY(35deg); /* 初始呈现 3D 立体感，能看到三个面 */
+  transform: rotateX(-30deg) rotateY(35deg); /* 初始呈现 3D 立体感 */
   transition: transform 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+.dice-3d.flat {
+  transform: rotateX(0deg) rotateY(0deg); /* 落地后变平面视角 */
 }
 
 .dice-3d.rolling {

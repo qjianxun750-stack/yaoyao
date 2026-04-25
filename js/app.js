@@ -123,6 +123,12 @@ const App = {
 
         if (typeof DiceController !== 'undefined') {
             this.state.comboDiceElements = DiceController.initMultiDice(comboContainer, 3);
+            
+            // 初始也给每个骰子随机填充一些面，确保 3D 立体感
+            const combo = COMBO_CONFIG[this.state.currentCombo];
+            this.state.comboDiceElements.forEach((dice, i) => {
+                DiceController.refreshDiceFaces(dice, combo.yaos[i]);
+            });
         }
     },
 
@@ -429,14 +435,10 @@ const App = {
         const combo = COMBO_CONFIG[index];
         this.applyTheme(combo.color);
 
-        // 重置三个骰子的内容为 ? 并重置状态
-        if (this.state.comboDiceElements) {
-            this.state.comboDiceElements.forEach(dice => {
-                dice.querySelectorAll('.face-word').forEach(el => el.textContent = '?');
-                dice.classList.remove('rolling', 'landing');
-                dice.classList.add('idle');
-                dice.style.removeProperty('--rx');
-                dice.style.removeProperty('--ry');
+        // 重置三个骰子的内容为各面的文字，确保 3D 立体感
+        if (this.state.comboDiceElements && typeof DiceController !== 'undefined') {
+            this.state.comboDiceElements.forEach((dice, i) => {
+                DiceController.refreshDiceFaces(dice, combo.yaos[i]);
             });
         }
 
@@ -541,12 +543,11 @@ const App = {
     resetCombo() {
         this.resetComboState();
         
-        // 重置三个骰子的内容为 ?
-        if (this.state.comboDiceElements) {
-            this.state.comboDiceElements.forEach(dice => {
-                dice.querySelectorAll('.face-word').forEach(el => el.textContent = '?');
-                dice.classList.remove('rolling', 'landing');
-                dice.classList.add('idle');
+        // 重置三个骰子的内容为各面的文字，确保 3D 立体感
+        const combo = COMBO_CONFIG[this.state.currentCombo];
+        if (this.state.comboDiceElements && typeof DiceController !== 'undefined') {
+            this.state.comboDiceElements.forEach((dice, i) => {
+                DiceController.refreshDiceFaces(dice, combo.yaos[i]);
             });
         }
 
