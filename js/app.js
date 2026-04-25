@@ -313,7 +313,7 @@ const App = {
         document.documentElement.style.setProperty('--tc-glow', color + '55');
 
         // 更新骰子面的背景色
-        const diceFaces = document.querySelectorAll('.dice-face');
+        const diceFaces = document.querySelectorAll('.face');
         diceFaces.forEach(face => {
             // 设置半透明的主题色背景
             face.style.background = `linear-gradient(145deg, ${color}38, ${color}22)`;
