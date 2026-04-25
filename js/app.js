@@ -30,6 +30,9 @@ const App = {
         // 初始化UI
         this.initUI();
 
+        // 初始化组合骰子
+        this.initComboDice();
+
         // 绑定事件
         this.bindEvents();
 
@@ -118,10 +121,8 @@ const App = {
         const comboContainer = document.getElementById('comboDiceContainer');
         if (!comboContainer) return;
 
-        comboContainer.classList.add('dice-scene');
-
         if (typeof DiceController !== 'undefined') {
-            DiceController.initDice(comboContainer);
+            this.state.comboDiceElements = DiceController.initMultiDice(comboContainer, 3);
         }
     },
 
@@ -160,23 +161,6 @@ const App = {
         this.updateYaoButton();
     },
 
-    // 更新起卦按钮
-    updateYaoButton() {
-        const combo = COMBO_CONFIG[this.state.currentCombo];
-        const button = document.getElementById('yaoButton');
-        if (!button) return;
-
-        if (this.state.currentYao >= 3) {
-            // 完卦状态
-            button.textContent = '✨ 完卦 · 生成分享';
-            button.onclick = () => this.finishCombo();
-        } else {
-            const yao = combo.yaos[this.state.currentYao];
-            button.textContent = `🎲 起${yao.name}爻`;
-            button.onclick = () => this.rollYao();
-        }
-    },
-
     // ========== 事件绑定 ==========
 
     bindEvents() {
@@ -204,6 +188,14 @@ const App = {
         if (rollButton) {
             rollButton.addEventListener('click', () => {
                 this.rollSingleDice();
+            });
+        }
+
+        // 组合模式起卦按钮
+        const yaoButton = document.getElementById('yaoButton');
+        if (yaoButton) {
+            yaoButton.addEventListener('click', () => {
+                this.rollComboDice();
             });
         }
 
@@ -432,11 +424,12 @@ const App = {
         const combo = COMBO_CONFIG[index];
         this.applyTheme(combo.color);
 
-        // 更新爻位卡片
-        this.updateYaoCards();
-
-        // 重置卦辞
-        this.updateGuaText();
+        // 重置三个骰子的内容为 ?
+        if (this.state.comboDiceElements) {
+            this.state.comboDiceElements.forEach(dice => {
+                dice.querySelectorAll('.face-word').forEach(el => el.textContent = '?');
+            });
+        }
 
         // 隐藏结果卡片
         const resultCard = document.getElementById('comboResultCard');
@@ -448,141 +441,61 @@ const App = {
         }
     },
 
-    resetComboState() {
-        this.state.currentYao = 0;
-        this.state.comboResults = [];
-    },
-
-    resetCombo() {
-        this.resetComboState();
-        this.updateYaoCards();
-        this.updateGuaText();
-        const resultCard = document.getElementById('comboResultCard');
-        if (resultCard) resultCard.classList.remove('visible');
-    },
-
-    rollYao() {
+    rollComboDice() {
         if (this.state.isRolling) return;
 
+        const combo = COMBO_CONFIG[this.state.currentCombo];
+        
+        // 随机产生三个结果
+        const results = combo.yaos.map(yao => {
+            const idx = Math.floor(Math.random() * yao.faces.length);
+            return yao.faces[idx];
+        });
+
         this.state.isRolling = true;
-        const combo = COMBO_CONFIG[this.state.currentCombo];
-        const yaoIndex = this.state.currentYao;
+        this.state.comboResults = results;
 
-        // 显示骰子场景
-        const comboDiceScene = document.querySelector('.combo-dice-scene');
-        if (comboDiceScene) {
-            comboDiceScene.style.display = 'block';
-            comboDiceScene.style.opacity = '1';
-            comboDiceScene.style.pointerEvents = 'auto';
-        }
+        // 隐藏结果卡片
+        const resultCard = document.getElementById('comboResultCard');
+        if (resultCard) resultCard.classList.remove('visible');
 
-        if (typeof DiceController !== 'undefined') {
-            DiceController.rollYao(combo, yaoIndex, (result, yaoConfig) => {
-                this.state.comboResults.push(result);
-                this.state.currentYao++;
+        if (typeof DiceController !== 'undefined' && this.state.comboDiceElements) {
+            DiceController.rollMultiDice(this.state.comboDiceElements, combo, results, () => {
                 this.state.isRolling = false;
+                this.showComboResult();
                 this.saveState();
-
-                // 更新爻位卡片
-                this.updateYaoCards();
-
-                // 更新卦辞
-                this.updateGuaText();
             });
-        } else {
-            // 降级方案：直接显示结果
-            const yao = combo.yaos[yaoIndex];
-            const randomIndex = Math.floor(Math.random() * yao.faces.length);
-            const result = yao.faces[randomIndex];
-
-            setTimeout(() => {
-                this.state.comboResults.push(result);
-                this.state.currentYao++;
-                this.state.isRolling = false;
-                this.saveState();
-
-                this.updateYaoCards();
-                this.updateGuaText();
-
-                // 隐藏骰子场景
-                if (comboDiceScene) {
-                    comboDiceScene.style.display = 'none';
-                }
-            }, 1000);
         }
     },
 
-    updateGuaText() {
-        const container = document.getElementById('guaciText');
-        if (!container) return;
-
+    showComboResult() {
         const combo = COMBO_CONFIG[this.state.currentCombo];
-        const results = this.state.comboResults;
-
-        if (results.length === 0) {
-            container.innerHTML = '点击下方按钮，逐爻揭晓，看今日之卦。';
-            return;
-        }
-
-        if (combo.id === 'today-cause') {
-            // 因态果
-            const labels = ['因', '态', '果'];
-            const lines = results.map((r, i) => `<div class="gua-line">${labels[i]}：${r.word}</div>`);
-            container.innerHTML = lines.join('');
-        } else if (combo.id === 'life-destiny') {
-            // 天人地
-            const labels = ['天', '人', '地'];
-            const lines = results.map((r, i) => `<div class="gua-line">${labels[i]}：${r.word}</div>`);
-            container.innerHTML = lines.join('');
-        }
-    },
-
-    finishCombo() {
-        const combo = COMBO_CONFIG[this.state.currentCombo];
-
-        // 播放完卦音效
-        if (typeof AudioController !== 'undefined') {
-            AudioController.playCompleteSound();
-        }
-
-        // 触发confetti效果
-        if (typeof DiceController !== 'undefined') {
-            DiceController.createConfetti(combo.color);
-        }
-
-        // 生成卦辞总结
-        const guaText = this.generateGuaSummary();
-        const comboResult = { desc: guaText };
-
-        // 显示解读卡片
-        const guaciBox = document.getElementById('guaciBox');
-        const guaciText = document.getElementById('guaciText');
-        if (guaciBox) guaciBox.style.display = 'block';
-        if (guaciText) guaciText.textContent = comboResult.desc;
-
+        const comboResult = this.generateComboResult(combo, this.state.comboResults);
+        
         // 显示结果卡片
         const resultCard = document.getElementById('comboResultCard');
         if (resultCard) {
             resultCard.classList.add('visible');
             
-            // 填充内容
+            // 填充日期
             const dateEl = document.getElementById('comboResultDate');
             if (dateEl) dateEl.textContent = new Date().toLocaleDateString('zh-CN', { year: 'numeric', month: 'long', day: 'numeric' });
 
-            const descEl = document.getElementById('comboResultDesc');
-            if (descEl) descEl.textContent = comboResult.desc;
-
-            // 填充爻位摘要
-            const yaosEl = document.getElementById('comboYaos');
-            if (yaosEl) {
-                yaosEl.innerHTML = this.state.comboResults.map((res, i) => `
-                    <div class="combo-yao">
-                        <div class="combo-yao-label">${combo.yaos[i].name}</div>
-                        <div class="combo-yao-emoji">${res.emoji}</div>
-                        <div class="combo-yao-word">${res.word}</div>
+            // 填充三个结果项
+            const groupEl = document.getElementById('comboResultGroup');
+            if (groupEl) {
+                groupEl.innerHTML = this.state.comboResults.map((res, i) => `
+                    <div class="combo-result-item">
+                        <div class="combo-result-label">${combo.yaos[i].name}</div>
+                        <div class="combo-result-emoji">${res.emoji}</div>
+                        <div class="combo-result-word">${res.word}</div>
                     </div>
                 `).join('');
             }
+
+            // 填充总评描述
+            const descEl = document.getElementById('comboResultDesc');
+            if (descEl) descEl.textContent = comboResult.desc;
 
             // 生成二维码
             const qrEl = document.getElementById('comboResultQRCode');
@@ -595,24 +508,36 @@ const App = {
                 });
             }
         }
-
-        // 延迟显示分享
-        setTimeout(() => {
-            this.generateComboShare();
-        }, 1500);
     },
 
-    generateGuaSummary() {
-        const combo = COMBO_CONFIG[this.state.currentCombo];
-        const results = this.state.comboResults;
-
+    generateComboResult(combo, results) {
+        let desc = '';
         if (combo.id === 'today-cause') {
-            return `今日之卦：${results[0].word}的处境，${results[1].word}的面对，最终${results[2].word}。`;
+            desc = `今日之卦：${results[0].word}的处境，${results[1].word}的面对，最终${results[2].word}。`;
         } else if (combo.id === 'life-destiny') {
-            return `人生一卦：天赐${results[0].word}，人谋${results[1].word}，地利${results[2].word}。`;
+            desc = `人生一卦：天赐${results[0].word}，人谋${results[1].word}，地利${results[2].word}。`;
+        }
+        return { desc };
+    },
+
+    resetComboState() {
+        this.state.comboResults = [];
+    },
+
+    resetCombo() {
+        this.resetComboState();
+        
+        // 重置三个骰子的内容为 ?
+        if (this.state.comboDiceElements) {
+            this.state.comboDiceElements.forEach(dice => {
+                dice.querySelectorAll('.face-word').forEach(el => el.textContent = '?');
+                dice.classList.remove('rolling', 'landing');
+                dice.classList.add('idle');
+            });
         }
 
-        return '';
+        const resultCard = document.getElementById('comboResultCard');
+        if (resultCard) resultCard.classList.remove('visible');
     },
 
     // ========== 分享功能 ==========
@@ -625,32 +550,12 @@ const App = {
             
             const result = this.state.mode === 'single' ?
                 this.state.lastResult :
-                { word: '今日之卦', emoji: '☯️', desc: this.generateGuaSummary() };
+                { word: '今日之卦', emoji: '☯️', desc: this.generateComboResult(config, this.state.comboResults).desc };
 
             const extra = this.state.mode === 'combo' ? 
                 { yaosResults: this.state.comboResults } : {};
 
             ShareController.show(config, result, extra);
-        }
-    },
-
-    generateComboShare() {
-        const combo = COMBO_CONFIG[this.state.currentCombo];
-        const guaText = this.generateGuaSummary();
-
-        if (typeof ShareController !== 'undefined') {
-            const imageData = ShareController.generateComboShare(
-                combo.name,
-                this.state.comboResults,
-                guaText,
-                combo.color
-            );
-            ShareController.showShareModal(imageData);
-        }
-
-        // 记录分享统计
-        if (typeof GlobalStatsController !== 'undefined') {
-            GlobalStatsController.recordShare('image', combo.name, null);
         }
     },
 

@@ -165,71 +165,83 @@ const DiceController = {
 
     // ========== 一卦模式骰子 ==========
 
-    // 起一爻（组合模式）
-    async rollYao(comboConfig, yaoIndex, callback) {
+    // 初始化多个骰子（用于一卦模式）
+    initMultiDice(container, count = 3) {
+        container.innerHTML = '';
+        const diceElements = [];
+        
+        for (let i = 0; i < count; i++) {
+            const diceScene = document.createElement('div');
+            diceScene.className = 'dice-scene';
+            diceScene.id = `diceScene-${i}`;
+            
+            const diceHTML = `
+                <div class="dice-glow"></div>
+                <div class="dice-3d idle">
+                    <div class="face face-front" data-face="0"><span class="face-emoji">🎲</span><span class="face-word">?</span></div>
+                    <div class="face face-back" data-face="1"><span class="face-emoji">🎲</span><span class="face-word">?</span></div>
+                    <div class="face face-left" data-face="2"><span class="face-emoji">🎲</span><span class="face-word">?</span></div>
+                    <div class="face face-right" data-face="3"><span class="face-emoji">🎲</span><span class="face-word">?</span></div>
+                    <div class="face face-top" data-face="4"><span class="face-emoji">🎲</span><span class="face-word">?</span></div>
+                    <div class="face face-bottom" data-face="5"><span class="face-emoji">🎲</span><span class="face-word">?</span></div>
+                </div>
+            `;
+            diceScene.innerHTML = diceHTML;
+            container.appendChild(diceScene);
+            diceElements.push(diceScene.querySelector('.dice-3d'));
+        }
+        
+        return diceElements;
+    },
+
+    // 同时摇多个骰子
+    async rollMultiDice(diceElements, comboConfig, results, callback) {
         if (this.isRolling) return;
-
         this.isRolling = true;
-
-        const diceScene = document.getElementById('comboDiceContainer');
-        if (!diceScene) {
-            this.isRolling = false;
-            return;
-        }
-        const dice = diceScene.querySelector('.dice-3d');
-        if (!dice) {
-            this.isRolling = false;
-            return;
-        }
-
-        const yaoConfig = comboConfig.yaos[yaoIndex];
-
-        // 随机选择结果
-        const resultIndex = Math.floor(Math.random() * yaoConfig.faces.length);
-        const result = yaoConfig.faces[resultIndex];
-
-        // 确定展示的面
-        const targetFaceIndex = resultIndex % 6;
-
-        // 更新骰子内容
-        this.updateDiceFaces(dice, yaoConfig, result, targetFaceIndex);
 
         // 播放摇骰音效
         if (typeof AudioController !== 'undefined') {
             AudioController.playRollSound();
         }
 
-        // 移除状态
-        dice.classList.remove('idle', 'landing');
+        diceElements.forEach((dice, i) => {
+            const result = results[i];
+            const resultIndex = Math.floor(Math.random() * 6); // 物理位置随机
+            
+            // 更新该骰子的内容
+            this.updateDiceFaces(dice, comboConfig.yaos[i], result, resultIndex);
 
-        // 设置最终旋转角度
-        const finalRotation = this.finalRotations[targetFaceIndex];
-        dice.style.setProperty('--rx', `${finalRotation.rx}deg`);
-        dice.style.setProperty('--ry', `${finalRotation.ry}deg`);
+            // 移除状态
+            dice.classList.remove('idle', 'landing');
 
-        // 执行rolling动画
-        dice.classList.add('rolling');
+            // 设置旋转
+            const finalRotation = this.finalRotations[resultIndex];
+            dice.style.setProperty('--rx', `${finalRotation.rx}deg`);
+            dice.style.setProperty('--ry', `${finalRotation.ry}deg`);
 
+            // 启动动画
+            dice.classList.add('rolling');
+        });
+
+        // 等待所有骰子动画完成
         setTimeout(() => {
-            dice.classList.remove('rolling');
-            dice.classList.add('landing');
-
-            setTimeout(() => {
-                dice.classList.add('idle');
-
-                // 播放揭晓音效
-                if (typeof AudioController !== 'undefined') {
-                    AudioController.playRevealSound(yaoIndex);
-                }
-
-                // 触发粒子效果
-                this.createParticles(diceScene, comboConfig.color);
-
-                this.isRolling = false;
-
-                // 回调
-                if (callback) callback(result);
-            }, 500);
+            diceElements.forEach((dice, i) => {
+                dice.classList.remove('rolling');
+                dice.classList.add('landing');
+                
+                setTimeout(() => {
+                    dice.classList.add('idle');
+                    
+                    // 最后一个骰子落地后触发后续
+                    if (i === diceElements.length - 1) {
+                        if (typeof AudioController !== 'undefined') {
+                            AudioController.playRevealSound(0);
+                        }
+                        this.isRolling = false;
+                        if (callback) callback();
+                    }
+                }, 500);
+            });
         }, 3000);
     },
 
