@@ -1,152 +1,953 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>🎲 情绪骰子 - 8款主题骰子，摇出今日状态</title>
-    
-    <!-- CSS 引用 -->
-    <link rel="stylesheet" href="css/variables.css">
-    <link rel="stylesheet" href="css/base.css">
-    <link rel="stylesheet" href="css/dice.css">
-    <link rel="stylesheet" href="css/animations.css">
-    <link rel="stylesheet" href="css/share.css">
-    <link rel="stylesheet" href="css/layout.css">
-    
-    <!-- 第三方库 -->
-    <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>🎲 情绪骰子 - 8款主题骰子，摇出今日状态 | 祈愿·玄学·关系·人生</title>
+<meta name="description" content="情绪骰子 - 8款主题骰子，摇出今日状态">
+
+<!-- Open Graph / Facebook / 微信分享 -->
+<meta property="og:type" content="website">
+<meta property="og:title" content="今日签 · 摇一摇看今天的状态">
+<meta property="og:description" content="赛博求签，随机不随缘。8款主题骰子：状态、发疯、祈愿、玄学、关系、人生、妈妈、搭子">
+<meta property="og:image" content="https://yaoyao.vercel.app/assets/share-cover.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:url" content="https://yaoyao.vercel.app">
+
+<!-- Umami Analytics -->
+<script async defer data-website-id="34118be7-d644-4577-a83d-3d8d001c2618" src="https://cloud.umami.is/script.js"></script>
+
+<!-- html2canvas for share image generation -->
+<script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
+
+<!-- QRCode.js for generating QR codes -->
+<script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;700&family=ZCOOL+XiaoWei&display=swap');
+
+:root {
+  --bg: #0C0A18;
+  --bg2: #13102A;
+  --border: rgba(255,255,255,0.08);
+  --text: #fff;
+  --text2: rgba(255,255,255,0.45);
+  --text3: rgba(255,255,255,0.2);
+  --tc: #FF6B6B;
+  --tc-glow: rgba(255,107,107,0.35);
+  --radius: 20px;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: -apple-system, 'PingFang SC', 'Hiragino Sans GB', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+/* Noise overlay */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+  pointer-events: none;
+  z-index: 0;
+  opacity: 0.6;
+}
+
+/* Ambient glow background */
+.ambient {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  transition: background 0.8s ease;
+}
+
+.container {
+  position: relative;
+  z-index: 1;
+  max-width: 480px;
+  margin: 0 auto;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  padding: 0 0 40px;
+}
+
+/* ── Header ── */
+header {
+  padding: 52px 24px 16px;
+  text-align: center;
+}
+.logo {
+  font-size: 13px;
+  letter-spacing: 0.15em;
+  color: var(--text3);
+  margin-bottom: 6px;
+  text-transform: uppercase;
+}
+h1 {
+  font-family: 'ZCOOL XiaoWei', 'Noto Serif SC', serif;
+  font-size: 28px;
+  font-weight: 400;
+  letter-spacing: 0.05em;
+  color: var(--text);
+}
+.tagline {
+  font-size: 12px;
+  color: var(--text3);
+  margin-top: 4px;
+  letter-spacing: 0.06em;
+}
+
+/* ── Tab switch ── */
+.tabs {
+  display: flex;
+  margin: 20px 24px 0;
+  background: rgba(255,255,255,0.05);
+  border-radius: 14px;
+  padding: 4px;
+  gap: 3px;
+}
+.tab {
+  flex: 1;
+  padding: 8px 0;
+  text-align: center;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text2);
+  border-radius: 10px;
+  cursor: pointer;
+  transition: all 0.25s;
+  border: none;
+  background: transparent;
+}
+.tab.active {
+  background: rgba(255,255,255,0.1);
+  color: var(--text);
+}
+
+/* ── Theme chips ── */
+.themes-scroll {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 8px;
+  padding: 16px 24px 0;
+  max-width: 600px;
+  margin-left: auto;
+  margin-right: auto;
+}
+.themes-scroll::-webkit-scrollbar { display: none; }
+.chip {
+  flex: 0 0 calc(25% - 6px);
+  max-width: calc(25% - 6px);
+  font-size: 12px;
+  font-weight: 500;
+  padding: 8px 12px;
+  border-radius: 20px;
+  border: 1px solid var(--border);
+  color: var(--text2);
+  cursor: pointer;
+  transition: all 0.2s;
+  text-align: center;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  background: transparent;
+}
+.chip:hover {
+  border-color: var(--tc);
+  color: var(--text);
+  background: rgba(255, 255, 255, 0.05);
+}
+.chip.active {
+  color: var(--bg);
+  border-color: var(--tc);
+  background: var(--tc);
+  font-weight: 600;
+}
+
+/* 响应式 */
+@media (max-width: 480px) {
+  .themes-scroll {
+    max-width: 100%;
+    gap: 6px;
+  }
+  .chip {
+    flex: 0 0 calc(25% - 5px);
+    max-width: calc(25% - 5px);
+    padding: 7px 10px;
+    font-size: 11px;
+  }
+}
+
+/* ── Dice stage ── */
+.dice-stage {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 32px 24px 20px;
+  gap: 16px;
+}
+
+/* 3D dice */
+.dice-scene {
+  perspective: 600px;
+  width: 140px;
+  height: 140px;
+  cursor: pointer;
+  position: relative;
+}
+
+.dice-glow {
+  position: absolute;
+  inset: -24px;
+  border-radius: 50%;
+  background: radial-gradient(circle, var(--tc-glow) 0%, transparent 70%);
+  animation: pulse-glow 3s ease-in-out infinite;
+  pointer-events: none;
+  transition: background 0.6s;
+}
+
+@keyframes pulse-glow {
+  0%, 100% { transform: scale(1); opacity: 0.7; }
+  50% { transform: scale(1.15); opacity: 1; }
+}
+
+.dice-3d {
+  width: 140px;
+  height: 140px;
+  position: relative;
+  transform-style: preserve-3d;
+  transform: rotateX(-15deg) rotateY(25deg);
+  transition: transform 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+.dice-3d.rolling {
+  animation: dice-roll 1.8s cubic-bezier(0.25, 0.1, 0.25, 1) forwards;
+}
+
+.dice-3d.landing {
+  animation: dice-land 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+}
+
+@keyframes dice-roll {
+  0%   { transform: rotateX(-15deg) rotateY(25deg) translateY(0px); }
+  10%  { transform: rotateX(120deg) rotateY(80deg) translateY(-30px); }
+  30%  { transform: rotateX(360deg) rotateY(200deg) translateY(-20px); }
+  50%  { transform: rotateX(540deg) rotateY(380deg) translateY(-30px); }
+  70%  { transform: rotateX(680deg) rotateY(520deg) translateY(-15px); }
+  85%  { transform: rotateX(760deg) rotateY(600deg) translateY(-5px); }
+  100% { transform: rotateX(var(--rx, 720deg)) rotateY(var(--ry, 720deg)) translateY(0px); }
+}
+
+@keyframes dice-land {
+  0%   { transform: rotateX(var(--rx, 0deg)) rotateY(var(--ry, 0deg)) scale(1.06); }
+  40%  { transform: rotateX(var(--rx, 0deg)) rotateY(var(--ry, 0deg)) scale(0.96); }
+  70%  { transform: rotateX(var(--rx, 0deg)) rotateY(var(--ry, 0deg)) scale(1.02); }
+  100% { transform: rotateX(var(--rx, 0deg)) rotateY(var(--ry, 0deg)) scale(1); }
+}
+
+.face {
+  position: absolute;
+  width: 140px;
+  height: 140px;
+  border-radius: 22px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  border: 1px solid rgba(255,255,255,0.15);
+  backface-visibility: hidden;
+  transition: background 0.5s;
+}
+.face-front  { transform: rotateY(0deg)    translateZ(70px); }
+.face-back   { transform: rotateY(180deg)  translateZ(70px); }
+.face-left   { transform: rotateY(-90deg)  translateZ(70px); }
+.face-right  { transform: rotateY(90deg)   translateZ(70px); }
+.face-top    { transform: rotateX(-90deg)  translateZ(70px); }
+.face-bottom { transform: rotateX(90deg)   translateZ(70px); }
+
+.face-emoji { font-size: 36px; line-height: 1; }
+.face-word  { font-size: 14px; font-weight: 700; color: #fff; letter-spacing: -0.3px; text-align: center; padding: 0 8px; }
+
+/* ── Hint text ── */
+.hint {
+  font-size: 12px;
+  color: var(--text3);
+  letter-spacing: 0.06em;
+  height: 18px;
+  transition: opacity 0.3s;
+}
+
+/* ── Roll button ── */
+.roll-btn {
+  width: 100%;
+  padding: 16px;
+  border-radius: 16px;
+  border: none;
+  font-size: 16px;
+  font-weight: 700;
+  cursor: pointer;
+  color: #fff;
+  letter-spacing: 0.05em;
+  background: var(--tc);
+  position: relative;
+  overflow: hidden;
+  transition: all 0.2s;
+  box-shadow: 0 8px 32px var(--tc-glow);
+}
+.roll-btn:active { transform: scale(0.97); }
+.roll-btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+.roll-btn::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, rgba(255,255,255,0.15) 0%, transparent 60%);
+  pointer-events: none;
+}
+
+/* ── Result card - 截图友好设计 ── */
+.result-card {
+  margin: 20px 16px;
+  border-radius: 24px;
+  border: 2px solid rgba(255,255,255,0.15);
+  padding: 24px 20px 20px;
+  /* 主题色深色渐变背景 */
+  background: linear-gradient(180deg,
+    rgba(255,255,255,0.12) 0%,
+    rgba(255,255,255,0.06) 50%,
+    rgba(0,0,0,0.1) 100%);
+  opacity: 0;
+  transform: translateY(16px);
+  transition: all 0.5s cubic-bezier(0.34, 1.3, 0.64, 1);
+  pointer-events: none;
+  /* 截图友好：固定宽度，占满屏幕 */
+  width: calc(100% - 32px);
+  box-sizing: border-box;
+  box-shadow:
+    0 20px 60px rgba(0,0,0,0.3),
+    inset 0 1px 0 rgba(255,255,255,0.1);
+}
+.result-card.visible {
+  opacity: 1;
+  transform: translateY(0);
+  pointer-events: auto;
+}
+
+/* 顶部：游戏名+日期 */
+.result-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid rgba(255,255,255,0.1);
+}
+.result-game-name {
+  font-size: 13px;
+  color: var(--text3);
+  letter-spacing: 0.05em;
+}
+.result-date {
+  font-size: 11px;
+  color: var(--text3);
+  opacity: 0.7;
+}
+
+/* 中间：超大emoji+结果词 */
+.result-main {
+  text-align: center;
+  padding: 24px 0;
+  margin-bottom: 20px;
+}
+.result-emoji {
+  font-size: 72px;
+  line-height: 1;
+  margin-bottom: 16px;
+  filter: drop-shadow(0 4px 12px rgba(0,0,0,0.3));
+}
+.result-word {
+  font-family: 'ZCOOL XiaoWei', 'Noto Serif SC', serif;
+  font-size: 36px;
+  font-weight: 700;
+  color: var(--text);
+  letter-spacing: 0.08em;
+  text-shadow: 0 2px 8px rgba(0,0,0,0.2);
+}
+
+/* 下面：卦语 */
+.result-desc {
+  font-size: 15px;
+  color: var(--text2);
+  line-height: 1.8;
+  text-align: center;
+  padding: 16px;
+  margin-bottom: 20px;
+  background: rgba(0,0,0,0.2);
+  border-radius: 12px;
+  border: 1px solid rgba(255,255,255,0.05);
+}
+
+/* 底部：回流钩子 */
+.result-footer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  padding: 16px 0 0;
+  margin-bottom: 20px;
+  border-top: 1px solid rgba(255,255,255,0.1);
+}
+.result-cta {
+  font-size: 13px;
+  color: var(--text);
+  font-weight: 500;
+}
+.result-domain {
+  font-size: 11px;
+  color: var(--text3);
+  letter-spacing: 0.05em;
+  opacity: 0.6;
+}
+
+/* 二维码容器 */
+.result-qrcode {
+  margin-top: 8px;
+  padding: 8px;
+  background: rgba(255, 255, 255, 0.95);
+  border-radius: 8px;
+  display: inline-block;
+}
+.result-qrcode canvas,
+.result-qrcode img {
+  display: block;
+  width: 80px !important;
+  height: 80px !important;
+  border-radius: 4px;
+}
+
+/* 截图提示 */
+.screenshot-hint {
+  display: block;
+  width: 100%;
+  text-align: center;
+  font-size: 12px;
+  color: var(--text2);
+  margin-bottom: 12px;
+  opacity: 0.8;
+  padding: 8px;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 8px;
+  border: 1px dashed rgba(255, 255, 255, 0.2);
+}
+
+/* 操作按钮 */
+.result-actions {
+  display: flex;
+  gap: 8px;
+}
+.action-btn {
+  flex: 1;
+  padding: 12px 0;
+  border-radius: 12px;
+  border: 1px solid var(--border);
+  background: rgba(255,255,255,0.05);
+  color: var(--text2);
+  font-size: 12px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.action-btn:hover {
+  background: rgba(255,255,255,0.1);
+  color: var(--text);
+  border-color: rgba(255,255,255,0.2);
+}
+.action-btn.primary {
+  background: var(--tc);
+  border-color: var(--tc);
+  color: var(--bg);
+  font-weight: 600;
+  box-shadow: 0 4px 15px var(--tc-glow);
+}
+.action-btn.primary:hover {
+  background: var(--tc);
+  opacity: 0.9;
+  transform: translateY(-1px);
+  box-shadow: 0 6px 20px var(--tc-glow);
+}
+
+/* 一卦模式特有样式 */
+.combo-yaos {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin: 20px 0;
+  padding: 16px;
+  background: rgba(0,0,0,0.2);
+  border-radius: 16px;
+  border: 1px solid rgba(255,255,255,0.05);
+}
+.combo-yao {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 8px 0;
+}
+.combo-yao-emoji {
+  font-size: 32px;
+  width: 48px;
+  text-align: center;
+}
+.combo-yao-label {
+  font-size: 12px;
+  color: var(--text3);
+  width: 32px;
+  flex-shrink: 0;
+}
+.combo-yao-word {
+  font-family: 'ZCOOL XiaoWei', 'Noto Serif SC', serif;
+  font-size: 18px;
+  color: var(--text);
+  flex: 1;
+  text-align: center;
+}
+
+/* ── Particles ── */
+#particles {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 999;
+}
+.particle {
+  position: absolute;
+  border-radius: 50%;
+  animation: particle-fly 0.9s ease-out forwards;
+}
+@keyframes particle-fly {
+  0%   { opacity: 1; transform: translate(0,0) scale(1); }
+  100% { opacity: 0; transform: translate(var(--tx), var(--ty)) scale(0); }
+}
+
+/* ── Share overlay ── */
+.share-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.85);
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s;
+  backdrop-filter: blur(8px);
+}
+.share-overlay.visible {
+  opacity: 1;
+  pointer-events: auto;
+}
+.share-modal {
+  width: 320px;
+  background: var(--bg2);
+  border-radius: 28px;
+  border: 1px solid rgba(255,255,255,0.1);
+  overflow: hidden;
+  transform: scale(0.9);
+  transition: transform 0.35s cubic-bezier(0.34, 1.4, 0.64, 1);
+}
+.share-overlay.visible .share-modal {
+  transform: scale(1);
+}
+
+/* Share card image area */
+.share-card {
+  padding: 32px 28px 28px;
+  background: var(--tc);
+  position: relative;
+  overflow: hidden;
+  text-align: center;
+}
+.share-card::before {
+  content: '';
+  position: absolute;
+  top: -40px; right: -40px;
+  width: 160px; height: 160px;
+  background: rgba(255,255,255,0.12);
+  border-radius: 50%;
+}
+.share-card::after {
+  content: '';
+  position: absolute;
+  bottom: -20px; left: -20px;
+  width: 100px; height: 100px;
+  background: rgba(0,0,0,0.1);
+  border-radius: 50%;
+}
+.share-date {
+  font-size: 11px;
+  color: rgba(255,255,255,0.6);
+  letter-spacing: 0.08em;
+  margin-bottom: 20px;
+  position: relative; z-index: 1;
+}
+.share-big-emoji {
+  font-size: 56px;
+  display: block;
+  margin-bottom: 12px;
+  position: relative; z-index: 1;
+}
+.share-big-word {
+  font-family: 'ZCOOL XiaoWei', 'Noto Serif SC', serif;
+  font-size: 32px;
+  color: #fff;
+  margin-bottom: 8px;
+  position: relative; z-index: 1;
+}
+.share-theme-name {
+  font-size: 12px;
+  color: rgba(255,255,255,0.65);
+  position: relative; z-index: 1;
+}
+.share-desc-area {
+  padding: 16px 20px;
+  font-size: 12px;
+  color: rgba(255,255,255,0.5);
+  line-height: 1.6;
+  border-bottom: 1px solid rgba(255,255,255,0.06);
+}
+.share-footer {
+  padding: 12px 20px 16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.share-brand {
+  font-size: 11px;
+  color: var(--text3);
+  letter-spacing: 0.05em;
+}
+.share-qrcode {
+  width: 60px;
+  height: 60px;
+  border-radius: 8px;
+  overflow: hidden;
+  background: white;
+  padding: 4px;
+  box-sizing: border-box;
+}
+.share-qrcode canvas,
+.share-qrcode img {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+.share-footer-btns {
+  display: flex;
+  gap: 8px;
+}
+.share-footer-btn {
+  font-size: 12px;
+  padding: 8px 16px;
+  border-radius: 10px;
+  border: 1px solid var(--border);
+  background: transparent;
+  color: var(--text2);
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.share-footer-btn.primary {
+  background: var(--tc);
+  border-color: var(--tc);
+  color: #fff;
+  font-weight: 600;
+}
+.share-close {
+  position: absolute;
+  top: 16px; right: 16px;
+  width: 32px; height: 32px;
+  border-radius: 50%;
+  border: 1px solid var(--border);
+  background: rgba(255,255,255,0.06);
+  color: var(--text2);
+  font-size: 16px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10;
+}
+
+/* ── Sound toggle ── */
+.sound-toggle {
+  position: fixed;
+  top: 20px; right: 20px;
+  z-index: 100;
+  width: 36px; height: 36px;
+  border-radius: 50%;
+  border: 1px solid var(--border);
+  background: rgba(255,255,255,0.06);
+  color: var(--text2);
+  font-size: 16px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
+  backdrop-filter: blur(8px);
+}
+.sound-toggle:hover { background: rgba(255,255,255,0.1); }
+
+/* ── Combo mode ── */
+.combo-selector {
+  padding: 0 24px 16px;
+  display: flex;
+  gap: 8px;
+}
+
+/* ── Combo Mode Styles ── */
+.yao-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 0 24px 16px;
+}
+.yao-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  opacity: 0.35;
+  transition: opacity 0.4s;
+}
+.yao-row.active { opacity: 1; }
+.yao-row.revealed { opacity: 1; }
+
+.yao-badge {
+  width: 28px; height: 28px;
+  border-radius: 9px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  font-weight: 800;
+  color: #fff;
+  flex-shrink: 0;
+  background: var(--tc);
+  opacity: 0.6;
+  transition: opacity 0.3s;
+}
+.yao-row.revealed .yao-badge { opacity: 1; }
+
+.yao-box {
+  flex: 1;
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 14px;
+  padding: 10px 14px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  transition: border-color 0.4s;
+  min-height: 52px;
+}
+.yao-row.revealed .yao-box {
+  border-color: rgba(255,255,255,0.15);
+}
+.yao-emoji { font-size: 20px; }
+.yao-info .yao-name {
+  font-size: 10px;
+  color: var(--text3);
+  margin-bottom: 2px;
+}
+.yao-info .yao-word {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--text);
+}
+.yao-placeholder {
+  font-size: 12px;
+  color: var(--text3);
+}
+
+.guaci-box {
+  margin: 0 24px 16px;
+  padding: 14px 16px;
+  border-radius: 14px;
+  background: rgba(255,255,255,0.03);
+  border: 1px solid rgba(255,255,255,0.06);
+  font-size: 12px;
+  color: var(--text2);
+  line-height: 1.7;
+  min-height: 54px;
+  transition: all 0.4s;
+}
+.guaci-label {
+  font-size: 10px;
+  color: var(--text3);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  margin-bottom: 4px;
+}
+
+/* ── Result card for combo mode ── */
+.combo-result-card {
+  display: none;
+}
+</style>
 </head>
 <body>
-    <!-- 环境光背景 -->
-    <div class="ambient-light" id="ambientLight"></div>
-    
-    <!-- 粒子层 -->
-    <div id="particles"></div>
-    
-    <!-- 音效控制 -->
-    <button class="sound-toggle" id="soundToggle" title="音效开关">🔊</button>
-    
-    <div class="container">
-        <!-- 顶部 Header -->
-        <div class="header">
-            <div class="logo">EMOTION DICE</div>
-            <h1>今日之卦</h1>
-            <p class="tagline">赛博求签的仪式感 · 摇出今日状态</p>
+
+<div class="ambient" id="ambient"></div>
+<div id="particles"></div>
+
+<button class="sound-toggle" id="soundToggle" title="音效开关">🔊</button>
+
+<div class="container">
+  <header>
+    <div class="logo">Emotion Dice · 情绪骰子</div>
+    <h1>今日之卦</h1>
+    <div class="tagline">摇一摇，看今天是什么状态</div>
+  </header>
+
+  <!-- Tabs -->
+  <div class="tabs">
+    <button class="tab active" data-mode="single">🎯 单骰模式</button>
+    <button class="tab" data-mode="combo">☯️ 一卦模式</button>
+  </div>
+
+  <!-- Single mode content -->
+  <div id="single-panel" class="panel active">
+    <!-- Theme chips -->
+    <div class="themes-scroll" id="themeChips">
+      <!-- Generated by app.js -->
+    </div>
+
+    <!-- Dice stage -->
+    <div class="dice-stage">
+      <div id="diceScene">
+        <!-- Generated by dice.js -->
+      </div>
+      <div class="hint" id="hint">点击骰子 · 或点击下方按钮</div>
+    </div>
+
+    <div style="padding: 0 24px; display: flex; flex-direction: column; gap: 12px;">
+      <button class="roll-btn" id="rollBtn">摇一摇 🎲</button>
+
+      <!-- Result card -->
+      <div class="result-card" id="resultCard">
+        <div class="result-header">
+          <span class="result-game-name">🎲 情绪骰子</span>
+          <span class="result-date" id="resultDate"></span>
         </div>
-
-        <!-- 模式切换 -->
-        <div class="mode-tabs">
-            <button class="mode-tab active" data-mode="single">单骰模式</button>
-            <button class="mode-tab" data-mode="combo">一卦模式</button>
+        <div class="result-main">
+          <div class="result-emoji" id="resultEmoji"></div>
+          <div class="result-word" id="resultWord"></div>
         </div>
-
-        <!-- ========== 单骰模式面板 ========== -->
-        <div class="panel active" id="singlePanel">
-            <!-- 主题选择器 -->
-            <div class="theme-selector" id="themeChips">
-                <!-- 由 app.js 动态渲染 -->
-            </div>
-
-            <!-- 骰子场景 -->
-            <div id="diceScene">
-                <!-- 由 DiceController.initDice 注入内容 -->
-            </div>
-
-            <!-- 提示文字 -->
-            <p class="hint-text" style="text-align: center; color: var(--text3); font-size: 12px; margin-top: -20px; margin-bottom: 20px;">点击骰子或下方按钮</p>
-
-            <!-- 摇动按钮 -->
-            <div style="padding: 0 20px;">
-                <button class="btn btn-primary" id="rollButton" style="width: 100%; height: 54px; font-size: 18px; font-weight: 600;">摇一摇 🎲</button>
-            </div>
-
-            <!-- 结果卡片 -->
-            <div class="result-card" id="resultCard" style="display: none;">
-                <div class="result-header">
-                    <span class="game-name">🎲 情绪骰子</span>
-                    <span class="result-date" id="resultDate"></span>
-                </div>
-                <div class="result-main">
-                    <div class="result-emoji" id="resultEmoji"></div>
-                    <div class="result-word" id="resultWord"></div>
-                </div>
-                <div class="result-desc" id="resultDesc"></div>
-                <div class="result-footer">
-                    <div class="footer-info">
-                        <span class="cta">摇一摇看今日状态</span>
-                        <span class="url">yaoyao.vercel.app</span>
-                    </div>
-                    <div id="resultQRCode" class="qrcode"></div>
-                </div>
-                <div class="result-actions">
-                    <button class="btn btn-primary" style="width: 100%;" onclick="App.shareResult()">分享今日签</button>
-                </div>
-            </div>
+        <div class="result-desc" id="resultDesc"></div>
+        <div class="result-footer">
+          <span class="result-cta">你的今日签是什么？</span>
+          <span class="result-domain">🔗 yaoyao.vercel.app</span>
+          <div class="result-qrcode" id="resultQRCode"></div>
         </div>
+        <div class="result-actions">
+          <span class="screenshot-hint">💡 截图保存到相册，或长按图片保存</span>
+        </div>
+      </div>
+    </div>
+  </div>
 
-        <!-- ========== 组合模式面板 ========== -->
-        <div class="panel" id="comboPanel">
-            <!-- 组合选择器 -->
-            <div class="theme-selector" id="comboSelector">
-                <!-- 由 app.js 动态渲染 -->
-            </div>
+  <!-- Combo mode content -->
+  <div id="combo-panel" class="panel">
+    <div class="combo-selector" id="comboSelector">
+      <!-- Generated by app.js -->
+    </div>
 
-            <!-- 爻位展示 -->
-            <div class="yao-cards-container" id="yaoCardsContainer">
-                <!-- 由 app.js 动态渲染 -->
-            </div>
+    <!-- Yao list -->
+    <div class="yao-list" id="yaoCardsContainer">
+      <!-- Generated by app.js -->
+    </div>
 
-            <!-- 骰子展示区域 -->
-            <div id="comboDiceContainer">
-                <!-- 由 DiceController.initDice 注入内容 -->
-            </div>
-
-            <!-- 操作区域 -->
-            <div style="padding: 0 20px; margin-top: 20px;">
-                <button class="btn btn-primary" id="yaoButton" style="width: 100%; height: 54px; font-size: 18px; font-weight: 600;">起卦 🎲</button>
-            </div>
-
-            <!-- 卦辞区域 -->
-            <div class="interpretation-card" id="comboInterpretation" style="display: none; margin: 24px 20px;">
-                <div class="card-title">卦辞解读</div>
-                <div class="card-content" id="comboInterpretationText"></div>
-            </div>
+    <!-- Dice stage for combo -->
+    <div class="dice-stage">
+        <div id="comboDiceContainer">
+            <!-- Generated by dice.js -->
         </div>
     </div>
 
-    <!-- 分享弹窗 -->
-    <div class="share-modal" id="shareModal">
-        <div class="share-modal-content">
-            <div class="share-modal-header">
-                <span class="share-modal-title">保存分享图</span>
-                <button class="share-modal-close" id="shareModalClose">×</button>
-            </div>
-            <div class="share-preview" id="sharePreview"></div>
-            <div class="share-actions">
-                <p class="share-hint" style="text-align: center; color: var(--text3); font-size: 12px; margin-bottom: 10px;">长按图片保存或发送给朋友</p>
-                <button class="btn btn-primary" style="width: 100%;" onclick="App.closeShare()">完成</button>
-            </div>
-        </div>
+    <div class="guaci-box" id="guaciBox">
+      <div class="guaci-label">卦辞</div>
+      <div id="guaciText">点击下方按钮，逐爻揭晓，看今日之卦。</div>
     </div>
 
-    <!-- 脚本引用 -->
-    <script src="js/config.js"></script>
-    <script src="js/supabase-client.js"></script>
-    <script src="js/audio.js"></script>
-    <script src="js/dice.js"></script>
-    <script src="js/share.js"></script>
-    <script src="js/analytics.js"></script>
-    <script src="js/global-stats.js"></script>
-    <script src="js/app.js"></script>
-    
-    <script>
-        // 启动应用
-        window.addEventListener('DOMContentLoaded', () => {
-            if (typeof App !== 'undefined') {
-                App.init();
-            }
-        });
-    </script>
+    <div style="padding: 0 24px; display: flex; flex-direction: column; gap: 12px;">
+      <button class="roll-btn" id="yaoButton">🎲 起卦</button>
+
+      <!-- Combo Result Card -->
+      <div class="result-card" id="comboResultCard">
+        <div class="result-header">
+          <span class="result-game-name">🎲 情绪骰子 · 一卦模式</span>
+          <span class="result-date" id="comboResultDate"></span>
+        </div>
+        <div class="combo-yaos" id="comboYaos">
+          <!-- Generated dynamically -->
+        </div>
+        <div class="result-desc" id="comboResultDesc"></div>
+        <div class="result-footer">
+          <span class="result-cta">你的今日卦是什么？</span>
+          <span class="result-domain">🔗 yaoyao.vercel.app</span>
+          <div class="result-qrcode" id="comboResultQRCode"></div>
+        </div>
+        <div class="result-actions">
+          <span class="screenshot-hint">💡 截图保存到相册，或长按图片保存</span>
+          <button class="action-btn primary" id="resetComboBtn">🔄 再摇一次</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Share Modal -->
+<div class="share-overlay" id="shareModal">
+    <div class="share-modal">
+        <button class="share-close" id="shareModalClose">×</button>
+        <div class="share-preview" id="sharePreview"></div>
+        <div class="share-footer-btns">
+            <button class="share-footer-btn primary" id="closeShareBtn">完成</button>
+        </div>
+    </div>
+</div>
+
+<!-- Toast -->
+<div class="toast" id="toast"></div>
+
+<!-- Core Scripts -->
+<script src="js/config.js"></script>
+<script src="js/supabase-client.js"></script>
+<script src="js/audio.js"></script>
+<script src="js/dice.js"></script>
+<script src="js/share.js"></script>
+<script src="js/analytics.js"></script>
+<script src="js/global-stats.js"></script>
+<script src="js/app.js"></script>
+
+<script>
+  // 初始化应用
+  window.addEventListener('DOMContentLoaded', () => {
+    if (typeof App !== 'undefined') {
+      App.init();
+    }
+  });
+</script>
 </body>
 </html>

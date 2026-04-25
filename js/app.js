@@ -64,11 +64,10 @@ const App = {
         const container = document.getElementById('themeChips');
         if (!container) return;
 
-        // 只显示单骰子（过滤掉type为combo的）
+        // 只显示单骰子
         const singleDice = DICE_CONFIG.filter(dice => dice.type !== 'combo');
 
         const html = singleDice.map((dice, index) => {
-            // 获取原始索引
             const originalIndex = DICE_CONFIG.findIndex(d => d.id === dice.id);
             return `
                 <button class="chip ${originalIndex === this.state.currentDice ? 'active' : ''}"
@@ -114,16 +113,15 @@ const App = {
         }
     },
 
-    // 初始化组合骰子区域
+    // 初始化组合骰子
     initComboDice() {
-        // 初始化爻位卡片
-        this.updateYaoCards();
+        const comboContainer = document.getElementById('comboDiceContainer');
+        if (!comboContainer) return;
 
-        // 初始化一卦模式的骰子场景
-        const comboDiceContainer = document.getElementById('comboDiceContainer');
-        if (comboDiceContainer && typeof DiceController !== 'undefined') {
-            DiceController.initDice(comboDiceContainer);
-            comboDiceContainer.style.display = ''; // 显示骰子场景
+        comboContainer.classList.add('dice-scene');
+
+        if (typeof DiceController !== 'undefined') {
+            DiceController.initDice(comboContainer);
         }
     },
 
@@ -136,14 +134,18 @@ const App = {
         const html = combo.yaos.map((yao, index) => {
             const result = this.state.comboResults[index];
             const isRevealed = index < this.state.currentYao;
+            const isActive = index === this.state.currentYao;
 
             return `
-                <div class="yao-card ${isRevealed ? 'revealed' : ''}">
-                    <div class="yao-label">${yao.name}</div>
-                    <div class="yao-content">
+                <div class="yao-row ${isRevealed ? 'revealed' : ''} ${isActive ? 'active' : ''}">
+                    <div class="yao-badge">${index + 1}</div>
+                    <div class="yao-box">
                         ${isRevealed ? `
                             <span class="yao-emoji">${result.emoji}</span>
-                            <span class="yao-word">${result.word}</span>
+                            <div class="yao-info">
+                                <div class="yao-name">${yao.name}</div>
+                                <div class="yao-word">${result.word}</div>
+                            </div>
                         ` : `
                             <span class="yao-placeholder">待揭晓</span>
                         `}
@@ -179,7 +181,7 @@ const App = {
 
     bindEvents() {
         // 模式切换
-        document.querySelectorAll('.mode-tab').forEach(tab => {
+        document.querySelectorAll('.tab').forEach(tab => {
             tab.addEventListener('click', (e) => {
                 const mode = e.target.dataset.mode;
                 this.switchMode(mode);
@@ -198,10 +200,18 @@ const App = {
         }
 
         // 单骰摇动按钮
-        const rollButton = document.getElementById('rollButton');
+        const rollButton = document.getElementById('rollBtn');
         if (rollButton) {
             rollButton.addEventListener('click', () => {
                 this.rollSingleDice();
+            });
+        }
+
+        // 组合模式重置按钮
+        const resetComboBtn = document.getElementById('resetComboBtn');
+        if (resetComboBtn) {
+            resetComboBtn.addEventListener('click', () => {
+                this.resetCombo();
             });
         }
 
@@ -231,6 +241,13 @@ const App = {
                 this.closeShare();
             });
         }
+
+        const closeShareBtn = document.getElementById('closeShareBtn');
+        if (closeShareBtn) {
+            closeShareBtn.addEventListener('click', () => {
+                this.closeShare();
+            });
+        }
     },
 
     // ========== 模式切换 ==========
@@ -240,13 +257,13 @@ const App = {
         this.saveState();
 
         // 更新Tab样式
-        document.querySelectorAll('.mode-tab').forEach(tab => {
+        document.querySelectorAll('.tab').forEach(tab => {
             tab.classList.toggle('active', tab.dataset.mode === mode);
         });
 
         // 切换面板
-        const singlePanel = document.getElementById('singlePanel');
-        const comboPanel = document.getElementById('comboPanel');
+        const singlePanel = document.getElementById('single-panel');
+        const comboPanel = document.getElementById('combo-panel');
         
         if (singlePanel) singlePanel.style.display = mode === 'single' ? 'block' : 'none';
         if (comboPanel) comboPanel.style.display = mode === 'combo' ? 'block' : 'none';
@@ -304,7 +321,7 @@ const App = {
         });
 
         // 更新环境光背景
-        const ambient = document.querySelector('.ambient-light');
+        const ambient = document.querySelector('.ambient');
         if (ambient) {
             ambient.style.background = `
                 radial-gradient(ellipse 60% 50% at 50% 0%, ${color}33 0%, transparent 70%),
@@ -313,7 +330,7 @@ const App = {
         }
 
         // 更新摇骰按钮颜色
-        const rollButton = document.getElementById('rollButton');
+        const rollButton = document.getElementById('rollBtn');
         if (rollButton) {
             rollButton.style.background = `linear-gradient(135deg, ${color}, ${this.adjustColor(color, -30)})`;
             rollButton.style.boxShadow = `0 8px 25px ${color}55`;
@@ -469,28 +486,27 @@ const App = {
     },
 
     updateGuaText() {
-        const container = document.getElementById('guaText');
+        const container = document.getElementById('guaciText');
         if (!container) return;
 
         const combo = COMBO_CONFIG[this.state.currentCombo];
         const results = this.state.comboResults;
 
+        if (results.length === 0) {
+            container.innerHTML = '点击下方按钮，逐爻揭晓，看今日之卦。';
+            return;
+        }
+
         if (combo.id === 'today-cause') {
             // 因态果
-            const texts = results.map(r => r.word);
-            container.innerHTML = `
-                <div class="gua-line">因：${texts[0]}的处境</div>
-                <div class="gua-line">态：${texts[1]}的面对</div>
-                <div class="gua-line">果：${texts[2]}的结局</div>
-            `;
+            const labels = ['因', '态', '果'];
+            const lines = results.map((r, i) => `<div class="gua-line">${labels[i]}：${r.word}</div>`);
+            container.innerHTML = lines.join('');
         } else if (combo.id === 'life-destiny') {
             // 天人地
-            const texts = results.map(r => r.word);
-            container.innerHTML = `
-                <div class="gua-line">天：${texts[0]}</div>
-                <div class="gua-line">人：${texts[1]}</div>
-                <div class="gua-line">地：${texts[2]}</div>
-            `;
+            const labels = ['天', '人', '地'];
+            const lines = results.map((r, i) => `<div class="gua-line">${labels[i]}：${r.word}</div>`);
+            container.innerHTML = lines.join('');
         }
     },
 
@@ -509,11 +525,38 @@ const App = {
 
         // 生成卦辞总结
         const guaText = this.generateGuaSummary();
+        const comboResult = { desc: guaText };
 
-        // 更新卦辞显示
-        const guaTextContainer = document.getElementById('guaText');
-        if (guaTextContainer) {
-            guaTextContainer.innerHTML = `<div class="gua-final">${guaText}</div>`;
+        // 显示解读卡片
+        const guaciBox = document.getElementById('guaciBox');
+        const guaciText = document.getElementById('guaciText');
+        if (guaciBox) guaciBox.style.display = 'block';
+        if (guaciText) guaciText.textContent = comboResult.desc;
+
+        // 显示结果卡片
+        const resultCard = document.getElementById('comboResultCard');
+        if (resultCard) {
+            resultCard.classList.add('visible');
+            resultCard.style.display = 'block';
+            
+            // 填充内容
+            const dateEl = document.getElementById('comboResultDate');
+            if (dateEl) dateEl.textContent = new Date().toLocaleDateString('zh-CN', { year: 'numeric', month: 'long', day: 'numeric' });
+
+            const descEl = document.getElementById('comboResultDesc');
+            if (descEl) descEl.textContent = comboResult.desc;
+
+            // 填充爻位摘要
+            const yaosEl = document.getElementById('comboYaos');
+            if (yaosEl) {
+                yaosEl.innerHTML = this.state.comboResults.map((res, i) => `
+                    <div class="combo-yao">
+                        <div class="combo-yao-label">${combo.yaos[i].name}</div>
+                        <div class="combo-yao-emoji">${res.emoji}</div>
+                        <div class="combo-yao-word">${res.word}</div>
+                    </div>
+                `).join('');
+            }
         }
 
         // 延迟显示分享
@@ -537,25 +580,20 @@ const App = {
 
     // ========== 分享功能 ==========
 
-    generateShare() {
-        const dice = DICE_CONFIG[this.state.currentDice];
-        const resultCard = document.getElementById('resultCard');
+    shareResult() {
+        if (typeof ShareController !== 'undefined') {
+            const config = this.state.mode === 'single' ? 
+                DICE_CONFIG[this.state.currentDice] : 
+                COMBO_CONFIG[this.state.currentCombo];
+            
+            const result = this.state.mode === 'single' ?
+                this.state.lastResult :
+                { word: '今日之卦', emoji: '☯️', desc: this.generateGuaSummary() };
 
-        if (resultCard) {
-            const emoji = resultCard.querySelector('.result-emoji').textContent;
-            const word = resultCard.querySelector('.result-word').textContent;
-            const desc = resultCard.querySelector('.result-desc').textContent;
+            const extra = this.state.mode === 'combo' ? 
+                { yaosResults: this.state.comboResults } : {};
 
-            const result = { emoji, word, desc };
-
-            if (typeof ShareController !== 'undefined') {
-                const imageData = ShareController.generateSingleShare(
-                    dice.name,
-                    result,
-                    dice.color
-                );
-                ShareController.showShareModal(imageData);
-            }
+            ShareController.show(config, result, extra);
         }
     },
 

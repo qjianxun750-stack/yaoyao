@@ -220,19 +220,44 @@ const ShareController = {
         ctx.fillText(line, x, currentY);
     },
 
+    // 统一显示入口
+    show(config, result, extra = {}) {
+        let imageDataUrl;
+        if (config.type === 'combo') {
+            imageDataUrl = this.generateComboShare(
+                config.name, 
+                extra.yaosResults || [], 
+                result.desc, 
+                config.color
+            );
+        } else {
+            imageDataUrl = this.generateSingleShare(config.name, result, config.color);
+        }
+        
+        if (imageDataUrl) {
+            this.showShareModal(imageDataUrl);
+        }
+    },
+
     // 显示分享弹窗
     showShareModal(imageDataUrl) {
         const modal = document.getElementById('shareModal');
         const preview = document.getElementById('sharePreview');
 
-        preview.innerHTML = `<img src="${imageDataUrl}" style="max-width: 100%; border-radius: 12px;" />`;
-        modal.classList.add('show');
+        if (preview) {
+            preview.innerHTML = `<img src="${imageDataUrl}" style="width: 100%; display: block;" />`;
+        }
+        if (modal) {
+            modal.classList.add('visible');
+        }
     },
 
     // 关闭分享弹窗
     closeShareModal() {
         const modal = document.getElementById('shareModal');
-        modal.classList.remove('show');
+        if (modal) {
+            modal.classList.remove('visible');
+        }
     },
 
     // 下载图片
