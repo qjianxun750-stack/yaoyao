@@ -1034,7 +1034,16 @@ h1 {
   <!-- Single mode content -->
   <div id="single-panel" style="display: block;">
     <!-- Theme chips -->
-    <div class="themes-scroll" id="themeChips"></div>
+    <div class="themes-scroll" id="themeChips">
+      <button class="chip active" onclick="selectDice(0)">今日状态</button>
+      <button class="chip" onclick="selectDice(1)">今日发疯</button>
+      <button class="chip" onclick="selectDice(2)">今日祈愿</button>
+      <button class="chip" onclick="selectDice(3)">今日玄学</button>
+      <button class="chip" onclick="selectDice(4)">今日关系</button>
+      <button class="chip" onclick="selectDice(5)">今日人生</button>
+      <button class="chip" onclick="selectDice(6)">今日妈妈</button>
+      <button class="chip" onclick="selectDice(7)">今日搭子</button>
+    </div>
 
     <!-- Dice stage -->
     <div class="dice-stage">
