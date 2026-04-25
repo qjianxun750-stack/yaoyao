@@ -204,45 +204,56 @@ const DiceController = {
             AudioController.playRollSound();
         }
 
-        diceElements.forEach((dice, i) => {
-            const result = results[i];
-            const resultIndex = Math.floor(Math.random() * 6); // 物理位置随机
-            
-            // 更新该骰子的内容
-            this.updateDiceFaces(dice, comboConfig.yaos[i], result, resultIndex);
+        // 获取每个骰子动画结束的 Promise
+        const rollPromises = diceElements.map((dice, i) => {
+            return new Promise(resolve => {
+                const result = results[i];
+                const resultIndex = Math.floor(Math.random() * 6); 
+                
+                // 增加动作差异：每个骰子的旋转圈数和起始时间略有不同
+                const extraSpins = 1440 + (i * 360) + (Math.random() * 360);
+                const finalRotation = {
+                    rx: this.finalRotations[resultIndex].rx + extraSpins,
+                    ry: this.finalRotations[resultIndex].ry + extraSpins
+                };
 
-            // 移除状态
-            dice.classList.remove('idle', 'landing');
+                // 更新该骰子的内容
+                this.updateDiceFaces(dice, comboConfig.yaos[i], result, resultIndex);
 
-            // 设置旋转
-            const finalRotation = this.finalRotations[resultIndex];
-            dice.style.setProperty('--rx', `${finalRotation.rx}deg`);
-            dice.style.setProperty('--ry', `${finalRotation.ry}deg`);
+                // 移除旧状态
+                dice.classList.remove('idle', 'landing');
 
-            // 启动动画
-            dice.classList.add('rolling');
+                // 设置随机旋转角度和动画时长（2.5s - 3.5s 之间差异化）
+                const duration = 2500 + (i * 400) + (Math.random() * 200);
+                dice.style.setProperty('--rx', `${finalRotation.rx}deg`);
+                dice.style.setProperty('--ry', `${finalRotation.ry}deg`);
+                dice.style.animationDuration = `${duration}ms`;
+
+                // 启动动画
+                dice.classList.add('rolling');
+
+                // 分别在各自的时间点停止
+                setTimeout(() => {
+                    dice.classList.remove('rolling');
+                    dice.classList.add('landing');
+                    
+                    setTimeout(() => {
+                        dice.classList.add('idle');
+                        resolve();
+                    }, 500);
+                }, duration);
+            });
         });
 
-        // 等待所有骰子动画完成
-        setTimeout(() => {
-            diceElements.forEach((dice, i) => {
-                dice.classList.remove('rolling');
-                dice.classList.add('landing');
-                
-                setTimeout(() => {
-                    dice.classList.add('idle');
-                    
-                    // 最后一个骰子落地后触发后续
-                    if (i === diceElements.length - 1) {
-                        if (typeof AudioController !== 'undefined') {
-                            AudioController.playRevealSound(0);
-                        }
-                        this.isRolling = false;
-                        if (callback) callback();
-                    }
-                }, 500);
-            });
-        }, 3000);
+        // 等待所有骰子全部落地
+        await Promise.all(rollPromises);
+
+        // 全部落地后的处理
+        if (typeof AudioController !== 'undefined') {
+            AudioController.playRevealSound(0);
+        }
+        this.isRolling = false;
+        if (callback) callback();
     },
 
     // ========== 粒子效果 ==========
