@@ -358,14 +358,17 @@ const App = {
 
         if (typeof DiceController !== 'undefined') {
             DiceController.rollSingleDice(dice, (result) => {
+                this.state.lastResult = result; // 保存结果供分享使用
                 this.showResultCard(result);
                 this.state.isRolling = false;
+                this.saveState();
             });
         } else {
-            // 降级方案：直接显示结果
+            // 降级方案
             const randomIndex = Math.floor(Math.random() * dice.faces.length);
             const result = dice.faces[randomIndex];
             setTimeout(() => {
+                this.state.lastResult = result;
                 this.showResultCard(result);
                 this.state.isRolling = false;
             }, 1000);
@@ -376,27 +379,38 @@ const App = {
         const resultCard = document.getElementById('resultCard');
         if (!resultCard) return;
 
-        const dice = DICE_CONFIG[this.state.currentDice];
+        // 填充内容而非重写 HTML
+        const emojiEl = document.getElementById('resultEmoji');
+        const wordEl = document.getElementById('resultWord');
+        const descEl = document.getElementById('resultDesc');
+        const dateEl = document.getElementById('resultDate');
+        const qrEl = document.getElementById('resultQRCode');
 
-        resultCard.innerHTML = `
-            <div class="result-header">🎲 ${dice.name}</div>
-            <div class="result-main">
-                <div class="result-emoji flip-in">${result.emoji}</div>
-                <div class="result-word pulse">${result.word}</div>
-            </div>
-            <div class="result-desc">${result.desc}</div>
-            <button class="generate-share-btn" onclick="App.generateShare()">
-                📸 生成分享图
-            </button>
-        `;
+        if (emojiEl) emojiEl.textContent = result.emoji;
+        if (wordEl) wordEl.textContent = result.word;
+        if (descEl) descEl.textContent = result.desc;
+        
+        const today = new Date();
+        const dateStr = `${today.getFullYear()}年${today.getMonth() + 1}月${today.getDate()}日`;
+        if (dateEl) dateEl.textContent = dateStr;
 
-        resultCard.classList.add('show');
+        // 生成二维码
+        if (qrEl && typeof QRCode !== 'undefined') {
+            qrEl.innerHTML = '';
+            new QRCode(qrEl, {
+                text: window.location.href,
+                width: 80,
+                height: 80
+            });
+        }
+
+        resultCard.classList.add('visible');
     },
 
     hideResultCard() {
         const resultCard = document.getElementById('resultCard');
         if (resultCard) {
-            resultCard.classList.remove('show');
+            resultCard.classList.remove('visible');
         }
     },
 
@@ -406,13 +420,12 @@ const App = {
         if (this.state.isRolling) return;
 
         this.state.currentCombo = index;
-        this.state.currentYao = 0;
-        this.state.comboResults = [];
+        this.resetComboState();
         this.saveState();
 
         // 更新UI
-        document.querySelectorAll('#comboSelector .theme-capsule').forEach((capsule, i) => {
-            capsule.classList.toggle('active', i === index);
+        document.querySelectorAll('#comboSelector .chip').forEach((chip, i) => {
+            chip.classList.toggle('active', i === index);
         });
 
         // 应用主题
@@ -422,16 +435,30 @@ const App = {
         // 更新爻位卡片
         this.updateYaoCards();
 
-        // 清空卦辞
-        const guaText = document.getElementById('guaText');
-        if (guaText) {
-            guaText.innerHTML = '';
-        }
+        // 重置卦辞
+        this.updateGuaText();
+
+        // 隐藏结果卡片
+        const resultCard = document.getElementById('comboResultCard');
+        if (resultCard) resultCard.classList.remove('visible');
 
         // 播放切换音效
         if (typeof AudioController !== 'undefined') {
             AudioController.playThemeSwitchSound();
         }
+    },
+
+    resetComboState() {
+        this.state.currentYao = 0;
+        this.state.comboResults = [];
+    },
+
+    resetCombo() {
+        this.resetComboState();
+        this.updateYaoCards();
+        this.updateGuaText();
+        const resultCard = document.getElementById('comboResultCard');
+        if (resultCard) resultCard.classList.remove('visible');
     },
 
     rollYao() {
@@ -537,7 +564,6 @@ const App = {
         const resultCard = document.getElementById('comboResultCard');
         if (resultCard) {
             resultCard.classList.add('visible');
-            resultCard.style.display = 'block';
             
             // 填充内容
             const dateEl = document.getElementById('comboResultDate');
@@ -556,6 +582,17 @@ const App = {
                         <div class="combo-yao-word">${res.word}</div>
                     </div>
                 `).join('');
+            }
+
+            // 生成二维码
+            const qrEl = document.getElementById('comboResultQRCode');
+            if (qrEl && typeof QRCode !== 'undefined') {
+                qrEl.innerHTML = '';
+                new QRCode(qrEl, {
+                    text: window.location.href,
+                    width: 80,
+                    height: 80
+                });
             }
         }
 

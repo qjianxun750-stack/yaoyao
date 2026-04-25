@@ -95,8 +95,16 @@ const DiceController = {
         if (this.isRolling) return;
 
         this.isRolling = true;
-        const diceScene = document.querySelector('.dice-scene');
+        const diceScene = document.getElementById('diceScene');
+        if (!diceScene) {
+            this.isRolling = false;
+            return;
+        }
         const dice = diceScene.querySelector('.dice-3d');
+        if (!dice) {
+            this.isRolling = false;
+            return;
+        }
 
         // 随机选择结果
         const resultIndex = Math.floor(Math.random() * diceConfig.faces.length);
@@ -110,13 +118,13 @@ const DiceController = {
             AudioController.playRollSound();
         }
 
-        // 移除idle状态，添加rolling状态
-        dice.classList.remove('idle');
+        // 移除状态
+        dice.classList.remove('idle', 'landing');
 
-        // 设置最终旋转角度
-        const finalRotation = this.finalRotations[resultIndex];
-        dice.style.setProperty('--final-rx', `${finalRotation.rx}deg`);
-        dice.style.setProperty('--final-ry', `${finalRotation.ry}deg`);
+        // 设置最终旋转角度（增加圈数让动作更大）
+        const finalRotation = this.finalRotations[resultIndex % this.finalRotations.length];
+        dice.style.setProperty('--rx', `${finalRotation.rx}deg`);
+        dice.style.setProperty('--ry', `${finalRotation.ry}deg`);
 
         // 执行rolling动画
         dice.classList.add('rolling');
@@ -129,31 +137,25 @@ const DiceController = {
 
             // landing完成后（0.5秒）
             setTimeout(() => {
-                // 添加shake动画
-                dice.classList.add('shake');
+                dice.classList.add('idle');
 
-                setTimeout(() => {
-                    dice.classList.remove('shake');
-                    dice.classList.add('idle');
+                // 播放揭晓音效
+                if (typeof AudioController !== 'undefined') {
+                    AudioController.playRevealSound(0);
+                }
 
-                    // 播放揭晓音效
-                    if (typeof AudioController !== 'undefined') {
-                        AudioController.playRevealSound(0);
-                    }
+                // 触发粒子效果
+                this.createParticles(diceScene, diceConfig.color);
 
-                    // 触发粒子效果
-                    this.createParticles(diceScene, diceConfig.color);
+                // 记录统计
+                if (typeof GlobalStatsController !== 'undefined') {
+                    GlobalStatsController.recordRoll(diceConfig.name, diceConfig.id, result);
+                }
 
-                    // 记录统计
-                    if (typeof GlobalStatsController !== 'undefined') {
-                        GlobalStatsController.recordRoll(diceConfig.name, diceConfig.id, result);
-                    }
+                this.isRolling = false;
 
-                    this.isRolling = false;
-
-                    // 回调
-                    if (callback) callback(result);
-                }, 300);
+                // 回调
+                if (callback) callback(result);
             }, 500);
         }, 3000);
     },
@@ -166,8 +168,17 @@ const DiceController = {
 
         this.isRolling = true;
 
-        const diceScene = document.querySelector('.combo-dice-scene');
+        const diceScene = document.getElementById('comboDiceContainer');
+        if (!diceScene) {
+            this.isRolling = false;
+            return;
+        }
         const dice = diceScene.querySelector('.dice-3d');
+        if (!dice) {
+            this.isRolling = false;
+            return;
+        }
+
         const yaoConfig = comboConfig.yaos[yaoIndex];
 
         // 随机选择结果
@@ -182,43 +193,38 @@ const DiceController = {
             AudioController.playRollSound();
         }
 
-        // 骰子出现动画
-        diceScene.classList.add('appear');
+        // 移除状态
+        dice.classList.remove('idle', 'landing');
+
+        // 设置最终旋转角度
+        const finalRotation = this.finalRotations[resultIndex % this.finalRotations.length];
+        dice.style.setProperty('--rx', `${finalRotation.rx}deg`);
+        dice.style.setProperty('--ry', `${finalRotation.ry}deg`);
+
+        // 执行rolling动画
+        dice.classList.add('rolling');
 
         setTimeout(() => {
-            diceScene.classList.remove('appear');
-
-            // 设置最终旋转角度
-            const finalRotation = this.finalRotations[resultIndex];
-            dice.style.setProperty('--final-rx', `${finalRotation.rx}deg`);
-            dice.style.setProperty('--final-ry', `${finalRotation.ry}deg`);
-
-            // 执行rolling动画
-            dice.classList.add('rolling');
+            dice.classList.remove('rolling');
+            dice.classList.add('landing');
 
             setTimeout(() => {
-                dice.classList.remove('rolling');
-                dice.classList.add('landing');
+                dice.classList.add('idle');
 
-                setTimeout(() => {
-                    dice.classList.remove('landing');
-                    dice.classList.add('idle');
+                // 播放揭晓音效
+                if (typeof AudioController !== 'undefined') {
+                    AudioController.playRevealSound(yaoIndex);
+                }
 
-                    // 播放揭晓音效
-                    if (typeof AudioController !== 'undefined') {
-                        AudioController.playRevealSound(yaoIndex);
-                    }
+                // 触发粒子效果
+                this.createParticles(diceScene, comboConfig.color);
 
-                    // 触发粒子效果
-                    this.createParticles(diceScene, comboConfig.color);
+                this.isRolling = false;
 
-                    this.isRolling = false;
-
-                    // 回调
-                    if (callback) callback(result);
-                }, 500);
-            }, 3000);
-        }, 400);
+                // 回调
+                if (callback) callback(result);
+            }, 500);
+        }, 3000);
     },
 
     // ========== 粒子效果 ==========
