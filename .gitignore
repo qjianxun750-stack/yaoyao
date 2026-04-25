@@ -1,0 +1,7 @@
+# Node.js modules
+node_modules/
+package-lock.json
+package.json
+
+# Conversion scripts
+convert-svg.js
