@@ -8,8 +8,8 @@ const DiceController = {
     finalRotations: [
         { rx: 1800, ry: 1800 },   // face 0 (前)
         { rx: 1800, ry: 1980 },   // face 1 (后)
-        { rx: 1800, ry: 1710 },   // face 2 (左)
-        { rx: 1800, ry: 1890 },   // face 3 (右)
+        { rx: 1800, ry: 1890 },   // face 2 (左)
+        { rx: 1800, ry: 1710 },   // face 3 (右)
         { rx: 1710, ry: 1800 },   // face 4 (上)
         { rx: 1890, ry: 1800 }    // face 5 (下)
     ],
@@ -55,21 +55,21 @@ const DiceController = {
     },
 
     // 更新骰子面的内容
-    updateDiceFaces(dice, diceConfig, result) {
+    updateDiceFaces(dice, diceConfig, result, targetFaceIndex) {
         const faces = dice.querySelectorAll('.face');
         faces.forEach((face, index) => {
-            const faceData = diceConfig.faces[index];
             const emojiEl = face.querySelector('.face-emoji');
             const wordEl = face.querySelector('.face-word');
 
-            // 前3个面用随机内容，后面3个面用结果
-            if (index < 3) {
+            if (index === targetFaceIndex) {
+                // 这个面是最终要展示给用户的，必须精准匹配结果
+                emojiEl.textContent = result.emoji;
+                wordEl.textContent = result.word;
+            } else {
+                // 其他面随机填充，增加真实感
                 const randomFace = diceConfig.faces[Math.floor(Math.random() * diceConfig.faces.length)];
                 emojiEl.textContent = randomFace.emoji;
                 wordEl.textContent = randomFace.word;
-            } else {
-                emojiEl.textContent = result.emoji;
-                wordEl.textContent = result.word;
             }
         });
     },
@@ -110,8 +110,11 @@ const DiceController = {
         const resultIndex = Math.floor(Math.random() * diceConfig.faces.length);
         const result = diceConfig.faces[resultIndex];
 
+        // 确定展示的面（物理索引 0-5）
+        const targetFaceIndex = resultIndex % 6;
+
         // 更新骰子内容
-        this.updateDiceFaces(dice, diceConfig, result);
+        this.updateDiceFaces(dice, diceConfig, result, targetFaceIndex);
 
         // 播放摇骰音效
         if (typeof AudioController !== 'undefined') {
@@ -121,8 +124,8 @@ const DiceController = {
         // 移除状态
         dice.classList.remove('idle', 'landing');
 
-        // 设置最终旋转角度（增加圈数让动作更大）
-        const finalRotation = this.finalRotations[resultIndex % this.finalRotations.length];
+        // 设置最终旋转角度（与 targetFaceIndex 对应）
+        const finalRotation = this.finalRotations[targetFaceIndex];
         dice.style.setProperty('--rx', `${finalRotation.rx}deg`);
         dice.style.setProperty('--ry', `${finalRotation.ry}deg`);
 
@@ -185,8 +188,11 @@ const DiceController = {
         const resultIndex = Math.floor(Math.random() * yaoConfig.faces.length);
         const result = yaoConfig.faces[resultIndex];
 
+        // 确定展示的面
+        const targetFaceIndex = resultIndex % 6;
+
         // 更新骰子内容
-        this.updateDiceFaces(dice, yaoConfig, result);
+        this.updateDiceFaces(dice, yaoConfig, result, targetFaceIndex);
 
         // 播放摇骰音效
         if (typeof AudioController !== 'undefined') {
@@ -197,7 +203,7 @@ const DiceController = {
         dice.classList.remove('idle', 'landing');
 
         // 设置最终旋转角度
-        const finalRotation = this.finalRotations[resultIndex % this.finalRotations.length];
+        const finalRotation = this.finalRotations[targetFaceIndex];
         dice.style.setProperty('--rx', `${finalRotation.rx}deg`);
         dice.style.setProperty('--ry', `${finalRotation.ry}deg`);
 
