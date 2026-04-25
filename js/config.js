@@ -343,6 +343,54 @@ const DICE_CONFIG = [
                 ]
             }
         ]
+    },
+    // ========== 组合骰子：大事不决·状态卡点行动 ==========
+    {
+        id: 'big-decision',
+        name: '大事不决',
+        type: 'combo', // 标记为组合骰子
+        subDice: ['decision-state', 'decision-block', 'decision-action'],
+        subNames: ['事情状态', '卡在哪里', '怎么动'],
+        color: '#8B5CF6',
+        description: '大事不决 · 状态卡点行动',
+        combo: [
+            {
+                subId: 'decision-state',
+                name: '事情状态',
+                faces: [
+                    { word: '拖着呢', emoji: '⏳', desc: '一直在拖，动不了' },
+                    { word: '快撑不住', emoji: '😫', desc: '到极限了，快崩了' },
+                    { word: '还有机会', emoji: '💫', desc: '机会还在，别急' },
+                    { word: '时机未到', emoji: '🌅', desc: '时候还没到，再等等' },
+                    { word: '箭在弦上', emoji: '🏹', desc: '不得不发，已经到这步了' },
+                    { word: '回不了头', emoji: '🚫', desc: '已经走了这么远，回不去了' }
+                ]
+            },
+            {
+                subId: 'decision-block',
+                name: '卡在哪里',
+                faces: [
+                    { word: '怕错了', emoji: '😰', desc: '怕判断错，怕选错' },
+                    { word: '舍不得', emoji: '💝', desc: '有些东西放不下' },
+                    { word: '看不清', emoji: '🌫️', desc: '想不清楚，看不明白' },
+                    { word: '没人商量', emoji: '🚶', desc: '一个人想，想不透' },
+                    { word: '等个信号', emoji: '🚦', desc: '在等一个时机或提示' },
+                    { word: '不信自己', emoji: '💭', desc: '不够相信自己的判断' }
+                ]
+            },
+            {
+                subId: 'decision-action',
+                name: '怎么动',
+                faces: [
+                    { word: '押下去', emoji: '🎯', desc: '选一个，押下去' },
+                    { word: '再等等', emoji: '⏸️', desc: '不急，再等等看' },
+                    { word: '问个人', emoji: '💬', desc: '去找个人聊聊' },
+                    { word: '退一步', emoji: '↩️', desc: '退一步，重新看' },
+                    { word: '就这么定', emoji: '🔨', desc: '拍板，就这么定了' },
+                    { word: '先放下', emoji: '📦', desc: '先放一放，不急着决定' }
+                ]
+            }
+        ]
     }
 ];
 

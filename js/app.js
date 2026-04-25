@@ -538,6 +538,8 @@ const App = {
             desc = `泡沫关系：${results[0].word}，我${results[1].word}，建议${results[2].word}。`;
         } else if (combo.id === 'money-path') {
             desc = `钱途在哪：${results[0].word}，卡在${results[1].word}，建议${results[2].word}。`;
+        } else if (combo.id === 'big-decision') {
+            desc = `大事不决：${results[0].word}，卡在${results[1].word}，建议${results[2].word}。`;
         }
         return { desc };
     },
