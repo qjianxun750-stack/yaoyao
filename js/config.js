@@ -199,6 +199,54 @@ const DICE_CONFIG = [
                 ]
             }
         ]
+    },
+    // ========== 组合骰子：摇个方向·处境症结方向 ==========
+    {
+        id: 'find-direction',
+        name: '摇个方向',
+        type: 'combo', // 标记为组合骰子
+        subDice: ['situation', 'block', 'direction'],
+        subNames: ['现在的处境', '卡在哪里', '该往哪走'],
+        color: '#F59E0B',
+        description: '摇个方向 · 处境症结方向',
+        combo: [
+            {
+                subId: 'situation',
+                name: '现在的处境',
+                faces: [
+                    { word: '瞎忙一场', emoji: '🌀', desc: '方向错了，白费了，这件事本来就是瞎的' },
+                    { word: '快生了', emoji: '🌱', desc: '就差那一口气，时机将至' },
+                    { word: '临门一脚', emoji: '⚽', desc: '万事俱备，就差最后这一步' },
+                    { word: '要炸了', emoji: '💥', desc: '绷到极限，随时引爆' },
+                    { word: '我就要', emoji: '🔥', desc: '逆着所有人往前走，就这么定了' },
+                    { word: '雷打不动', emoji: '🗻', desc: '什么都来了，守住就行' }
+                ]
+            },
+            {
+                subId: 'block',
+                name: '卡在哪里',
+                faces: [
+                    { word: '被依靠', emoji: '🧱', desc: '所有人压着我，我动不了' },
+                    { word: '怕说错', emoji: '😶', desc: '有想法，但开不了口' },
+                    { word: '看不清', emoji: '🌫️', desc: '方向太多，不知道选哪个' },
+                    { word: '等别人', emoji: '⏳', desc: '自己准备好了，但在等一个人或一个信号' },
+                    { word: '舍不得', emoji: '💝', desc: '知道该放下，但放不下' },
+                    { word: '不信自己', emoji: '💭', desc: '能力够，但不敢迈那一步' }
+                ]
+            },
+            {
+                subId: 'direction',
+                name: '该往哪走',
+                faces: [
+                    { word: '动', emoji: '▶️', desc: '现在是时候了，不要再等' },
+                    { word: '退一步', emoji: '◀️', desc: '后退不是失败，是为了看清楚' },
+                    { word: '说出来', emoji: '🗣️', desc: '把那句话说出去，说了就松了' },
+                    { word: '放下一个', emoji: '🎈', desc: '不是全放，就放下一个，轻一点' },
+                    { word: '等等看', emoji: '⏸️', desc: '现在不急，再等一个信号' },
+                    { word: '找个人', emoji: '👥', desc: '一个人扛不住，去找那个人' }
+                ]
+            }
+        ]
     }
 ];
 
