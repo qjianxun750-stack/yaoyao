@@ -540,6 +540,8 @@ const App = {
             desc = `钱途在哪：${results[0].word}，卡在${results[1].word}，建议${results[2].word}。`;
         } else if (combo.id === 'big-decision') {
             desc = `大事不决：${results[0].word}，卡在${results[1].word}，建议${results[2].word}。`;
+        } else if (combo.id === 'am-i-ok') {
+            desc = `我还好吗：${results[0].word}，因为${results[1].word}，建议${results[2].word}。`;
         }
         return { desc };
     },

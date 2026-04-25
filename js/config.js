@@ -391,6 +391,54 @@ const DICE_CONFIG = [
                 ]
             }
         ]
+    },
+    // ========== 组合骰子：我还好吗·状态卡点行动 ==========
+    {
+        id: 'am-i-ok',
+        name: '我还好吗',
+        type: 'combo', // 标记为组合骰子
+        subDice: ['wellness-state', 'wellness-block', 'wellness-action'],
+        subNames: ['我的状态', '卡在哪里', '怎么办'],
+        color: '#F472B6',
+        description: '我还好吗 · 状态卡点行动',
+        combo: [
+            {
+                subId: 'wellness-state',
+                name: '我的状态',
+                faces: [
+                    { word: '撑着呢', emoji: '💪', desc: '还在撑，但快到极限了' },
+                    { word: '麻了', emoji: '😐', desc: '不痛不痒，感觉不到了' },
+                    { word: '快垮了', emoji: '😫', desc: '真的快撑不住了' },
+                    { word: '将就吧', emoji: '😌', desc: '不好也不坏，就这样吧' },
+                    { word: '空空的', emoji: '🕳️', desc: '心里空的，不知道怎么了' },
+                    { word: '还行吧', emoji: '🙂', desc: '表面还行，但不知道哪里不对' }
+                ]
+            },
+            {
+                subId: 'wellness-block',
+                name: '卡在哪里',
+                faces: [
+                    { word: '说不出来', emoji: '🤐', desc: '不知道怎么了，但就是不对' },
+                    { word: '睡不好', emoji: '😴', desc: '晚上睡不着，白天没精神' },
+                    { word: '提不起劲', emoji: '😪', desc: '什么都不想做，没有力气' },
+                    { word: '一个人扛', emoji: '🧱', desc: '什么都自己扛，扛不住了' },
+                    { word: '没人懂', emoji: '💭', desc: '想说，但没人能理解' },
+                    { word: '忘了照顾自己', emoji: '🫂', desc: '一直在照顾别人，忘了自己' }
+                ]
+            },
+            {
+                subId: 'wellness-action',
+                name: '怎么办',
+                faces: [
+                    { word: '歇一下', emoji: '🛋️', desc: '真的该休息了，停下来' },
+                    { word: '说出来', emoji: '🗣️', desc: '把话说出来，不要憋着' },
+                    { word: '找个人', emoji: '👥', desc: '去找个人说说，别一个人扛' },
+                    { word: '动起来', emoji: '🏃', desc: '强迫自己动一动' },
+                    { word: '放过自己', emoji: '🕊️', desc: '别对自己那么苛刻' },
+                    { word: '今天算了', emoji: '📅', desc: '今天就这样吧，明天再说' }
+                ]
+            }
+        ]
     }
 ];
 
