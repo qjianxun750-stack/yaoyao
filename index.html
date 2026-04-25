@@ -2656,6 +2656,12 @@ document.addEventListener('DOMContentLoaded', function() {
   loadFaces(DICE[0]);
   buildYaoList();
 
+  // 测试：2秒后自动切换到"今日发疯"主题
+  setTimeout(() => {
+    console.log('自动测试：切换到今日发疯主题');
+    selectDice(1);
+  }, 2000);
+
   // Init date in share
   const now = new Date();
   document.getElementById('shareDate').textContent = `${now.getFullYear()}年${now.getMonth()+1}月${now.getDate()}日`;
