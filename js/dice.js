@@ -10,8 +10,8 @@ const DiceController = {
         { rx: 1800, ry: 1980 },   // face 1 (后)
         { rx: 1800, ry: 1890 },   // face 2 (左)
         { rx: 1800, ry: 1710 },   // face 3 (右)
-        { rx: 1710, ry: 1800 },   // face 4 (上)
-        { rx: 1890, ry: 1800 }    // face 5 (下)
+        { rx: 1890, ry: 1800 },   // face 4 (上) - 修正：rotateX(90) 显示顶部面
+        { rx: 1710, ry: 1800 }    // face 5 (下) - 修正：rotateX(-90) 显示底部面
     ],
 
     // 初始化骰子DOM
