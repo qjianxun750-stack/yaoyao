@@ -1659,9 +1659,14 @@ function selectDice(i) {
 }
 
 function loadFaces(d) {
+  console.log('Loading faces for theme:', d.name);
   d.faces.forEach((f, i) => {
-    document.getElementById('f'+i).querySelector('.face-emoji').textContent = f.e;
-    document.getElementById('f'+i).querySelector('.face-word').textContent = f.w;
+    const faceEl = document.getElementById('f'+i);
+    const emojiEl = faceEl.querySelector('.face-emoji');
+    const wordEl = faceEl.querySelector('.face-word');
+    console.log('- f' + i + ':', emojiEl.textContent, '→', f.e, wordEl.textContent, '→', f.w);
+    emojiEl.textContent = f.e;
+    wordEl.textContent = f.w;
   });
 }
 
@@ -1719,6 +1724,13 @@ function rollDice() {
   // Add multiples of 360 for spinning effect
   const finalRx = rot.rx + 720;
   const finalRy = rot.ry + 720;
+
+  // Debug logging
+  console.log('Roll result:');
+  console.log('- faceIdx:', faceIdx);
+  console.log('- rotation:', rot);
+  console.log('- result from faces[' + faceIdx + ']:', DICE[curDice].faces[faceIdx].e, DICE[curDice].faces[faceIdx].w);
+  console.log('- Expected visible face: f' + faceIdx);
 
   const dice3d = document.getElementById('dice3d');
   dice3d.style.cssText = `--rx:${finalRx}deg;--ry:${finalRy}deg;`;
