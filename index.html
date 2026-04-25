@@ -185,6 +185,13 @@ h1 {
     padding: 7px 10px;
     font-size: 11px;
   }
+
+  .combo-selector .chip {
+    flex: 0 0 calc(50% - 3px);
+    max-width: calc(50% - 3px);
+    padding: 7px 10px;
+    font-size: 11px;
+  }
 }
 
 /* ── Dice stage ── */
@@ -788,7 +795,14 @@ h1 {
 .combo-selector {
   padding: 0 24px 16px;
   display: flex;
+  flex-wrap: wrap;
   gap: 8px;
+  justify-content: center;
+}
+
+.combo-selector .chip {
+  flex: 0 0 calc(25% - 6px);
+  max-width: calc(25% - 6px);
 }
 
 /* ── Combo Mode Styles ── */
@@ -1008,14 +1022,14 @@ h1 {
 <div class="toast" id="toast"></div>
 
 <!-- Core Scripts -->
-<script src="js/config.js?v=1.9"></script>
-<script src="js/supabase-client.js?v=1.9"></script>
-<script src="js/audio.js?v=1.9"></script>
-<script src="js/dice.js?v=1.9"></script>
-<script src="js/share.js?v=1.9"></script>
-<script src="js/analytics.js?v=1.9"></script>
-<script src="js/global-stats.js?v=1.9"></script>
-<script src="js/app.js?v=1.9"></script>
+<script src="js/config.js?v=2.0"></script>
+<script src="js/supabase-client.js?v=2.0"></script>
+<script src="js/audio.js?v=2.0"></script>
+<script src="js/dice.js?v=2.0"></script>
+<script src="js/share.js?v=2.0"></script>
+<script src="js/analytics.js?v=2.0"></script>
+<script src="js/global-stats.js?v=2.0"></script>
+<script src="js/app.js?v=2.0"></script>
 
 <script>
   // 初始化应用
