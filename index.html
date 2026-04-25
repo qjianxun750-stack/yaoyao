@@ -2651,6 +2651,9 @@ document.getElementById('soundToggle').addEventListener('click', function() {
 
 // ── Init ──
 document.addEventListener('DOMContentLoaded', function() {
+  // 最基本的测试：确认JavaScript在运行
+  alert('✅ 页面已加载，JavaScript正在运行！');
+
   // buildChips(); // 已在HTML中硬编码，无需动态生成
   applyTheme(DICE[0].color);
   loadFaces(DICE[0]);
@@ -2659,6 +2662,7 @@ document.addEventListener('DOMContentLoaded', function() {
   // 测试：2秒后自动切换到"今日发疯"主题
   setTimeout(() => {
     console.log('自动测试：切换到今日发疯主题');
+    alert('准备切换到今日发疯主题');
     selectDice(1);
   }, 2000);
 
