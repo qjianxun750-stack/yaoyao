@@ -232,7 +232,7 @@ h1 {
 }
 
 .dice-3d.flat {
-  transform: rotateX(0deg) rotateY(0deg); /* 落地后变平面视角 */
+  transform: rotateX(var(--rx, 0deg)) rotateY(var(--ry, 0deg)) !important; /* 强制覆盖初始倾斜角度，确保变正 */
 }
 
 .dice-3d.rolling {
@@ -1007,14 +1007,14 @@ h1 {
 <div class="toast" id="toast"></div>
 
 <!-- Core Scripts -->
-<script src="js/config.js"></script>
-<script src="js/supabase-client.js"></script>
-<script src="js/audio.js"></script>
-<script src="js/dice.js"></script>
-<script src="js/share.js"></script>
-<script src="js/analytics.js"></script>
-<script src="js/global-stats.js"></script>
-<script src="js/app.js"></script>
+<script src="js/config.js?v=1.2"></script>
+<script src="js/supabase-client.js?v=1.2"></script>
+<script src="js/audio.js?v=1.2"></script>
+<script src="js/dice.js?v=1.2"></script>
+<script src="js/share.js?v=1.2"></script>
+<script src="js/analytics.js?v=1.2"></script>
+<script src="js/global-stats.js?v=1.2"></script>
+<script src="js/app.js?v=1.2"></script>
 
 <script>
   // 初始化应用

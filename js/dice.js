@@ -146,6 +146,7 @@ const DiceController = {
 
             // landing完成后（0.5秒）
             setTimeout(() => {
+                dice.classList.remove('landing'); // 彻底移除动画类
                 dice.classList.add('idle', 'flat'); // 落地后变平面
 
                 // 播放揭晓音效
@@ -248,6 +249,7 @@ const DiceController = {
                     dice.classList.add('landing');
                     
                     setTimeout(() => {
+                        dice.classList.remove('landing'); // 彻底移除动画类
                         dice.classList.add('idle', 'flat'); // 落地后变平面
                         resolve();
                     }, 500);
