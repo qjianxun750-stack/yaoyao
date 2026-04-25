@@ -31,11 +31,31 @@
 <!-- Umami Analytics -->
 <script async defer data-website-id="34118be7-d644-4577-a83d-3d8d001c2618" src="https://cloud.umami.is/script.js"></script>
 
-<!-- html2canvas for share image generation -->
-<script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
+<!-- Compatibility patches (load first!) -->
+<script src="js/compatibility.js?v=2.1"></script>
 
-<!-- QRCode.js for generating QR codes -->
-<script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
+<!-- html2canvas for share image generation (with fallback) -->
+<script>
+  // 动态加载，失败时不影响主功能
+  var html2canvasScript = document.createElement('script');
+  html2canvasScript.src = 'https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js';
+  html2canvasScript.onerror = function() {
+    console.warn('html2canvas 加载失败，将使用 Canvas API 作为降级方案');
+  };
+  document.head.appendChild(html2canvasScript);
+</script>
+
+<!-- QRCode.js for generating QR codes (with fallback) -->
+<script>
+  // 动态加载，失败时不影响主功能
+  var qrcodeScript = document.createElement('script');
+  qrcodeScript.src = 'https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js';
+  qrcodeScript.onerror = function() {
+    console.warn('QRCode.js 加载失败，二维码功能将不可用');
+    window.QRCode = null; // 标记为不可用
+  };
+  document.head.appendChild(qrcodeScript);
+</script>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;700&family=ZCOOL+XiaoWei&display=swap');
 
@@ -1035,14 +1055,14 @@ h1 {
 <div class="toast" id="toast"></div>
 
 <!-- Core Scripts -->
-<script src="js/config.js?v=2.1"></script>
-<script src="js/supabase-client.js?v=2.1"></script>
-<script src="js/audio.js?v=2.1"></script>
-<script src="js/dice.js?v=2.1"></script>
-<script src="js/share.js?v=2.1"></script>
-<script src="js/analytics.js?v=2.1"></script>
-<script src="js/global-stats.js?v=2.1"></script>
-<script src="js/app.js?v=2.1"></script>
+<script src="js/config.js?v=2.2"></script>
+<script src="js/supabase-client.js?v=2.2"></script>
+<script src="js/audio.js?v=2.2"></script>
+<script src="js/dice.js?v=2.2"></script>
+<script src="js/share.js?v=2.2"></script>
+<script src="js/analytics.js?v=2.2"></script>
+<script src="js/global-stats.js?v=2.2"></script>
+<script src="js/app.js?v=2.2"></script>
 
 <script>
   // 初始化应用

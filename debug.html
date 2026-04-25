@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🔍 兼容性诊断</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+        }
+
+        h1 {
+            font-size: 24px;
+            color: #333;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .test-item {
+            padding: 15px;
+            margin-bottom: 10px;
+            border-radius: 10px;
+            border-left: 4px solid #ddd;
+            background: #f8f9fa;
+        }
+
+        .test-item.pass {
+            border-left-color: #28a745;
+            background: #d4edda;
+        }
+
+        .test-item.fail {
+            border-left-color: #dc3545;
+            background: #f8d7da;
+        }
+
+        .test-item.warn {
+            border-left-color: #ffc107;
+            background: #fff3cd;
+        }
+
+        .test-name {
+            font-weight: 600;
+            margin-bottom: 5px;
+            color: #333;
+        }
+
+        .test-detail {
+            font-size: 13px;
+            color: #666;
+        }
+
+        .summary {
+            margin-top: 20px;
+            padding: 20px;
+            background: #e7f3ff;
+            border-radius: 10px;
+            text-align: center;
+        }
+
+        .btn {
+            display: block;
+            width: 100%;
+            padding: 15px;
+            margin-top: 20px;
+            background: #667eea;
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        .btn:hover {
+            background: #5568d3;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔍 手机兼容性诊断</h1>
+        <div id="results"></div>
+        <div class="summary" id="summary" style="display: none;"></div>
+        <button class="btn" onclick="window.location.href='index.html'">
+            🎮 返回游戏
+        </button>
+    </div>
+
+    <script>
+        const results = [];
+
+        function addTest(name, passed, detail) {
+            results.push({ name, passed, detail });
+            const className = passed ? 'pass' : (passed === null ? 'warn' : 'fail');
+            const icon = passed ? '✅' : (passed === null ? '⚠️' : '❌');
+
+            const html = `
+                <div class="test-item ${className}">
+                    <div class="test-name">${icon} ${name}</div>
+                    <div class="test-detail">${detail}</div>
+                </div>
+            `;
+
+            document.getElementById('results').innerHTML += html;
+        }
+
+        function showSummary() {
+            const passCount = results.filter(r => r.passed === true).length;
+            const failCount = results.filter(r => r.passed === false).length;
+            const warnCount = results.filter(r => r.passed === null).length;
+
+            const summaryEl = document.getElementById('summary');
+            summaryEl.style.display = 'block';
+
+            if (failCount === 0 && warnCount === 0) {
+                summaryEl.innerHTML = `
+                    <h3 style="color: #28a745;">✅ 全部通过！</h3>
+                    <p style="margin-top: 10px;">您的手机完全兼容，可以正常使用游戏。</p>
+                `;
+            } else if (failCount > 0) {
+                summaryEl.innerHTML = `
+                    <h3 style="color: #dc3545;">❌ 发现 ${failCount} 个问题</h3>
+                    <p style="margin-top: 10px;">建议升级浏览器或系统版本。</p>
+                `;
+            } else {
+                summaryEl.innerHTML = `
+                    <h3 style="color: #ffc107;">⚠️ 有 ${warnCount} 个警告</h3>
+                    <p style="margin-top: 10px;">可能影响部分功能，建议升级。</p>
+                `;
+            }
+        }
+
+        // 1. 检测基本信息
+        const ua = navigator.userAgent;
+        const isIOS = /iPhone|iPad|iPod/.test(ua);
+        const isAndroid = /Android/.test(ua);
+        const isWeChat = /MicroMessenger/.test(ua);
+
+        let osInfo = '';
+        if (isIOS) {
+            const match = ua.match(/OS (\d+)_(\d+)/);
+            osInfo = match ? `iOS ${match[1]}.${match[2]}` : 'iOS';
+        } else if (isAndroid) {
+            const match = ua.match(/Android (\d+\.\d+)/);
+            osInfo = match ? `Android ${match[1]}` : 'Android';
+        } else {
+            osInfo = '未知系统';
+        }
+
+        addTest('操作系统', true, osInfo + (isWeChat ? ' (微信浏览器)' : ''));
+
+        // 2. 检测 ES6 支持
+        try {
+            eval('const test = () => {}');
+            addTest('ES6 语法支持', true, '支持箭头函数、const/let');
+        } catch (e) {
+            addTest('ES6 语法支持', false, '不支持现代JavaScript语法');
+        }
+
+        // 3. 检测 async/await
+        try {
+            eval('async function test() {}');
+            addTest('Async/Await', true, '支持异步编程');
+        } catch (e) {
+            addTest('Async/Await', false, '不支持async/await，可能影响数据加载');
+        }
+
+        // 4. 检测 fetch API
+        if (typeof fetch !== 'undefined') {
+            addTest('Fetch API', true, '支持网络请求');
+        } else {
+            addTest('Fetch API', false, '不支持fetch，可能无法加载数据');
+        }
+
+        // 5. 检测 LocalStorage
+        try {
+            localStorage.setItem('test', 'test');
+            localStorage.removeItem('test');
+            addTest('LocalStorage', true, '支持本地存储');
+        } catch (e) {
+            addTest('LocalStorage', false, '不支持本地存储');
+        }
+
+        // 6. 检测 Canvas API
+        const canvas = document.createElement('canvas');
+        if (canvas.getContext) {
+            addTest('Canvas API', true, '支持2D绘图');
+        } else {
+            addTest('Canvas API', false, '不支持Canvas，无法显示分享图片');
+        }
+
+        // 7. 检测 CSS 3D Transform
+        const has3D = 'transform' in document.documentElement.style ||
+                      'webkitTransform' in document.documentElement.style;
+        if (has3D) {
+            addTest('CSS 3D Transform', true, '支持3D动画');
+        } else {
+            addTest('CSS 3D Transform', false, '不支持3D动画，骰子效果会受影响');
+        }
+
+        // 8. 检测 Web Audio API
+        if (typeof AudioContext !== 'undefined' || typeof webkitAudioContext !== 'undefined') {
+            addTest('Web Audio API', true, '支持音效播放');
+        } else {
+            addTest('Web Audio API', null, '不支持Web Audio，无音效');
+        }
+
+        // 9. 检测网络
+        if (navigator.onLine) {
+            addTest('网络连接', true, '已连接到互联网');
+        } else {
+            addTest('网络连接', false, '未连接到互联网');
+        }
+
+        // 10. 检测 Chart.js 加载
+        fetch('https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js', { method: 'HEAD' })
+            .then(response => {
+                if (response.ok) {
+                    addTest('CDN 访问', true, '可以访问 jsDelivr CDN');
+                } else {
+                    addTest('CDN 访问', false, '无法访问 CDN，可能需要科学上网');
+                }
+                showSummary();
+            })
+            .catch(() => {
+                addTest('CDN 访问', false, '无法访问 CDN');
+                showSummary();
+            });
+
+        // 显示浏览器信息
+        console.log('User Agent:', ua);
+        console.log('Screen:', `${screen.width}x${screen.height}`);
+        console.log('Viewport:', `${window.innerWidth}x${window.innerHeight}`);
+    </script>
+</body>
+</html>
