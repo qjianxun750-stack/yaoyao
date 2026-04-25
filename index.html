@@ -227,7 +227,7 @@ h1 {
   height: 140px;
   position: relative;
   transform-style: preserve-3d;
-  transform: rotateX(-15deg) rotateY(25deg);
+  transform: rotateX(-30deg) rotateY(35deg); /* 初始呈现 3D 立体感，能看到三个面 */
   transition: transform 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94);
 }
 
@@ -240,7 +240,7 @@ h1 {
 }
 
 @keyframes dice-roll {
-  0%   { transform: rotateX(-15deg) rotateY(25deg) translateY(0px) scale(1); }
+  0%   { transform: rotateX(-30deg) rotateY(35deg) translateY(0px) scale(1); }
   10%  { transform: rotateX(150deg) rotateY(120deg) translateY(-100px) scale(1.1); }
   25%  { transform: rotateX(450deg) rotateY(320deg) translateY(20px) scale(0.9); }
   40%  { transform: rotateX(800deg) rotateY(600deg) translateY(-120px) scale(1.2); }
@@ -364,6 +364,26 @@ h1 {
   font-size: 11px;
   color: var(--text3);
   opacity: 0.7;
+}
+
+.mini-share-btn {
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: var(--text2);
+  width: 24px;
+  height: 24px;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  font-size: 12px;
+  transition: all 0.2s;
+}
+
+.mini-share-btn:hover {
+  background: rgba(255, 255, 255, 0.2);
+  color: var(--text);
 }
 
 /* 中间：超大emoji+结果词 */
@@ -507,6 +527,7 @@ h1 {
 .multi-dice-container .dice-3d {
   width: 84px;
   height: 84px;
+  transform: rotateX(-30deg) rotateY(35deg); /* 统一 3D 视角 */
 }
 
 .multi-dice-container .face {
@@ -893,7 +914,10 @@ h1 {
       <div class="result-card" id="resultCard">
         <div class="result-header">
           <span class="result-game-name">🎲 情绪骰子</span>
-          <span class="result-date" id="resultDate"></span>
+          <div style="display: flex; align-items: center; gap: 10px;">
+            <span class="result-date" id="resultDate"></span>
+            <button class="mini-share-btn" onclick="App.shareResult()" title="转发分享">📤</button>
+          </div>
         </div>
         <div class="result-main">
           <div class="result-emoji" id="resultEmoji"></div>
@@ -907,7 +931,6 @@ h1 {
         </div>
         <div class="result-actions">
           <span class="screenshot-hint">💡 截图保存到相册，或长按图片保存</span>
-          <button class="action-btn primary" onclick="App.shareResult()">📸 生成分享海报</button>
         </div>
       </div>
     </div>
@@ -933,7 +956,10 @@ h1 {
       <div class="result-card" id="comboResultCard">
         <div class="result-header">
           <span class="result-game-name">🎲 情绪骰子 · 一卦模式</span>
-          <span class="result-date" id="comboResultDate"></span>
+          <div style="display: flex; align-items: center; gap: 10px;">
+            <span class="result-date" id="comboResultDate"></span>
+            <button class="mini-share-btn" onclick="App.shareResult()" title="转发分享">📤</button>
+          </div>
         </div>
         
         <div class="result-main combo-main">

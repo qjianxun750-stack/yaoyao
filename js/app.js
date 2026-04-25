@@ -397,6 +397,11 @@ const App = {
         }
 
         resultCard.classList.add('visible');
+
+        // 自动平滑滚动到结果卡片，确保用户能立即看到
+        setTimeout(() => {
+            resultCard.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }, 100);
     },
 
     hideResultCard() {
@@ -424,10 +429,14 @@ const App = {
         const combo = COMBO_CONFIG[index];
         this.applyTheme(combo.color);
 
-        // 重置三个骰子的内容为 ?
+        // 重置三个骰子的内容为 ? 并重置状态
         if (this.state.comboDiceElements) {
             this.state.comboDiceElements.forEach(dice => {
                 dice.querySelectorAll('.face-word').forEach(el => el.textContent = '?');
+                dice.classList.remove('rolling', 'landing');
+                dice.classList.add('idle');
+                dice.style.removeProperty('--rx');
+                dice.style.removeProperty('--ry');
             });
         }
 
@@ -476,6 +485,11 @@ const App = {
         const resultCard = document.getElementById('comboResultCard');
         if (resultCard) {
             resultCard.classList.add('visible');
+            
+            // 自动平滑滚动到结果卡片
+            setTimeout(() => {
+                resultCard.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }, 100);
             
             // 填充日期
             const dateEl = document.getElementById('comboResultDate');

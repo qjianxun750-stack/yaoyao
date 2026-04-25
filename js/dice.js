@@ -78,6 +78,12 @@ const DiceController = {
     refreshDiceFaces(dice, diceConfig) {
         if (!dice || !diceConfig || !diceConfig.faces) return;
 
+        // 重置旋转和状态，确保呈现初始 3D 视角
+        dice.classList.remove('rolling', 'landing');
+        dice.classList.add('idle');
+        dice.style.removeProperty('--rx');
+        dice.style.removeProperty('--ry');
+
         const faces = dice.querySelectorAll('.face');
         faces.forEach((face, index) => {
             // 如果配置的faces少于6个，循环使用
