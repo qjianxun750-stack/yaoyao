@@ -530,8 +530,8 @@ const App = {
         let desc = '';
         if (combo.id === 'today-cause') {
             desc = `今日之卦：${results[0].word}的处境，${results[1].word}的面对，最终${results[2].word}。`;
-        } else if (combo.id === 'life-destiny') {
-            desc = `人生一卦：天赐${results[0].word}，人谋${results[1].word}，地利${results[2].word}。`;
+        } else if (combo.id === 'three-questions') {
+            desc = `三爻问心：此刻${results[0].word}，身处${results[1].word}，心里压着${results[2].word}。`;
         }
         return { desc };
     },

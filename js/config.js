@@ -152,50 +152,50 @@ const DICE_CONFIG = [
             }
         ]
     },
-    // ========== 组合骰子：人生一卦·天人地 ==========
+    // ========== 组合骰子：三爻问心·状态处境心声 ==========
     {
-        id: 'life-destiny',
-        name: '人生一卦',
+        id: 'three-questions',
+        name: '三爻问心',
         type: 'combo', // 标记为组合骰子
-        subDice: ['heaven', 'human', 'earth'],
-        subNames: ['天', '人', '地'],
+        subDice: ['state', 'position', 'heart'],
+        subNames: ['此刻状态', '当下处境', '没说出口的话'],
         color: '#059669',
-        description: '人生一卦 · 天人地',
+        description: '三爻问心 · 状态处境心声',
         combo: [
             {
-                subId: 'heaven',
-                name: '天·势',
+                subId: 'state',
+                name: '此刻状态',
                 faces: [
-                    { word: '顺势', emoji: '🌊', desc: '这件事是对的，跟着走' },
-                    { word: '逆势', emoji: '⛰️', desc: '这件事是错的，但你在做' },
-                    { word: '无势', emoji: '🌫️', desc: '这件事没有方向，随机的' },
-                    { word: '蓄势', emoji: '🌱', desc: '这件事在积累，还没到时候' },
-                    { word: '破势', emoji: '⚡', desc: '这件事要打破什么，需要勇气' },
-                    { word: '守势', emoji: '🛡️', desc: '这件事不要动，守住就行' }
+                    { word: '要炸了', emoji: '💥', desc: '绷到极限，随时引爆' },
+                    { word: '电量不足', emoji: '🪫', desc: '没能量，别指望我' },
+                    { word: '将就着', emoji: '😌', desc: '不追求了，过得去就行' },
+                    { word: '还撑着', emoji: '💪', desc: '没崩，但就差一口气' },
+                    { word: '麻了', emoji: '😐', desc: '不痛不痒，感觉不到了' },
+                    { word: '挺好的', emoji: '😊', desc: '真的挺好，或者假装挺好' }
                 ]
             },
             {
-                subId: 'human',
-                name: '人·位',
+                subId: 'position',
+                name: '当下处境',
                 faces: [
-                    { word: '主角', emoji: '👑', desc: '这件事我说了算，我来决定' },
-                    { word: '配角', emoji: '🤝', desc: '这件事我在协助别人，不是主导' },
-                    { word: '旁观者', emoji: '👀', desc: '这件事跟我有关，但我选择看着' },
-                    { word: '局中人', emoji: '🎭', desc: '这件事我已经在里面了，出不去' },
-                    { word: '局外人', emoji: '🚪', desc: '这件事我可以不参与，我有选择' },
-                    { word: '棋子', emoji: '♟️', desc: '这件事我被人安排了，身不由己' }
+                    { word: '被依靠', emoji: '🧱', desc: '所有人找我，我找不到人' },
+                    { word: '夹在中间', emoji: '🚪', desc: '两边都要顾，哪边都不是自己人' },
+                    { word: '跟着走', emoji: '🚶', desc: '不是我选的，就这么走到这里了' },
+                    { word: '只干活', emoji: '🔨', desc: '出力没名，但活儿是真的干了' },
+                    { word: '就看着', emoji: '👀', desc: '看清楚了，选择不进去' },
+                    { word: '我来扛', emoji: '💪', desc: '出了事是我的，成了是大家的' }
                 ]
             },
             {
-                subId: 'earth',
-                name: '地·时',
+                subId: 'heart',
+                name: '没说出口的话',
                 faces: [
-                    { word: '动', emoji: '▶️', desc: '现在是时候了，行动' },
-                    { word: '等', emoji: '⏳', desc: '现在不是时候，再等等' },
-                    { word: '退', emoji: '◀️', desc: '现在需要后退一步，让一让' },
-                    { word: '进', emoji: '⏩', desc: '现在可以往前走，机会来了' },
-                    { word: '止', emoji: '⏸️', desc: '现在停下来，不要再往前了' },
-                    { word: '观', emoji: '👁️', desc: '现在什么都不做，先看着' }
+                    { word: '凭什么', emoji: '🙄', desc: '不服，但没说' },
+                    { word: '我委屈我不哭', emoji: '😢', desc: '难受，但咽下去了' },
+                    { word: '就不说了', emoji: '🤐', desc: '说了也没用，算了' },
+                    { word: '我知道', emoji: '🤫', desc: '心里有数，但装作不知道' },
+                    { word: '好累', emoji: '😴', desc: '不是身体累，是那种说不清的累' },
+                    { word: '无所谓了', emoji: '🤷', desc: '不是真的无所谓，是太有所谓了' }
                 ]
             }
         ]
