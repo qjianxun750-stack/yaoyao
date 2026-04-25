@@ -357,6 +357,10 @@ const App = {
         if (typeof DiceController !== 'undefined') {
             DiceController.rollSingleDice(dice, (result) => {
                 this.state.lastResult = result; // 保存结果供分享使用
+
+                // 增强统计：记录单骰子摇动
+                this.recordRoll('single', null, dice, result);
+
                 this.showResultCard(result);
                 this.state.isRolling = false;
                 this.saveState();
@@ -367,6 +371,7 @@ const App = {
             const result = dice.faces[randomIndex];
             setTimeout(() => {
                 this.state.lastResult = result;
+                this.recordRoll('single', null, dice, result);
                 this.showResultCard(result);
                 this.state.isRolling = false;
             }, 1000);
@@ -456,7 +461,7 @@ const App = {
         if (this.state.isRolling) return;
 
         const combo = COMBO_CONFIG[this.state.currentCombo];
-        
+
         // 随机产生三个结果
         const results = combo.yaos.map(yao => {
             const idx = Math.floor(Math.random() * yao.faces.length);
@@ -472,6 +477,9 @@ const App = {
 
         if (typeof DiceController !== 'undefined' && this.state.comboDiceElements) {
             DiceController.rollMultiDice(this.state.comboDiceElements, combo, results, () => {
+                // 增强统计：记录一卦模式摇动
+                this.recordRoll('combo', combo, null, results);
+
                 this.state.isRolling = false;
                 this.showComboResult();
                 this.saveState();
@@ -571,16 +579,24 @@ const App = {
 
     shareResult() {
         if (typeof ShareController !== 'undefined') {
-            const config = this.state.mode === 'single' ? 
-                DICE_CONFIG[this.state.currentDice] : 
+            const config = this.state.mode === 'single' ?
+                DICE_CONFIG[this.state.currentDice] :
                 COMBO_CONFIG[this.state.currentCombo];
-            
+
             const result = this.state.mode === 'single' ?
                 this.state.lastResult :
                 { word: '今日之卦', emoji: '☯️', desc: this.generateComboResult(config, this.state.comboResults).desc };
 
-            const extra = this.state.mode === 'combo' ? 
+            const extra = this.state.mode === 'combo' ?
                 { yaosResults: this.state.comboResults } : {};
+
+            // 增强统计：记录分享行为
+            this.recordShare('link', {
+                diceName: this.state.mode === 'single' ? config.name : null,
+                comboName: this.state.mode === 'combo' ? config.name : null,
+                comboId: this.state.mode === 'combo' ? config.id : null,
+                resultWord: result.word
+            });
 
             ShareController.show(config, result, extra);
         }
@@ -590,6 +606,176 @@ const App = {
         if (typeof ShareController !== 'undefined') {
             ShareController.closeShareModal();
         }
+    },
+
+    // ========== 增强数据收集 ==========
+
+    // 会话开始时间
+    sessionStartTime: Date.now(),
+    rollCountInSession: 0,
+
+    // 增强的摇骰子统计记录
+    recordRoll(modeType, comboConfig, diceConfig, results) {
+        try {
+            const visitorId = this.getOrCreateVisitorId();
+            const now = new Date();
+
+            // 构建基础统计数据
+            const stats = {
+                // 访客信息
+                visitor_id: visitorId,
+
+                // 模式信息
+                mode_type: modeType, // 'single' 或 'combo'
+
+                // 单骰子信息
+                dice_id: modeType === 'single' ? diceConfig.id : null,
+                dice_name: modeType === 'single' ? diceConfig.name : null,
+
+                // 一卦模式信息
+                combo_id: modeType === 'combo' ? comboConfig.id : null,
+                combo_name: modeType === 'combo' ? comboConfig.name : null,
+
+                // 结果信息
+                results: modeType === 'single'
+                    ? [{
+                        result_word: results.word,
+                        result_emoji: results.emoji,
+                        result_desc: results.desc
+                    }]
+                    : results.map((r, i) => ({
+                        sub_dice_index: i,
+                        sub_dice_name: comboConfig.yaos[i].name,
+                        result_word: r.word,
+                        result_emoji: r.emoji,
+                        result_desc: r.desc
+                    })),
+
+                // 时间维度
+                created_at: now.toISOString(),
+                date: now.toISOString().split('T')[0], // YYYY-MM-DD
+                time: now.toTimeString().split(' ')[0].substring(0, 5), // HH:MM
+                hour: now.getHours(), // 0-23
+                day_of_week: now.getDay(), // 0-6 (周日到周六)
+                day_of_month: now.getDate(),
+                month: now.getMonth() + 1,
+                year: now.getFullYear(),
+
+                // 时段分类
+                time_period: this.getTimeOfDay(now),
+                is_weekend: this.isWeekend(now),
+                is_working_hour: this.isWorkingHour(now),
+
+                // 用户行为
+                roll_number_in_session: ++this.rollCountInSession,
+                time_on_page_before_roll: (Date.now() - this.sessionStartTime) / 1000, // 秒
+                time_since_last_roll: this.timeSinceLastRoll ? (Date.now() - this.timeSinceLastRoll) / 1000 : null,
+            };
+
+            // 更新最后摇骰时间
+            this.timeSinceLastRoll = Date.now();
+
+            // 发送到Supabase（异步，不阻塞）
+            if (typeof SupabaseClient !== 'undefined' && SupabaseClient.insert) {
+                SupabaseClient.insert('dice_rolls', stats).catch(err => {
+                    console.warn('Supabase记录失败:', err);
+                    // 降级到本地统计
+                    this.recordToLocalStats(stats);
+                });
+            } else {
+                // 降级到本地统计
+                this.recordToLocalStats(stats);
+            }
+
+        } catch (error) {
+            console.error('记录摇骰子统计失败:', error);
+        }
+    },
+
+    // 记录分享行为
+    recordShare(shareType = 'link', extra = {}) {
+        try {
+            const visitorId = this.getOrCreateVisitorId();
+            const now = new Date();
+
+            const shareStats = {
+                visitor_id: visitorId,
+                share_type: shareType,
+                dice_name: extra.diceName || null,
+                combo_name: extra.comboName || null,
+                result_word: extra.resultWord || null,
+                combo_id: extra.comboId || null,
+
+                // 时间维度
+                created_at: now.toISOString(),
+                date: now.toISOString().split('T')[0],
+                hour: now.getHours(),
+                day_of_week: now.getDay(),
+                time_period: this.getTimeOfDay(now),
+                is_weekend: this.isWeekend(now),
+
+                // 用户行为
+                time_on_page_before_share: (Date.now() - this.sessionStartTime) / 1000,
+                rolls_before_share: this.rollCountInSession
+            };
+
+            // 发送到Supabase
+            if (typeof SupabaseClient !== 'undefined' && SupabaseClient.insert) {
+                SupabaseClient.insert('shares', shareStats).catch(err => {
+                    console.warn('Supabase记录分享失败:', err);
+                });
+            }
+
+        } catch (error) {
+            console.error('记录分享统计失败:', error);
+        }
+    },
+
+    // 本地统计降级方案
+    recordToLocalStats(stats) {
+        if (typeof StatsController === 'object' && StatsController.recordRoll) {
+            if (stats.mode_type === 'single') {
+                StatsController.recordRoll(stats.dice_name, stats.results[0].result_word);
+            } else {
+                // 一卦模式：记录每个骰子
+                stats.results.forEach(r => {
+                    StatsController.recordRoll(stats.combo_name, r.result_word);
+                });
+            }
+        }
+    },
+
+    // 时间辅助函数
+    getTimeOfDay(date = new Date()) {
+        const hour = date.getHours();
+        if (hour >= 5 && hour < 9) return '早晨';
+        if (hour >= 9 && hour < 12) return '上午';
+        if (hour >= 12 && hour < 14) return '中午';
+        if (hour >= 14 && hour < 18) return '下午';
+        if (hour >= 18 && hour < 22) return '晚上';
+        return '深夜';
+    },
+
+    isWeekend(date = new Date()) {
+        const day = date.getDay();
+        return day === 0 || day === 6; // 周日或周六
+    },
+
+    isWorkingHour(date = new Date()) {
+        const hour = date.getHours();
+        const day = date.getDay();
+        // 周一到周五，9:00-18:00
+        return day >= 1 && day <= 5 && hour >= 9 && hour < 18;
+    },
+
+    // 获取或创建访客ID
+    getOrCreateVisitorId() {
+        let visitorId = localStorage.getItem('visitorId');
+        if (!visitorId) {
+            visitorId = 'v_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+            localStorage.setItem('visitorId', visitorId);
+        }
+        return visitorId;
     },
 
     // ========== 状态管理 ==========

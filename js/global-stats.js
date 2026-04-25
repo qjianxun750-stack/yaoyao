@@ -17,6 +17,7 @@ const GlobalStatsController = {
             totalShares: 0,
             uniqueVisitors: 0,
             diceStats: {},
+            comboStats: {}, // 新增：一卦模式统计
             shareStats: {},
             topResults: [],
             dailyTrends: []
@@ -253,6 +254,243 @@ const GlobalStatsController = {
             desktop: 0,
             tablet: 0
         };
+    },
+
+    // ========== 新增：一卦模式统计 ==========
+
+    // 获取一卦模式使用统计
+    async getComboModeStats() {
+        try {
+            const rolls = await SupabaseClient.select('dice_rolls');
+
+            if (!rolls) return {};
+
+            // 统计每个一卦模式的使用次数
+            const comboStats = {};
+            rolls.forEach(roll => {
+                if (roll.mode_type === 'combo' && roll.combo_name) {
+                    if (!comboStats[roll.combo_name]) {
+                        comboStats[roll.combo_name] = {
+                            id: roll.combo_id,
+                            name: roll.combo_name,
+                            count: 0,
+                            percentage: 0
+                        };
+                    }
+                    comboStats[roll.combo_name].count++;
+                }
+            });
+
+            // 计算百分比
+            const totalComboRolls = Object.values(comboStats).reduce((sum, item) => sum + item.count, 0);
+            Object.values(comboStats).forEach(item => {
+                item.percentage = totalComboRolls > 0 ? ((item.count / totalComboRolls) * 100).toFixed(1) : 0;
+            });
+
+            // 按使用次数排序
+            const sorted = Object.values(comboStats).sort((a, b) => b.count - a.count);
+
+            // 转换为对象格式（便于前端使用）
+            const result = {};
+            sorted.forEach((item, index) => {
+                result[item.name] = {
+                    ...item,
+                    rank: index + 1
+                };
+            });
+
+            return result;
+        } catch (error) {
+            console.error('获取一卦模式统计失败:', error);
+            return {};
+        }
+    },
+
+    // 获取单骰 vs 一卦使用对比
+    async getModeComparison() {
+        try {
+            const rolls = await SupabaseClient.select('dice_rolls');
+
+            if (!rolls) return { single: 0, combo: 0 };
+
+            const singleCount = rolls.filter(r => r.mode_type === 'single').length;
+            const comboCount = rolls.filter(r => r.mode_type === 'combo').length;
+            const total = singleCount + comboCount;
+
+            return {
+                single: singleCount,
+                combo: comboCount,
+                total: total,
+                singlePercentage: total > 0 ? ((singleCount / total) * 100).toFixed(1) : 0,
+                comboPercentage: total > 0 ? ((comboCount / total) * 100).toFixed(1) : 0
+            };
+        } catch (error) {
+            console.error('获取模式对比失败:', error);
+            return { single: 0, combo: 0, total: 0, singlePercentage: 0, comboPercentage: 0 };
+        }
+    },
+
+    // ========== 新增：时间维度分析 ==========
+
+    // 获取时段分布统计
+    async getTimePeriodStats() {
+        try {
+            const rolls = await SupabaseClient.select('dice_rolls');
+
+            if (!rolls) return {};
+
+            // 按时段统计
+            const timeStats = {
+                '早晨': { count: 0, hour: '05-09' },
+                '上午': { count: 0, hour: '09-12' },
+                '中午': { count: 0, hour: '12-14' },
+                '下午': { count: 0, hour: '14-18' },
+                '晚上': { count: 0, hour: '18-22' },
+                '深夜': { count: 0, hour: '22-05' }
+            };
+
+            // 按小时统计（用于热力图）
+            const hourlyStats = {};
+            for (let i = 0; i < 24; i++) {
+                hourlyStats[i] = { hour: i, count: 0, label: `${i}:00` };
+            }
+
+            rolls.forEach(roll => {
+                // 时段统计
+                if (roll.time_period && timeStats[roll.time_period]) {
+                    timeStats[roll.time_period].count++;
+                }
+
+                // 小时统计
+                if (roll.hour !== undefined && hourlyStats[roll.hour]) {
+                    hourlyStats[roll.hour].count++;
+                }
+            });
+
+            // 转换为数组格式
+            const timeArray = Object.values(timeStats);
+            const hourlyArray = Object.values(hourlyStats);
+
+            // 计算百分比
+            const totalRolls = rolls.length;
+            timeArray.forEach(item => {
+                item.percentage = totalRolls > 0 ? ((item.count / totalRolls) * 100).toFixed(1) : 0;
+            });
+
+            return {
+                timePeriods: timeArray,
+                hourly: hourlyArray,
+                peakPeriod: timeArray.sort((a, b) => b.count - a.count)[0],
+                peakHour: hourlyArray.sort((a, b) => b.count - a.count)[0]
+            };
+        } catch (error) {
+            console.error('获取时段统计失败:', error);
+            return { timePeriods: [], hourly: [] };
+        }
+    },
+
+    // 获取工作日 vs 周末统计
+    async getWeekendStats() {
+        try {
+            const rolls = await SupabaseClient.select('dice_rolls');
+
+            if (!rolls) return { weekday: 0, weekend: 0 };
+
+            const weekday = rolls.filter(r => !r.is_weekend).length;
+            const weekend = rolls.filter(r => r.is_weekend).length;
+            const total = weekday + weekend;
+
+            return {
+                weekday: weekday,
+                weekend: weekend,
+                total: total,
+                weekdayPercentage: total > 0 ? ((weekday / total) * 100).toFixed(1) : 0,
+                weekendPercentage: total > 0 ? ((weekend / total) * 100).toFixed(1) : 0
+            };
+        } catch (error) {
+            console.error('获取周末统计失败:', error);
+            return { weekday: 0, weekend: 0 };
+        }
+    },
+
+    // ========== 新增：用户行为路径分析 ==========
+
+    // 获取转化漏斗
+    async getConversionFunnel() {
+        try {
+            const [visitors, rolls, shares] = await Promise.all([
+                SupabaseClient.select('visitors'),
+                SupabaseClient.select('dice_rolls'),
+                SupabaseClient.select('shares')
+            ]);
+
+            const uniqueVisitors = visitors ? visitors.length : 0;
+            const uniqueRolls = rolls ? new Set(rolls.map(r => r.visitor_id)).size : 0;
+            const uniqueShares = shares ? new Set(shares.map(s => s.visitor_id)).size : 0;
+
+            return {
+                visitors: uniqueVisitors,
+                rolls: uniqueRolls,
+                shares: uniqueShares,
+                visitToRollRate: uniqueVisitors > 0 ? ((uniqueRolls / uniqueVisitors) * 100).toFixed(1) : 0,
+                rollToShareRate: uniqueRolls > 0 ? ((uniqueShares / uniqueRolls) * 100).toFixed(1) : 0,
+                visitToShareRate: uniqueVisitors > 0 ? ((uniqueShares / uniqueVisitors) * 100).toFixed(1) : 0
+            };
+        } catch (error) {
+            console.error('获取转化漏斗失败:', error);
+            return {
+                visitors: 0,
+                rolls: 0,
+                shares: 0,
+                visitToRollRate: 0,
+                rollToShareRate: 0,
+                visitToShareRate: 0
+            };
+        }
+    },
+
+    // 获取平均会话数据
+    async getSessionStats() {
+        try {
+            const rolls = await SupabaseClient.select('dice_rolls');
+
+            if (!rolls || rolls.length === 0) {
+                return {
+                    avgRollsPerSession: 0,
+                    avgTimeOnPage: 0,
+                    avgTimeBetweenRolls: 0
+                };
+            }
+
+            // 计算平均每会话摇骰子次数
+            const totalRollsInSessions = rolls.reduce((sum, roll) => sum + (roll.roll_number_in_session || 1), 0);
+            const avgRollsPerSession = totalRollsInSessions / rolls.length;
+
+            // 计算平均页面停留时间
+            const totalTimeOnPage = rolls.reduce((sum, roll) => sum + (roll.time_on_page_before_roll || 0), 0);
+            const avgTimeOnPage = totalTimeOnPage / rolls.length;
+
+            // 计算平均摇骰子间隔时间
+            const timeBetweenRolls = rolls
+                .filter(r => r.time_since_last_roll !== null)
+                .map(r => r.time_since_last_roll);
+            const avgTimeBetweenRolls = timeBetweenRolls.length > 0
+                ? timeBetweenRolls.reduce((sum, time) => sum + time, 0) / timeBetweenRolls.length
+                : 0;
+
+            return {
+                avgRollsPerSession: avgRollsPerSession.toFixed(1),
+                avgTimeOnPage: Math.round(avgTimeOnPage),
+                avgTimeBetweenRolls: Math.round(avgTimeBetweenRolls)
+            };
+        } catch (error) {
+            console.error('获取会话统计失败:', error);
+            return {
+                avgRollsPerSession: 0,
+                avgTimeOnPage: 0,
+                avgTimeBetweenRolls: 0
+            };
+        }
     },
 
     // 加载本地统计（兼容）
