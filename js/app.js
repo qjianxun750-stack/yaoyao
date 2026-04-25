@@ -61,7 +61,7 @@ const App = {
 
     // 渲染单骰主题选择器
     renderThemeSelector() {
-        const container = document.getElementById('themeSelector');
+        const container = document.getElementById('themeChips');
         if (!container) return;
 
         // 只显示单骰子（过滤掉type为combo的）
@@ -71,7 +71,7 @@ const App = {
             // 获取原始索引
             const originalIndex = DICE_CONFIG.findIndex(d => d.id === dice.id);
             return `
-                <button class="theme-capsule ${originalIndex === this.state.currentDice ? 'active' : ''}"
+                <button class="chip ${originalIndex === this.state.currentDice ? 'active' : ''}"
                         data-dice-index="${originalIndex}"
                         onclick="App.selectDice(${originalIndex})">
                     ${dice.name}
@@ -84,11 +84,25 @@ const App = {
 
     // 渲染组合选择器
     renderComboSelector() {
-        const container = document.getElementById('comboSelector');
-        if (!container) return;
+        const container = document.getElementById('comboSelector'); // index.html 中 class="combo-selector" 但没ID
+        if (!container) {
+            // 尝试通过类名查找
+            const comboSelector = document.querySelector('.combo-selector');
+            if (comboSelector) {
+                const html = COMBO_CONFIG.map((combo, index) => `
+                    <div class="combo-chip ${index === this.state.currentCombo ? 'active' : ''}"
+                            data-combo-index="${index}"
+                            onclick="App.selectCombo(${index}, this)">
+                        ${combo.name}
+                    </div>
+                `).join('');
+                comboSelector.innerHTML = html;
+            }
+            return;
+        }
 
         const html = COMBO_CONFIG.map((combo, index) => `
-            <button class="theme-capsule ${index === this.state.currentCombo ? 'active' : ''}"
+            <button class="chip ${index === this.state.currentCombo ? 'active' : ''}"
                     data-combo-index="${index}"
                     onclick="App.selectCombo(${index})">
                 ${combo.name}
@@ -100,7 +114,7 @@ const App = {
 
     // 初始化单骰子
     initSingleDice() {
-        const diceContainer = document.getElementById('singleDiceContainer');
+        const diceContainer = document.getElementById('diceScene');
         if (!diceContainer) return;
 
         // 确保容器有正确的类
@@ -240,20 +254,13 @@ const App = {
         this.saveState();
 
         // 更新Tab样式
-        document.querySelectorAll('.mode-tab').forEach(tab => {
-            tab.classList.toggle('active', tab.dataset.mode === mode);
+        document.querySelectorAll('.tab').forEach(tab => {
+            tab.classList.toggle('active', tab.getAttribute('onclick') && tab.getAttribute('onclick').includes(mode));
         });
 
         // 切换面板
-        document.querySelectorAll('.panel').forEach(panel => {
-            panel.classList.remove('active');
-        });
-
-        if (mode === 'single') {
-            document.getElementById('singlePanel').classList.add('active');
-        } else {
-            document.getElementById('comboPanel').classList.add('active');
-        }
+        document.getElementById('single-panel').style.display = mode === 'single' ? 'block' : 'none';
+        document.getElementById('combo-panel').style.display = mode === 'combo' ? 'flex' : 'none';
 
         // 播放切换音效
         if (typeof AudioController !== 'undefined') {
@@ -269,10 +276,10 @@ const App = {
         this.state.currentDice = index;
         this.saveState();
 
-        // 更新UI - 注意要使用原始索引来查找active元素
-        document.querySelectorAll('#themeSelector .theme-capsule').forEach((capsule) => {
-            const capsuleIndex = parseInt(capsule.dataset.diceIndex);
-            capsule.classList.toggle('active', capsuleIndex === index);
+        // 更新UI
+        document.querySelectorAll('#themeChips .chip').forEach((chip) => {
+            const chipIndex = parseInt(chip.dataset.diceIndex);
+            chip.classList.toggle('active', chipIndex === index);
         });
 
         // 应用主题
@@ -280,7 +287,7 @@ const App = {
         this.applyTheme(diceConfig.color);
 
         // 更新骰子面文案
-        const diceEl = document.querySelector('#singleDiceContainer .dice-3d');
+        const diceEl = document.querySelector('#diceScene .dice-3d');
         if (diceEl && typeof DiceController !== 'undefined') {
             DiceController.refreshDiceFaces(diceEl, diceConfig);
         }
