@@ -531,7 +531,10 @@ h1 {
 .multi-dice-container .dice-3d {
   width: 84px;
   height: 84px;
-  transform: rotateX(-30deg) rotateY(35deg); /* 统一 3D 视角 */
+}
+
+.multi-dice-container .dice-3d.flat {
+  transform: rotateX(0deg) rotateY(0deg); /* 确保一卦模式落地也变平面 */
 }
 
 .multi-dice-container .face {
