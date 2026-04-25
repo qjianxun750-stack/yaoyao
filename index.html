@@ -2579,17 +2579,19 @@ document.getElementById('soundToggle').addEventListener('click', function() {
 });
 
 // ── Init ──
-buildChips();
-applyTheme(DICE[0].color);
-loadFaces(DICE[0]);
-buildYaoList();
+document.addEventListener('DOMContentLoaded', function() {
+  buildChips();
+  applyTheme(DICE[0].color);
+  loadFaces(DICE[0]);
+  buildYaoList();
 
-// Init date in share
-const now = new Date();
-document.getElementById('shareDate').textContent = `${now.getFullYear()}年${now.getMonth()+1}月${now.getDate()}日`;
+  // Init date in share
+  const now = new Date();
+  document.getElementById('shareDate').textContent = `${now.getFullYear()}年${now.getMonth()+1}月${now.getDate()}日`;
 
-// 记录访问
-trackVisit();
+  // 记录访问
+  trackVisit();
+});
 </script>
 </body>
 </html>
