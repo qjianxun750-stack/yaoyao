@@ -1673,34 +1673,43 @@ function selectDice(i) {
 function loadFaces(d) {
   console.log('=== loadFaces called ===');
   console.log('Theme:', d.name);
-  console.log('Faces to load:', d.faces.length);
+  alert(`正在加载主题：${d.name}\n即将更新骰子内容`);
 
   d.faces.forEach((f, i) => {
     const faceId = 'f' + i;
     const faceEl = document.getElementById(faceId);
 
+    console.log(`处理面 ${faceId}:`, faceEl);
+
     if (!faceEl) {
       console.error('Face element not found:', faceId);
+      alert(`错误：找不到面元素 ${faceId}`);
       return;
     }
 
-    // Use direct children selection to avoid selecting combo dice faces
-    const emojiEl = faceEl.children[0]; // .face-emoji
-    const wordEl = faceEl.children[1];  // .face-word
+    // Use direct children selection
+    const emojiEl = faceEl.children[0];
+    const wordEl = faceEl.children[1];
+
+    console.log(`${faceId} emoji元素:`, emojiEl, 'word元素:', wordEl);
 
     if (!emojiEl || !wordEl) {
-      console.error('Emoji or word element not found in face:', faceId, 'children:', faceEl.children.length);
+      console.error('Elements not found in face:', faceId);
+      alert(`错误：${faceId} 的子元素不完整`);
       return;
     }
 
-    console.log(`f${i}: "${emojiEl.textContent}" → "${f.e}", "${wordEl.textContent}" → "${f.w}"`);
+    const oldEmoji = emojiEl.textContent;
+    const oldWord = wordEl.textContent;
 
     emojiEl.textContent = f.e;
     wordEl.textContent = f.w;
 
-    // Verify the update
-    console.log(`✓ Verification: f${i} now shows "${emojiEl.textContent} ${wordEl.textContent}"`);
+    console.log(`${faceId}: "${oldEmoji} ${oldWord}" → "${f.e} ${f.w}"`);
+    alert(`面 ${faceId} 更新成功：\n"${oldEmoji} ${oldWord}" → "${f.e} ${f.w}"`);
   });
+
+  alert(`主题 ${d.name} 加载完成！`);
   console.log('=== loadFaces completed ===');
 }
 
