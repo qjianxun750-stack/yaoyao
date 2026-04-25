@@ -4,14 +4,14 @@ const DiceController = {
     currentResult: null,
     isRolling: false,
 
-    // 六个面的最终朝向（在720度基础上叠加）
+    // 六个面的最终朝向（在1800度基础上叠加）
     finalRotations: [
-        { rx: 720, ry: 720 },   // face 0 (前)
-        { rx: 720, ry: 900 },   // face 1 (后)
-        { rx: 720, ry: 630 },   // face 2 (左)
-        { rx: 720, ry: 810 },   // face 3 (右)
-        { rx: 630, ry: 720 },   // face 4 (上)
-        { rx: 810, ry: 720 }    // face 5 (下)
+        { rx: 1800, ry: 1800 },   // face 0 (前)
+        { rx: 1800, ry: 1980 },   // face 1 (后)
+        { rx: 1800, ry: 1710 },   // face 2 (左)
+        { rx: 1800, ry: 1890 },   // face 3 (右)
+        { rx: 1710, ry: 1800 },   // face 4 (上)
+        { rx: 1890, ry: 1800 }    // face 5 (下)
     ],
 
     // 初始化骰子DOM
@@ -19,27 +19,27 @@ const DiceController = {
         const diceHTML = `
             <div class="dice-glow"></div>
             <div class="dice-3d idle">
-                <div class="dice-face front" data-face="0">
+                <div class="face face-front" data-face="0">
                     <span class="face-emoji">🎲</span>
                     <span class="face-word">?</span>
                 </div>
-                <div class="dice-face back" data-face="1">
+                <div class="face face-back" data-face="1">
                     <span class="face-emoji">🎲</span>
                     <span class="face-word">?</span>
                 </div>
-                <div class="dice-face left" data-face="2">
+                <div class="face face-left" data-face="2">
                     <span class="face-emoji">🎲</span>
                     <span class="face-word">?</span>
                 </div>
-                <div class="dice-face right" data-face="3">
+                <div class="face face-right" data-face="3">
                     <span class="face-emoji">🎲</span>
                     <span class="face-word">?</span>
                 </div>
-                <div class="dice-face top" data-face="4">
+                <div class="face face-top" data-face="4">
                     <span class="face-emoji">🎲</span>
                     <span class="face-word">?</span>
                 </div>
-                <div class="dice-face bottom" data-face="5">
+                <div class="face face-bottom" data-face="5">
                     <span class="face-emoji">🎲</span>
                     <span class="face-word">?</span>
                 </div>
@@ -56,7 +56,7 @@ const DiceController = {
 
     // 更新骰子面的内容
     updateDiceFaces(dice, diceConfig, result) {
-        const faces = dice.querySelectorAll('.dice-face');
+        const faces = dice.querySelectorAll('.face');
         faces.forEach((face, index) => {
             const faceData = diceConfig.faces[index];
             const emojiEl = face.querySelector('.face-emoji');
@@ -78,7 +78,7 @@ const DiceController = {
     refreshDiceFaces(dice, diceConfig) {
         if (!dice || !diceConfig || !diceConfig.faces) return;
 
-        const faces = dice.querySelectorAll('.dice-face');
+        const faces = dice.querySelectorAll('.face');
         faces.forEach((face, index) => {
             // 如果配置的faces少于6个，循环使用
             const faceData = diceConfig.faces[index % diceConfig.faces.length];
@@ -121,13 +121,13 @@ const DiceController = {
         // 执行rolling动画
         dice.classList.add('rolling');
 
-        // 等待动画完成
+        // 等待动画完成（3秒）
         setTimeout(() => {
             // 添加landing动画
             dice.classList.remove('rolling');
             dice.classList.add('landing');
 
-            // landing完成后
+            // landing完成后（0.5秒）
             setTimeout(() => {
                 // 添加shake动画
                 dice.classList.add('shake');
@@ -154,8 +154,8 @@ const DiceController = {
                     // 回调
                     if (callback) callback(result);
                 }, 300);
-            }, 400);
-        }, 1800);
+            }, 500);
+        }, 3000);
     },
 
     // ========== 一卦模式骰子 ==========
@@ -202,35 +202,23 @@ const DiceController = {
 
                 setTimeout(() => {
                     dice.classList.remove('landing');
-                    dice.classList.add('shake');
+                    dice.classList.add('idle');
 
-                    setTimeout(() => {
-                        dice.classList.remove('shake');
+                    // 播放揭晓音效
+                    if (typeof AudioController !== 'undefined') {
+                        AudioController.playRevealSound(yaoIndex);
+                    }
 
-                        // 播放揭晓音效
-                        if (typeof AudioController !== 'undefined') {
-                            AudioController.playRevealSound(yaoIndex);
-                        }
+                    // 触发粒子效果
+                    this.createParticles(diceScene, comboConfig.color);
 
-                        // 触发粒子效果
-                        this.createParticles(diceScene, comboConfig.color);
+                    this.isRolling = false;
 
-                        // 骰子消失动画
-                        setTimeout(() => {
-                            diceScene.classList.add('exit');
-
-                            setTimeout(() => {
-                                diceScene.classList.remove('exit');
-                                this.isRolling = false;
-
-                                // 回调
-                                if (callback) callback(result, yaoConfig);
-                            }, 200);
-                        }, 500);
-                    }, 300);
-                }, 400);
-            }, 1800);
-        }, 300);
+                    // 回调
+                    if (callback) callback(result);
+                }, 500);
+            }, 3000);
+        }, 400);
     },
 
     // ========== 粒子效果 ==========
