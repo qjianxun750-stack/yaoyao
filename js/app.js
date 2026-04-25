@@ -482,17 +482,17 @@ const App = {
     showComboResult() {
         const combo = COMBO_CONFIG[this.state.currentCombo];
         const comboResult = this.generateComboResult(combo, this.state.comboResults);
-        
+
         // 显示结果卡片
         const resultCard = document.getElementById('comboResultCard');
         if (resultCard) {
             resultCard.classList.add('visible');
-            
+
             // 自动平滑滚动到结果卡片
             setTimeout(() => {
                 resultCard.scrollIntoView({ behavior: 'smooth', block: 'center' });
             }, 100);
-            
+
             // 填充日期
             const dateEl = document.getElementById('comboResultDate');
             if (dateEl) dateEl.textContent = new Date().toLocaleDateString('zh-CN', { year: 'numeric', month: 'long', day: 'numeric' });

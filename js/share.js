@@ -43,7 +43,7 @@ const ShareController = {
 
         // 结果词
         ctx.fillStyle = '#FFFFFF';
-        ctx.font = 'bold 56px "Noto Serif SC", serif';
+        ctx.font = 'bold 56px -apple-system, "PingFang SC", sans-serif';
         ctx.fillText(result.word, centerX, centerY + 50);
 
         // 分割线
