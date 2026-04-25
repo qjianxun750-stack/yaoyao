@@ -1684,21 +1684,22 @@ function loadFaces(d) {
       return;
     }
 
-    const emojiEl = faceEl.querySelector('.face-emoji');
-    const wordEl = faceEl.querySelector('.face-word');
+    // Use direct children selection to avoid selecting combo dice faces
+    const emojiEl = faceEl.children[0]; // .face-emoji
+    const wordEl = faceEl.children[1];  // .face-word
 
     if (!emojiEl || !wordEl) {
-      console.error('Emoji or word element not found in face:', faceId);
+      console.error('Emoji or word element not found in face:', faceId, 'children:', faceEl.children.length);
       return;
     }
 
-    console.log(`f${i}: ${emojiEl.textContent} → ${f.e}, ${wordEl.textContent} → ${f.w}`);
+    console.log(`f${i}: "${emojiEl.textContent}" → "${f.e}", "${wordEl.textContent}" → "${f.w}"`);
 
     emojiEl.textContent = f.e;
     wordEl.textContent = f.w;
 
     // Verify the update
-    console.log(`Verification after update: f${i} = ${emojiEl.textContent} ${wordEl.textContent}`);
+    console.log(`✓ Verification: f${i} now shows "${emojiEl.textContent} ${wordEl.textContent}"`);
   });
   console.log('=== loadFaces completed ===');
 }
